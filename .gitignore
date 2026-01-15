@@ -1,0 +1,31 @@
+# --- IDE & System Files ---
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# --- Backend (Spring Boot / Maven) ---
+backend/target/
+backend/.mvn/
+backend/*.jar
+backend/*.war
+backend/logs/
+
+# --- Frontend (React / Vite) ---
+frontend/node_modules/
+frontend/dist/
+frontend/dist-ssr/
+frontend/*.local
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+
+# --- Infrastructure & Security ---
+# NEVER push your real secrets to GitHub
+.env
+.env.local
+infrastructure/secrets/
+**/temp-data/
+
+# --- Docker ---
+.docker/
