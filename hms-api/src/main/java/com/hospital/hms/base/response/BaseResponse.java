@@ -35,10 +35,10 @@ public abstract class BaseResponse {
      * Convert to log-safe string
      */
     public String toLogString() {
-        return String.format("%s[processedAt=%s, processingTime=%dms]",
+        return String.format("%s[processedAt=%s, processingTime=%sms]",
                 this.getClass().getSimpleName(),
                 processedAt,
-                processingTimeMs
+                processingTimeMs != null ? processingTimeMs : "N/A"
         );
     }
 }

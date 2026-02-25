@@ -2,45 +2,81 @@ services:
   mysql:
     image: 'mysql:8.0'
     environment:
-      - 'MYSQL_DATABASE=mydatabase'
-      - 'MYSQL_PASSWORD=secret'
-      - 'MYSQL_ROOT_PASSWORD=verysecret'
-      - 'MYSQL_USER=myuser'
+      MYSQL_DATABASE: hms_db
+      MYSQL_USER: ${MYSQL_USER:-myuser}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-secret}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-verysecret}
     ports:
       - '3306:3306'
     volumes:
       - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   redis:
-    image: 'redis:latest'
+    image: 'redis:7.4'
     ports:
       - '6379:6379'
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   mongodb:
-    image: 'mongo:latest'
+    image: 'mongo:7.0'
     environment:
-      - 'MONGO_INITDB_ROOT_USERNAME=root'
-      - 'MONGO_INITDB_ROOT_PASSWORD=secret'
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER:-root}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-secret}
     ports:
       - '27017:27017'
     volumes:
       - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Keycloak uses its OWN database — separate from the app's hms_db
+  keycloak-db:
+    image: 'mysql:8.0'
+    environment:
+      MYSQL_DATABASE: keycloak
+      MYSQL_USER: ${KC_DB_USER:-keycloak}
+      MYSQL_PASSWORD: ${KC_DB_PASSWORD:-keycloak_secret}
+      MYSQL_ROOT_PASSWORD: ${KC_DB_ROOT_PASSWORD:-verysecret}
+    volumes:
+      - keycloak_db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   keycloak:
-    image: 'quay.io/keycloak/keycloak:latest'
+    image: 'quay.io/keycloak/keycloak:26.1'
     command: start-dev
     environment:
-      - 'KC_DB=mysql'
-      - 'KC_DB_URL=jdbc:mysql://mysql:3306/mydatabase'
-      - 'KC_DB_USERNAME=myuser'
-      - 'KC_DB_PASSWORD=secret'
-      - 'KEYCLOAK_ADMIN=admin'
-      - 'KEYCLOAK_ADMIN_PASSWORD=admin'
+      KC_DB: mysql
+      KC_DB_URL: jdbc:mysql://keycloak-db:3306/keycloak
+      KC_DB_USERNAME: ${KC_DB_USER:-keycloak}
+      KC_DB_PASSWORD: ${KC_DB_PASSWORD:-keycloak_secret}
+      KEYCLOAK_ADMIN: ${KC_ADMIN:-admin}
+      KEYCLOAK_ADMIN_PASSWORD: ${KC_ADMIN_PASSWORD:-admin}
     ports:
       - '9090:8080'
     depends_on:
-      - mysql
+      keycloak-db:
+        condition: service_healthy
 
 volumes:
   mysql_data:
+  redis_data:
   mongo_data:
+  keycloak_db_data:

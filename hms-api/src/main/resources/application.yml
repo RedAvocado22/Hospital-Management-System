@@ -1,0 +1,98 @@
+### ==============================================
+### Hospital Management System API Configuration
+### ==============================================
+
+spring:
+  application:
+    name: Hospital Management System API
+
+  # ------ MySQL (JPA/Hibernate) ------
+  datasource:
+    url: jdbc:mysql://localhost:3306/hms_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: ${MYSQL_USER:myuser}
+    password: ${MYSQL_PASSWORD:secret}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate  # Flyway manages the schema — Hibernate only validates
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 16
+        jdbc:
+          batch_size: 25
+        order_inserts: true
+        order_updates: true
+    open-in-view: false  # Prevent lazy-loading in controllers (anti-pattern)
+
+  # ------ Flyway (Database Migrations) ------
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+  # ------ MongoDB (Audit logs, Chat history) ------
+  data:
+    mongodb:
+      uri: mongodb://${MONGO_USER:root}:${MONGO_PASSWORD:secret}@localhost:27017/hms_nosql?authSource=admin
+
+    # ------ Redis (Caching & Sessions) ------
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+  # ------ Mail ------
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  # ------ OAuth2 Resource Server (Keycloak JWT) ------
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:9090/realms/hms}
+          jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:http://localhost:9090/realms/hms/protocol/openid-connect/certs}
+
+# ------ Server ------
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: /api
+
+# ------ Actuator ------
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: when-authorized
+
+# ------ Logging ------
+logging:
+  level:
+    root: INFO
+    com.hospital.hms: DEBUG
+    org.springframework.security: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+# ------ OpenAPI / Swagger ------
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
