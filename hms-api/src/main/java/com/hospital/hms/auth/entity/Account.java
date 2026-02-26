@@ -1,6 +1,7 @@
 package com.hospital.hms.auth.entity;
 
 import com.hospital.hms.base.BaseEntity;
+import com.hospital.hms.common.enums.Gender;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -28,8 +29,9 @@ public class Account extends BaseEntity {
     @Column(name = "dob")
     private LocalDate dob;
 
-    @Column(name = "gender", columnDefinition = "TINYINT(1)")
-    private Boolean gender;
+    @Column(name = "gender")
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
 
     @Column(name = "address", length = 255)
     private String address;
