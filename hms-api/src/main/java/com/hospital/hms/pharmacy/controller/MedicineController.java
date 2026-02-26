@@ -1,0 +1,56 @@
+package com.hospital.hms.pharmacy.controller;
+
+import com.hospital.hms.base.api.ApiResponse;
+import com.hospital.hms.base.api.ResponseMetadata;
+import com.hospital.hms.pharmacy.dto.request.MedicineGetDetailRequest;
+import com.hospital.hms.pharmacy.dto.response.MedicineResponse;
+import com.hospital.hms.pharmacy.service.MedicineGetDetailService;
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@Slf4j
+@RestController
+@RequestMapping("/api/v1/medicines")
+@RequiredArgsConstructor
+public class MedicineController {
+    private final MedicineGetDetailService medicineGetDetailService;
+
+    @PostMapping("/detail")
+    public ResponseEntity<ApiResponse<MedicineResponse>> getMedicine(@RequestBody MedicineGetDetailRequest request, HttpServletRequest httpRequest) {
+        long startTime = System.currentTimeMillis();
+        String traceId = java.util.UUID.randomUUID().toString();
+
+        log.info("[TraceID: {}] Fetching course with Medicine Id: {}", traceId, request.getId());
+
+        request.initialize();
+
+        MedicineResponse response = medicineGetDetailService.execute(request);
+        long duration = System.currentTimeMillis() - startTime;
+
+        ResponseMetadata metadata = ResponseMetadata.builder()
+                .traceId(traceId)
+                .path(httpRequest.getRequestURI())
+                .method(httpRequest.getMethod())
+                .duration(duration)
+                .apiVersion("v1")
+                .build();
+        ApiResponse<MedicineResponse> apiResponse = ApiResponse.success(
+                response,
+                "Course retrieved successfully",
+                HttpStatus.OK.value(),
+                metadata
+        );
+
+        log.info("[TraceID: {}] Retrieved course: {} successfully (took {}ms)",
+                traceId, response.getName(), duration);
+
+        return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+    }
+}
