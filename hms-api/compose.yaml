@@ -28,21 +28,6 @@ services:
       timeout: 5s
       retries: 5
 
-  mongodb:
-    image: 'mongo:7.0'
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER:-root}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-secret}
-    ports:
-      - '27017:27017'
-    volumes:
-      - mongo_data:/data/db
-    healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   # Keycloak uses its OWN database — separate from the app's hms_db
   keycloak-db:
     image: 'mysql:8.0'
@@ -78,5 +63,4 @@ services:
 volumes:
   mysql_data:
   redis_data:
-  mongo_data:
   keycloak_db_data:

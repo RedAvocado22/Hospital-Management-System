@@ -46,11 +46,6 @@
 			<artifactId>spring-boot-starter-data-redis</artifactId>
 		</dependency>
 
-		<!-- MongoDB integration for NoSQL document storage (audit logs, chat history, etc.) -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-mongodb</artifactId>
-		</dependency>
 
 		<!-- OAuth2 Resource Server for validating JWT tokens from Keycloak -->
 		<dependency>
