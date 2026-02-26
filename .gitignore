@@ -29,3 +29,6 @@ infrastructure/secrets/
 
 # --- Docker ---
 .docker/
+
+# --- Documentation ---
+docs/*

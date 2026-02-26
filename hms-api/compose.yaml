@@ -3,9 +3,9 @@ services:
     image: 'mysql:8.0'
     environment:
       MYSQL_DATABASE: hms_db
-      MYSQL_USER: ${MYSQL_USER:-sa}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-123}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-verysecret}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     ports:
       - '3306:3306'
     volumes:
@@ -33,9 +33,9 @@ services:
     image: 'mysql:8.0'
     environment:
       MYSQL_DATABASE: keycloak
-      MYSQL_USER: ${KC_DB_USER:-keycloak}
-      MYSQL_PASSWORD: ${KC_DB_PASSWORD:-keycloak_secret}
-      MYSQL_ROOT_PASSWORD: ${KC_DB_ROOT_PASSWORD:-verysecret}
+      MYSQL_USER: ${KC_DB_USER}
+      MYSQL_PASSWORD: ${KC_DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${KC_DB_ROOT_PASSWORD}
     volumes:
       - keycloak_db_data:/var/lib/mysql
     healthcheck:
@@ -50,10 +50,10 @@ services:
     environment:
       KC_DB: mysql
       KC_DB_URL: jdbc:mysql://keycloak-db:3306/keycloak
-      KC_DB_USERNAME: ${KC_DB_USER:-keycloak}
-      KC_DB_PASSWORD: ${KC_DB_PASSWORD:-keycloak_secret}
-      KEYCLOAK_ADMIN: ${KC_ADMIN:-admin}
-      KEYCLOAK_ADMIN_PASSWORD: ${KC_ADMIN_PASSWORD:-admin}
+      KC_DB_USERNAME: ${KC_DB_USER}
+      KC_DB_PASSWORD: ${KC_DB_PASSWORD}
+      KEYCLOAK_ADMIN: ${KC_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KC_ADMIN_PASSWORD}
     ports:
       - '9090:8080'
     depends_on:

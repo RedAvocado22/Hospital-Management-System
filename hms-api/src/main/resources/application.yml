@@ -9,8 +9,8 @@ spring:
   # ------ MySQL (JPA/Hibernate) ------
   datasource:
     url: jdbc:mysql://localhost:3306/hms_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-    username: ${MYSQL_USER:sa}
-    password: ${MYSQL_PASSWORD:123}
+    username: ${MYSQL_USER}
+    password: ${MYSQL_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
