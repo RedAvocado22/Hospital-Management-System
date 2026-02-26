@@ -32,3 +32,4 @@ infrastructure/secrets/
 
 # --- Documentation ---
 docs/*
+!docs/implementation_plan.md
