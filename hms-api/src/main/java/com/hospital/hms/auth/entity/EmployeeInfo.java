@@ -10,7 +10,6 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "employee_info")
-@AttributeOverride(name = "id", column = @Column(name = "employee_info_id"))
 @Getter
 @Setter
 @NoArgsConstructor
@@ -29,6 +28,6 @@ public class EmployeeInfo extends BaseEntity {
     @Column(name = "hire_date")
     private LocalDate hireDate;
 
-    @Column(name = "employee_code", length = 20)
-    private String employeeCode;
+    @Column(name = "code", length = 20)
+    private String code;
 }

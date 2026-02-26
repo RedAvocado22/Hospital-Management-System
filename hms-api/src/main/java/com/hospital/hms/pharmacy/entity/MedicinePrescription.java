@@ -9,7 +9,6 @@ import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "medicine_prescription")
-@AttributeOverride(name = "id", column = @Column(name = "medicine_prescription_id"))
 @Getter
 @Setter
 @NoArgsConstructor

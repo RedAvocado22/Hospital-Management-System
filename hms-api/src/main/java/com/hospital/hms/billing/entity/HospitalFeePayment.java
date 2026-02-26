@@ -13,7 +13,6 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "hospital_fee_payment")
-@AttributeOverride(name = "id", column = @Column(name = "fee_payment_id"))
 @Getter
 @Setter
 @NoArgsConstructor

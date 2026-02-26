@@ -9,7 +9,6 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "medicine")
-@AttributeOverride(name = "id", column = @Column(name = "medicine_id"))
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,8 +16,8 @@ import java.math.BigDecimal;
 @SuperBuilder
 public class Medicine extends BaseEntity {
 
-    @Column(name = "medicine_name", length = 100, nullable = false)
-    private String medicineName;
+    @Column(name = "name", length = 100, nullable = false)
+    private String name;
 
     @Column(name = "quantity", nullable = false)
     private Integer quantity;

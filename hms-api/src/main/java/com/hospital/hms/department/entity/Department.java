@@ -7,7 +7,6 @@ import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "department")
-@AttributeOverride(name = "id", column = @Column(name = "department_id"))
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,8 +14,8 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class Department extends BaseEntity {
 
-    @Column(name = "department_name", length = 100, nullable = false)
-    private String departmentName;
+    @Column(name = "name", length = 100, nullable = false)
+    private String name;
 
     @Column(name = "is_active", columnDefinition = "TINYINT(1)", nullable = false)
     private Boolean isActive;

@@ -9,7 +9,6 @@ import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "medical_record")
-@AttributeOverride(name = "id", column = @Column(name = "medical_record_id"))
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,8 +20,8 @@ public class MedicalRecord extends BaseEntity {
     @JoinColumn(name = "patient_id", nullable = false)
     private PatientInfo patient;
 
-    @Column(name = "medical_description", columnDefinition = "TEXT")
-    private String medicalDescription;
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
 
     @Column(name = "doctor_advice", columnDefinition = "TEXT")
     private String doctorAdvice;

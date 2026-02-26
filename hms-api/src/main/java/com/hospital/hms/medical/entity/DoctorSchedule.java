@@ -11,7 +11,6 @@ import java.time.LocalTime;
 
 @Entity
 @Table(name = "doctor_schedule")
-@AttributeOverride(name = "id", column = @Column(name = "schedule_id"))
 @Getter
 @Setter
 @NoArgsConstructor
@@ -23,8 +22,8 @@ public class DoctorSchedule extends BaseEntity {
     @JoinColumn(name = "doctor_id", nullable = false)
     private Account doctor;
 
-    @Column(name = "work_date", nullable = false)
-    private LocalDate workDate;
+    @Column(name = "date", nullable = false)
+    private LocalDate date;
 
     @Column(name = "start_time", nullable = false)
     private LocalTime startTime;

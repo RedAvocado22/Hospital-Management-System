@@ -10,7 +10,6 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "medical_examination_history")
-@AttributeOverride(name = "id", column = @Column(name = "examination_history_id"))
 @Getter
 @Setter
 @NoArgsConstructor
@@ -22,11 +21,11 @@ public class MedicalExaminationHistory extends BaseEntity {
     @JoinColumn(name = "patient_id", nullable = false)
     private PatientInfo patient;
 
-    @Column(name = "examination_description", columnDefinition = "TEXT")
-    private String examinationDescription;
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
 
-    @Column(name = "examination_date")
-    private LocalDate examinationDate;
+    @Column(name = "date")
+    private LocalDate date;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "reception_counter_staff_id", nullable = false)

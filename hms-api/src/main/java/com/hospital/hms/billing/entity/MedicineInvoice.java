@@ -11,7 +11,6 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "medicine_invoice")
-@AttributeOverride(name = "id", column = @Column(name = "medicine_invoice_id"))
 @Getter
 @Setter
 @NoArgsConstructor

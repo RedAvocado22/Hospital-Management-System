@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "notification")
-@AttributeOverride(name = "id", column = @Column(name = "notification_id"))
 @Getter
 @Setter
 @NoArgsConstructor

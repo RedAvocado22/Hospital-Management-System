@@ -9,7 +9,6 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "health_insurance")
-@AttributeOverride(name = "id", column = @Column(name = "insurance_id"))
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,8 +16,8 @@ import java.time.LocalDate;
 @SuperBuilder
 public class HealthInsurance extends BaseEntity {
 
-    @Column(name = "insurance_name", length = 100, nullable = false)
-    private String insuranceName;
+    @Column(name = "name", length = 100, nullable = false)
+    private String name;
 
     @Column(name = "is_valid", columnDefinition = "TINYINT(1)", nullable = false)
     private Boolean isValid;

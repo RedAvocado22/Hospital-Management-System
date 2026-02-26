@@ -7,7 +7,6 @@ import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "role")
-@AttributeOverride(name = "id", column = @Column(name = "role_id"))
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,9 +14,9 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class Role extends BaseEntity {
 
-    @Column(name = "role_name", length = 50, nullable = false)
-    private String roleName;
+    @Column(name = "name", length = 50, nullable = false)
+    private String name;
 
-    @Column(name = "role_description", columnDefinition = "TEXT")
-    private String roleDescription;
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
 }

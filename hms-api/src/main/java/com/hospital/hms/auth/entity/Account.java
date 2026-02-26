@@ -9,7 +9,6 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "account")
-@AttributeOverride(name = "id", column = @Column(name = "account_id"))
 @Getter
 @Setter
 @NoArgsConstructor
