@@ -1,0 +1,16 @@
+package com.hospital.hms.medical.repository;
+
+import com.hospital.hms.medical.entity.MedicalRecord;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.UUID;
+
+@Repository
+public interface MedicalRecordRepository extends JpaRepository<MedicalRecord, UUID> {
+
+    List<MedicalRecord> findByPatient_Id(UUID patientId);
+
+    List<MedicalRecord> findByDoctor_Id(UUID doctorId);
+}
