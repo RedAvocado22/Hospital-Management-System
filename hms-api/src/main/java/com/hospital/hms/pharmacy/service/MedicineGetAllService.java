@@ -29,9 +29,9 @@ public class MedicineGetAllService implements BaseService<MedicineGetAllRequest,
     @Transactional(readOnly = true)
     public PaginatedResponse<MedicineResponse> doProcess(MedicineGetAllRequest request) {
         log.debug(
-                "Fetching medicine with pagination - page: {}, size: {}, name: {}, quantity: {}, price: {},",
+                "Fetching medicine with pagination - page: {}, size: {}, name: {}, quantity: {}, price: {}, description: {}",
                 request.getPage(), request.getSize(),
-                request.getName(), request.getQuantity(), request.getPrice()
+                request.getName(), request.getQuantity(), request.getPrice(), request.getDescription()
         );
 
         Pageable pageable = request.toPageable();
