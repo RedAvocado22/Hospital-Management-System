@@ -12,4 +12,5 @@ import java.util.UUID;
 public interface MedicineRepository extends JpaRepository<Medicine, UUID>,
         JpaSpecificationExecutor<Medicine> {
     Optional<Medicine> findById(UUID id);
+    Optional<Medicine> findByName(String name);
 }
