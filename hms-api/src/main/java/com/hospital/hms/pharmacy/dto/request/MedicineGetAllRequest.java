@@ -23,6 +23,8 @@ public class MedicineGetAllRequest extends PaginatedRequest {
 
     private Integer quantity;
 
+    private String description;
+
     public void validate() {
     }
 }

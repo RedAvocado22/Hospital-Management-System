@@ -17,9 +17,6 @@ public class MedicineSpecification {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
-            if (request.getId() != null) {
-            }
-
             if (request.getName() != null && !request.getName().isBlank()) {
                 //add LIKE query
                 predicates.add(criteriaBuilder.like(

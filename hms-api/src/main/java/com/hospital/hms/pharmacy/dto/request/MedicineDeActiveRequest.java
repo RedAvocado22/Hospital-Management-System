@@ -15,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class MedicineGetDetailRequest extends BaseRequest {
+public class MedicineDeActiveRequest extends BaseRequest {
 
     @NotBlank(message = "Medicine id are required ")
     private UUID id;
