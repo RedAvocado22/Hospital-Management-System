@@ -10,4 +10,5 @@ public interface MedicineMapper {
     MedicineMapper INSTANCE = Mappers.getMapper(MedicineMapper.class);
 
     MedicineResponse toResponse(Medicine medicine);
+    Medicine toEntity(MedicineResponse medicineResponse);
 }
