@@ -20,8 +20,14 @@ public class Account extends BaseEntity {
     @Column(name = "username", length = 50, nullable = false, unique = true)
     private String username;
 
-    @Column(name = "password", length = 255, nullable = false)
-    private String password;
+    @Column(name = "first_name", length = 100)
+    private String firstName;
+
+    @Column(name = "last_name", length = 100)
+    private String lastName;
+
+    @Column(name = "email", length = 100, unique = true)
+    private String email;
 
     @Column(name = "full_name", length = 100)
     private String fullName;
@@ -45,4 +51,12 @@ public class Account extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
+
+    @PrePersist
+    @PreUpdate
+    protected void prepareFullName() {
+        String first = this.firstName != null ? this.firstName : "";
+        String last = this.lastName != null ? this.lastName : "";
+        this.fullName = (first + " " + last).trim();
+    }
 }
