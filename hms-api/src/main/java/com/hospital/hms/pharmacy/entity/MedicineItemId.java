@@ -4,6 +4,7 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -11,9 +12,9 @@ import java.util.Objects;
 @AllArgsConstructor
 public class MedicineItemId implements Serializable {
 
-    private Integer medicinePrescription;
+    private UUID medicinePrescription;
 
-    private Integer medicine;
+    private UUID medicine;
 
     @Override
     public boolean equals(Object o) {

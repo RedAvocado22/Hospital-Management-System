@@ -4,6 +4,7 @@ import lombok.*;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -11,9 +12,9 @@ import java.util.Objects;
 @AllArgsConstructor
 public class ServiceItemId implements Serializable {
 
-    private Integer service;
+    private UUID service;
 
-    private Integer serviceInvoice;
+    private UUID serviceInvoice;
 
     @Override
     public boolean equals(Object o) {
