@@ -1,7 +1,7 @@
 package com.hospital.hms.base.service;
 
 import com.hospital.hms.base.request.BaseRequest;
-import com.hospital.hms.base.response.BaseResponse;
+
 import com.hospital.hms.exception.BusinessException;
 import com.hospital.hms.exception.NotFoundException;
 import com.hospital.hms.exception.ValidationException;
@@ -40,7 +40,7 @@ import java.util.Optional;
  * </pre>
  *
  * @param <REQ> Request type (must extend BaseRequest)
- * @param <RES> Response type (must extend BaseResponse, or Void)
+ * @param <RES> Response type
  */
 public interface BaseService<REQ extends BaseRequest, RES> {
 
