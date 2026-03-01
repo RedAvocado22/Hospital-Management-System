@@ -1,5 +1,6 @@
 package com.hospital.hms.auth.service;
 
+import com.hospital.hms.auth.repository.AccountRepository;
 import com.hospital.hms.auth.request.SignUpRequest;
 import com.hospital.hms.auth.response.AuthResponse;
 import com.hospital.hms.exception.IdentityProviderException;
@@ -21,6 +22,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -30,6 +32,7 @@ public class KeycloakService {
 
     private final WebClient webClient = WebClient.builder().build();
     private final Keycloak keycloak;
+    private final AccountRepository accountRepository;
 
     @Value("${app.keycloak.server-url}")
     private String serverUrl;
@@ -106,7 +109,9 @@ public class KeycloakService {
         userRepresentation.setCredentials(Collections.singletonList(credentialRepresentation));
 
         UsersResource usersResource = keycloak.realm(realm).users();
-        try (Response response = usersResource.create(userRepresentation)) {
+        try {
+            Response response = usersResource.create(userRepresentation);
+
             if (response.getStatus() == 409) {
                 log.warn("User already exists in Keycloak: {}", request.getUsername());
                 throw new IdentityProviderException("User already exists in Keycloak", HttpStatus.CONFLICT);
@@ -121,6 +126,18 @@ public class KeycloakService {
         } catch (Exception e) {
             log.error("Error communicating with Keycloak", e);
             throw new IdentityProviderException("Error communicating with Keycloak", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    public void deleteUser(String username) {
+        UsersResource usersResource = keycloak.realm(realm).users();
+
+        List<UserRepresentation> usersRepresentation = usersResource.search(username);
+
+        if (!usersRepresentation.isEmpty()) {
+            usersResource.delete(usersRepresentation.getFirst().getId());
+        } else {
+            log.warn("Nothing to delete in Keycloak");
         }
     }
 }
