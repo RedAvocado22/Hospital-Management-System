@@ -54,8 +54,16 @@ public class SignUpService {
         log.debug("User saved to local database: {}", request.getUsername());
 
         // 3. Register user with Keycloak
-        // If this fails, @Transactional will rollback the local save.
         keycloakService.createUser(request);
+
+        // If this fails, @Transactional will rollback the local save.
+        try {
+            accountRepository.flush();
+        } catch (Exception e) {
+            log.error("MySQL commit failed after Keycloak creation — compensating");
+            keycloakService.deleteUser(request.getUsername());
+            throw new RuntimeException("Registration failed, please try again");
+        }
 
         log.info("User registered successfully in both MySQL and Keycloak: {}", request.getUsername());
     }
