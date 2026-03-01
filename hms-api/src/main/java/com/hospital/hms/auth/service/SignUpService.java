@@ -1,12 +1,13 @@
 package com.hospital.hms.auth.service;
 
-import com.hospital.hms.auth.request.SignUpRequest;
 import com.hospital.hms.auth.entity.Account;
 import com.hospital.hms.auth.entity.Role;
 import com.hospital.hms.auth.repository.AccountRepository;
 import com.hospital.hms.auth.repository.RoleRepository;
+import com.hospital.hms.auth.request.SignUpRequest;
 import com.hospital.hms.exception.DuplicateResourceException;
 import com.hospital.hms.exception.IdentityProviderException;
+import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.admin.client.Keycloak;
@@ -16,8 +17,6 @@ import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import jakarta.ws.rs.core.Response;
 
 import java.util.Collections;
 

@@ -4,7 +4,10 @@ import com.hospital.hms.auth.entity.Account;
 import com.hospital.hms.base.BaseEntity;
 import com.hospital.hms.common.enums.AuditAction;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;

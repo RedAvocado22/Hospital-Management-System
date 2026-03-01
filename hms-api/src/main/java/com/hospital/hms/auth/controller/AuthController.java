@@ -1,8 +1,8 @@
 package com.hospital.hms.auth.controller;
 
-import com.hospital.hms.auth.response.AuthResponse;
 import com.hospital.hms.auth.request.SignInRequest;
 import com.hospital.hms.auth.request.SignUpRequest;
+import com.hospital.hms.auth.response.AuthResponse;
 import com.hospital.hms.auth.service.SignInService;
 import com.hospital.hms.auth.service.SignUpService;
 import com.hospital.hms.base.api.ApiResponse;
@@ -13,7 +13,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController

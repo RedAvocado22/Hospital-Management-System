@@ -1,7 +1,8 @@
 package com.hospital.hms.auth.service;
 
-import com.hospital.hms.auth.response.AuthResponse;
 import com.hospital.hms.auth.request.SignInRequest;
+import com.hospital.hms.auth.response.AuthResponse;
+import com.hospital.hms.exception.IdentityProviderException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,8 +13,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import com.hospital.hms.exception.IdentityProviderException;
-
 import java.util.Map;
 
 @Slf4j
@@ -21,19 +20,15 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class SignInService {
 
+    private final WebClient webClient = WebClient.builder().build();
     @Value("${app.keycloak.server-url}")
     private String serverUrl;
-
     @Value("${app.keycloak.realm}")
     private String realm;
-
     @Value("${app.keycloak.client-id}")
     private String clientId;
-
     @Value("${app.keycloak.client-secret}")
     private String clientSecret;
-
-    private final WebClient webClient = WebClient.builder().build();
 
     public AuthResponse signInUser(SignInRequest request) {
         long startTime = System.currentTimeMillis();
