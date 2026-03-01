@@ -5,7 +5,10 @@ import com.hospital.hms.base.BaseEntity;
 import com.hospital.hms.medical.entity.MedicalRecord;
 import com.hospital.hms.patient.entity.PatientInfo;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;

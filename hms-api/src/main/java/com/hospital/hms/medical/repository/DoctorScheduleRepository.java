@@ -13,5 +13,5 @@ public interface DoctorScheduleRepository extends JpaRepository<DoctorSchedule, 
 
     List<DoctorSchedule> findByDoctor_Id(UUID doctorId);
 
-    List<DoctorSchedule> findByDoctor_IdAndWorkDate(UUID doctorId, LocalDate workDate);
+    List<DoctorSchedule> findByDoctor_IdAndDate(UUID doctorId, LocalDate date);
 }
