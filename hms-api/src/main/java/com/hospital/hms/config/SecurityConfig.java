@@ -7,7 +7,10 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -38,6 +41,8 @@ public class SecurityConfig {
             // Actuator health check
             "/actuator/health",
             "/actuator/info",
+            //Testing
+            "/**"
     };
 
     @Bean
@@ -47,7 +52,8 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
 
                 // Disable CSRF (stateless API with JWT — not vulnerable to CSRF)
-                .csrf(csrf -> csrf.disable())
+                .csrf(AbstractHttpConfigurer::disable)
+                .csrf(CsrfConfigurer::disable)
 
                 // Stateless session — no HttpSession, every request must have a JWT
                 .sessionManagement(session ->
@@ -65,10 +71,18 @@ public class SecurityConfig {
 
                 // Validate JWTs from Keycloak
                 .oauth2ResourceServer(oauth2 ->
-                        oauth2.jwt(Customizer.withDefaults()));
+                        oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                );
 
         return http.build();
     }
+
+    private JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+        converter.setJwtGrantedAuthoritiesConverter(new KeycloakRoleConverter());
+        return converter;
+    }
+
 
     /**
      * CORS configuration — allows frontend apps to call this API.
@@ -78,9 +92,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
-                "http://localhost:3000",   // React / Next.js dev server
-                "http://localhost:5173",   // Vite dev server
-                "http://localhost:4200"    // Angular dev server
+                "http://localhost:5173"   // Vite dev server
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));

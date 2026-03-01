@@ -29,3 +29,9 @@ infrastructure/secrets/
 
 # --- Docker ---
 .docker/
+
+# --- Documentation ---
+docs/*
+
+# --- Agent ---
+.agent/*

@@ -1,9 +1,13 @@
 package com.hospital.hms.billing.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -11,9 +15,9 @@ import java.util.Objects;
 @AllArgsConstructor
 public class ServiceItemId implements Serializable {
 
-    private Integer service;
+    private UUID service;
 
-    private Integer serviceInvoice;
+    private UUID serviceInvoice;
 
     @Override
     public boolean equals(Object o) {

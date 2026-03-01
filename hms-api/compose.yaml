@@ -31,6 +31,8 @@ services:
   # Keycloak uses its OWN database — separate from the app's hms_db
   keycloak-db:
     image: 'mysql:8.0'
+    labels:
+      org.springframework.boot.ignore: true
     environment:
       MYSQL_DATABASE: keycloak
       MYSQL_USER: ${KC_DB_USER:-keycloak}
@@ -46,7 +48,7 @@ services:
 
   keycloak:
     image: 'quay.io/keycloak/keycloak:26.1'
-    command: start-dev
+    command: start-dev --import-realm
     environment:
       KC_DB: mysql
       KC_DB_URL: jdbc:mysql://keycloak-db:3306/keycloak
@@ -59,6 +61,8 @@ services:
     depends_on:
       keycloak-db:
         condition: service_healthy
+    volumes:
+      - ./keycloak-setup:/opt/keycloak/data/import
 
 volumes:
   mysql_data:

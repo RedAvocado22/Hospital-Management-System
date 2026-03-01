@@ -1,13 +1,10 @@
 package com.hospital.hms.base.service;
 
 import com.hospital.hms.base.request.BaseRequest;
-import com.hospital.hms.base.response.BaseResponse;
 import com.hospital.hms.exception.BusinessException;
 import com.hospital.hms.exception.NotFoundException;
 import com.hospital.hms.exception.ValidationException;
-import lombok.extern.slf4j.Slf4j;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 /**
@@ -40,7 +37,7 @@ import java.util.Optional;
  * </pre>
  *
  * @param <REQ> Request type (must extend BaseRequest)
- * @param <RES> Response type (must extend BaseResponse, or Void)
+ * @param <RES> Response type
  */
 public interface BaseService<REQ extends BaseRequest, RES> {
 
@@ -70,7 +67,7 @@ public interface BaseService<REQ extends BaseRequest, RES> {
      *
      * @param request The request to validate
      * @throws IllegalArgumentException if request is null
-     * @throws ValidationException if validation fails
+     * @throws ValidationException      if validation fails
      */
     default void validate(REQ request) {
         if (request == null) {
