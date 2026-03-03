@@ -54,7 +54,7 @@ public class MedicineController {
         );
 
         log.info("[TraceID: {}] Medicine de-active successfully with ID: {} (took {}ms)",
-                traceId, medicineResponse.getId(), duration);
+                traceId, medicineResponse.id(), duration);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -92,7 +92,7 @@ public class MedicineController {
         );
 
         log.info("[TraceID: {}] Medicine created successfully with ID: {} (took {}ms)",
-                traceId, medicineResponse.getId(), duration);
+                traceId, medicineResponse.id(), duration);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -130,7 +130,7 @@ public class MedicineController {
         );
 
         log.info("[TraceID: {}] Retrieved {} medicine successfully (took {}ms)",
-                traceId, medicines.getSize(), duration);
+                traceId, medicines.size(), duration);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -167,7 +167,7 @@ public class MedicineController {
         );
 
         log.info("[TraceID: {}] Retrieved medicine: {} successfully (took {}ms)",
-                traceId, response.getName(), duration);
+                traceId, response.name(), duration);
 
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
@@ -204,7 +204,7 @@ public class MedicineController {
 
 
         log.info("[TraceID: {}] Updated medicine: {} successfully (took {}ms)",
-                traceId, response.getName(), duration);
+                traceId, response.name(), duration);
 
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }

@@ -20,25 +20,20 @@ import java.util.Optional;
 public class MedicineCreateService implements BaseService<MedicineCreateRequest, MedicineResponse> {
 
     private final MedicineRepository medicineRepository;
+    private final MedicineMapper medicineMapper;
 
     @Override
     @Transactional
     public MedicineResponse doProcess(MedicineCreateRequest request) {
         log.debug("Processing medicine creation request: {}", request.getName());
 
-        Medicine course = Medicine.builder()
-                .name(request.getName())
-                .description(request.getDescription())
-                .isActive(false)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now()).build();
+        Medicine course = medicineMapper.toEntity(request);
 
         Medicine savedMedicine = medicineRepository.save(course);
 
-        log.info("Course saved with ID: {}", savedMedicine.getId());
+        log.info("Medicine saved with ID: {}", savedMedicine.getId());
 
-        MedicineResponse response = MedicineMapper.INSTANCE.toResponse(savedMedicine);
-        response.setProcessedAt(LocalDateTime.now());
+        MedicineResponse response = medicineMapper.toResponse(savedMedicine);
 
         return response;
     }
@@ -64,18 +59,4 @@ public class MedicineCreateService implements BaseService<MedicineCreateRequest,
         }
     }
 
-    @Override
-    public MedicineResponse execute(MedicineCreateRequest request) {
-        return BaseService.super.execute(request);
-    }
-
-    @Override
-    public Optional<MedicineResponse> executeOptional(MedicineCreateRequest request) {
-        return BaseService.super.executeOptional(request);
-    }
-
-    @Override
-    public Optional<MedicineResponse> executeSilent(MedicineCreateRequest request) {
-        return BaseService.super.executeSilent(request);
-    }
 }

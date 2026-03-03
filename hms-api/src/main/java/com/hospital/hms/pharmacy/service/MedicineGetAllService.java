@@ -24,6 +24,7 @@ import java.util.Optional;
 public class MedicineGetAllService implements BaseService<MedicineGetAllRequest, PaginatedResponse<MedicineResponse>> {
 
     private final MedicineRepository medicineRepository;
+    private final MedicineMapper medicineMapper;
 
     @Override
     @Transactional(readOnly = true)
@@ -44,7 +45,7 @@ public class MedicineGetAllService implements BaseService<MedicineGetAllRequest,
                 medicinePage.getNumber(),
                 medicinePage.getTotalPages());
 
-        Page<MedicineResponse> courseResponsePage = medicinePage.map(MedicineMapper.INSTANCE::toResponse);
+        Page<MedicineResponse> courseResponsePage = medicinePage.map(medicineMapper::toResponse);
         return PaginatedResponse.from(courseResponsePage);
     }
 

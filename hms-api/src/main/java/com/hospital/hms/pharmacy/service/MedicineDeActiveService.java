@@ -21,6 +21,7 @@ import java.util.Optional;
 public class MedicineDeActiveService implements BaseService<MedicineDeActiveRequest, MedicineResponse> {
 
     private final MedicineRepository medicineRepository;
+    private final MedicineMapper medicineMapper;
 
     @Override
     @Transactional
@@ -37,11 +38,10 @@ public class MedicineDeActiveService implements BaseService<MedicineDeActiveRequ
 
         Medicine deActiveMedicine = medicineRepository.save(medicine);
 
-        log.info("medicine de-active with ID: {}",
+        log.info("Medicine de-active with ID: {}",
                 deActiveMedicine.getId());
 
-        MedicineResponse response = MedicineMapper.INSTANCE.toResponse(deActiveMedicine);
-        response.setProcessedAt(LocalDateTime.now());
+        MedicineResponse response = medicineMapper.toResponse(deActiveMedicine);
 
         return response;
     }

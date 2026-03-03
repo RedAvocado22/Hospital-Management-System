@@ -61,7 +61,7 @@ public class MedicineCreateRequest extends BaseRequest {
         if (isActive == null) {
             throw new IllegalArgumentException("Active status is required");
         }
-        if (name != null && description != null && name.equals(description)) {
+        if (name != null && name.equals(description)) {
             throw new IllegalArgumentException("Name and description cannot be identical");
         }
         if (description != null && description.length() > 5000) {

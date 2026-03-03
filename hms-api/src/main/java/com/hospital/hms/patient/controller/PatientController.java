@@ -5,8 +5,6 @@ import com.hospital.hms.base.api.ResponseMetadata;
 import com.hospital.hms.patient.dto.request.PatientCreateRequest;
 import com.hospital.hms.patient.dto.response.PatientResponse;
 import com.hospital.hms.patient.service.PatientCreateService;
-import com.hospital.hms.pharmacy.dto.request.MedicineCreateRequest;
-import com.hospital.hms.pharmacy.dto.response.MedicineResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -57,7 +55,7 @@ public class PatientController {
         );
 
         log.info("[TraceID: {}] Patient created successfully with ID: {} (took {}ms)",
-                traceId, patientResponse.getId(), duration);
+                traceId, patientResponse.id(), duration);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)

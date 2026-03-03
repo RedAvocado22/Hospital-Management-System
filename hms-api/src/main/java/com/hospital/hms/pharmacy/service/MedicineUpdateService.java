@@ -21,6 +21,7 @@ import java.util.Optional;
 public class MedicineUpdateService implements BaseService<MedicineUpdateRequest, MedicineResponse> {
 
     private final MedicineRepository medicineRepository;
+    private final MedicineMapper medicineMapper;
 
     @Override
     @Transactional
@@ -42,8 +43,7 @@ public class MedicineUpdateService implements BaseService<MedicineUpdateRequest,
         log.info("Medicine saved with ID: {}",
                 updatedMedicine.getId());
 
-        MedicineResponse response = MedicineMapper.INSTANCE.toResponse(updatedMedicine);
-        response.setProcessedAt(LocalDateTime.now());
+        MedicineResponse response = medicineMapper.toResponse(updatedMedicine);
 
         return response;
     }

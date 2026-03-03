@@ -21,6 +21,10 @@ public class MedicineGetAllRequest extends PaginatedRequest {
 
     private BigDecimal price;
 
+    private BigDecimal minPrice;
+
+    private BigDecimal maxPrice;
+
     private Integer quantity;
 
     private String description;

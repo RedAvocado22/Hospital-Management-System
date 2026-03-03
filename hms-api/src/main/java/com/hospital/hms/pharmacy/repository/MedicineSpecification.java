@@ -21,6 +21,7 @@ public class MedicineSpecification {
                 //add LIKE query
                 predicates.add(criteriaBuilder.like(
                         criteriaBuilder.lower(root.get("name")),
+
 //                        -- LIKE operator (the keyword)
 //                        WHERE title LIKE '...'
 //
@@ -31,6 +32,19 @@ public class MedicineSpecification {
 //                        WHERE title LIKE 'java'    -- exact match only
                         "%" + request.getName().toLowerCase() + "%"
                 ));
+            }
+            if (request.getDescription() != null && !request.getDescription().isBlank()) {
+                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("description")),
+                        "%" + request.getDescription().toLowerCase() + "%"
+                ));
+
+            }
+            if (request.getMinPrice() != null) {
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("price"), request.getMinPrice()));
+            }
+
+            if (request.getMaxPrice() != null) {
+                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("price"), request.getMaxPrice()));
             }
             //     this will add AND    this make List<Predicate> to Array
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
