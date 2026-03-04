@@ -97,7 +97,7 @@ Diff:
     r = requests.post(
         "https://models.inference.ai.azure.com/chat/completions",
         headers={
-            "Authorization": f"Bearer {GITHUB_TOKEN}",
+            "Authorization": f"Bearer {os.environ['GH_PAT']}",
             "Content-Type": "application/json",
         },
         json=payload,
