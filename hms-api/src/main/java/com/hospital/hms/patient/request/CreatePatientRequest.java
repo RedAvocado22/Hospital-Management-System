@@ -35,6 +35,7 @@ public class CreatePatientRequest extends BaseRequest {
     @NotBlank(message = "Last name is required")
     private String lastName;
 
+    @Size(max = 8)
     private String bloodType;
 
     private String allergies;

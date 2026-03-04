@@ -1,14 +1,13 @@
 package com.hospital.hms.auth.request;
 
-import com.hospital.hms.auth.entity.Role;
 import com.hospital.hms.base.request.BaseRequest;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
-@Builder
+@SuperBuilder
 public class AccountRegistrationRequest extends BaseRequest {
     private String username;
 
@@ -20,5 +19,5 @@ public class AccountRegistrationRequest extends BaseRequest {
 
     private String password;
 
-    private Role role;
+    private String role;
 }

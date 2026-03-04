@@ -1,11 +1,14 @@
 package com.hospital.hms.auth.service;
 
 import com.hospital.hms.auth.entity.Account;
+import com.hospital.hms.auth.entity.Role;
 import com.hospital.hms.auth.repository.AccountRepository;
+import com.hospital.hms.auth.repository.RoleRepository;
 import com.hospital.hms.auth.request.AccountRegistrationRequest;
 import com.hospital.hms.base.service.BaseService;
 import com.hospital.hms.exception.DuplicateResourceException;
 import com.hospital.hms.exception.IdentityProviderException;
+import com.hospital.hms.exception.NotFoundException;
 import com.hospital.hms.keycloak.request.KeyCloakRequest;
 import com.hospital.hms.keycloak.service.KeycloakService;
 import lombok.RequiredArgsConstructor;
@@ -20,11 +23,15 @@ public class AccountRegistrationService extends BaseService<AccountRegistrationR
 
     private final AccountRepository accountRepository;
     private final KeycloakService keycloakService;
+    private final RoleRepository roleRepository;
 
     @Override
     @Transactional
     protected Account doProcess(AccountRegistrationRequest request) {
         log.debug("User saved to local database: {}", request.getUsername());
+
+        Role role = roleRepository.findByNameIgnoreCase(request.getRole())
+                .orElseThrow(() -> new NotFoundException("Role not found: " + request.getRole()));
 
         Account account = Account.builder()
                 .username(request.getUsername())
@@ -32,7 +39,7 @@ public class AccountRegistrationService extends BaseService<AccountRegistrationR
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .isActive(true)
-                .role(request.getRole())
+                .role(role)
                 .build();
 
         accountRepository.save(account);
@@ -50,7 +57,7 @@ public class AccountRegistrationService extends BaseService<AccountRegistrationR
             keycloakUserId = keycloakService.createUser(keyCloakRequest);
 
             // 4. Assign permissions in Keycloak
-            keycloakService.assignRoleToUser(keycloakUserId, request.getRole().getName().toUpperCase());
+            keycloakService.assignRoleToUser(keycloakUserId, role.getName().toUpperCase());
         } catch (Exception e) {
             log.error("Keycloak error during account creation - rolling back", e);
             keycloakService.deleteUser(request.getUsername());

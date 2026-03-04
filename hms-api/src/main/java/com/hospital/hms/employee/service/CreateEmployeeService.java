@@ -1,8 +1,6 @@
 package com.hospital.hms.employee.service;
 
 import com.hospital.hms.auth.entity.Account;
-import com.hospital.hms.auth.entity.Role;
-import com.hospital.hms.auth.repository.RoleRepository;
 import com.hospital.hms.auth.request.AccountRegistrationRequest;
 import com.hospital.hms.auth.service.AccountRegistrationService;
 import com.hospital.hms.base.service.BaseService;
@@ -23,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CreateEmployeeService extends BaseService<CreateEmployeeRequest, Void> {
 
-    private final RoleRepository roleRepository;
     private final DepartmentRepository departmentRepository;
     private final EmployeeInfoRepository employeeInfoRepository;
     private final AccountRegistrationService accountRegistrationService;
@@ -32,9 +29,6 @@ public class CreateEmployeeService extends BaseService<CreateEmployeeRequest, Vo
     @Transactional
     protected Void doProcess(CreateEmployeeRequest request) {
         log.info("Starting employee creation for username: {}", request.getUsername());
-
-        Role role = roleRepository.findByNameIgnoreCase(request.getRole())
-                .orElseThrow(() -> new NotFoundException("Role not found: " + request.getRole()));
 
         Department department = departmentRepository.findByNameIgnoreCase(request.getDepartment())
                 .orElseThrow(() -> new NotFoundException("Department not found: " + request.getDepartment()));
@@ -45,7 +39,7 @@ public class CreateEmployeeService extends BaseService<CreateEmployeeRequest, Vo
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .password(request.getPassword())
-                .role(role)
+                .role(request.getRole())
                 .build();
 
         Account account = accountRegistrationService.execute(accountRegistrationRequest);

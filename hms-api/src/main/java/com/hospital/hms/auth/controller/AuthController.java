@@ -45,7 +45,6 @@ public class AuthController {
             )
     })
     public ResponseEntity<ApiResponse<Void>> signUp(@Valid @RequestBody CreatePatientRequest request) {
-        request.initialize();
         log.info("Received sign up request: {}", request.toLogString());
 
         createPatientService.execute(request);
@@ -69,7 +68,6 @@ public class AuthController {
             )
     })
     public ResponseEntity<ApiResponse<AuthResponse>> signIn(@Valid @RequestBody SignInRequest request) {
-        request.initialize();
         log.info("Received sign in request: {}", request.toLogString());
 
         AuthResponse response = signInService.signInUser(request);

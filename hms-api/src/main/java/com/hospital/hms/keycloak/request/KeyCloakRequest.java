@@ -8,13 +8,13 @@ import lombok.Setter;
 @Setter
 @Builder
 public class KeyCloakRequest {
-    String username;
+    private String username;
 
-    String email;
+    private String email;
 
-    String firstName;
+    private String firstName;
 
-    String lastName;
+    private String lastName;
 
-    String password;
+    private String password;
 }

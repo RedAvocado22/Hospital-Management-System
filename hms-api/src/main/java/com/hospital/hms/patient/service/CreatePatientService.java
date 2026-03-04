@@ -1,12 +1,10 @@
 package com.hospital.hms.patient.service;
 
 import com.hospital.hms.auth.entity.Account;
-import com.hospital.hms.auth.entity.Role;
 import com.hospital.hms.auth.repository.RoleRepository;
 import com.hospital.hms.auth.request.AccountRegistrationRequest;
 import com.hospital.hms.auth.service.AccountRegistrationService;
 import com.hospital.hms.base.service.BaseService;
-import com.hospital.hms.exception.NotFoundException;
 import com.hospital.hms.patient.entity.PatientInfo;
 import com.hospital.hms.patient.repository.PatientInfoRepository;
 import com.hospital.hms.patient.request.CreatePatientRequest;
@@ -29,16 +27,13 @@ public class CreatePatientService extends BaseService<CreatePatientRequest, Void
     protected Void doProcess(CreatePatientRequest request) {
         log.info("Attempting to create patient with username: {}", request.getUsername());
 
-        Role defaultRole = roleRepository.findByNameIgnoreCase("Patient")
-                .orElseThrow(() -> new NotFoundException("Role not found: Patient"));
-
         AccountRegistrationRequest accountRegistrationRequest = AccountRegistrationRequest.builder()
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .firstName(request.getFirstName())
                 .lastName(request.getLastName())
                 .password(request.getPassword())
-                .role(defaultRole)
+                .role("Patient")
                 .build();
 
         Account account = accountRegistrationService.execute(accountRegistrationRequest);

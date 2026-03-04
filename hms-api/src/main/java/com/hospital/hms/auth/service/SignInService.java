@@ -16,6 +16,7 @@ public class SignInService {
 
     public AuthResponse signInUser(SignInRequest request) {
         log.info("Processing SignInService.signInUser: {}", request.toLogString());
+        request.initialize();
         return keycloakService.authenticate(request.getUsername(), request.getPassword());
     }
 }
