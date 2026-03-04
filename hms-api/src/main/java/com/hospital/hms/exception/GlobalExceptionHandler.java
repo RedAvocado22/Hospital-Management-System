@@ -144,7 +144,7 @@ public class GlobalExceptionHandler {
                 "A record with the provided data already exists. Please contact support with trace ID: " + traceId,
                 "DUPLICATE_RESOURCE"
         );
-        return buildErrorResponse(HttpStatus.CONFLICT, "An SQL error occurred", List.of(error), traceId, request);
+        return buildErrorResponse(HttpStatus.CONFLICT, "handleDataIntegrityViolationException", List.of(error), traceId, request);
     }
 
     // ==================== Private Helpers ====================
