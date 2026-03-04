@@ -12,24 +12,19 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 @Data
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class MedicineUpdateRequest extends BaseRequest {
-
-    @NotBlank(message = "Medicine id are required ")
-    private UUID id;
+public class CreateMedicineRequest extends BaseRequest {
 
     @NotBlank(message = "Name is required")
     @Size(min = 3, max = 200, message = "Name must be between 3 and 200 characters")
     private String name;
 
-    @NotBlank(message = "Quantity is required")
-    @Size(min = 1, max = 50, message = "Quantity must be between 1 and 50 characters")
+    @NotNull(message = "Quantity is required")
     private Integer quantity;
 
     @NotNull(message = "Price is required")
@@ -50,9 +45,6 @@ public class MedicineUpdateRequest extends BaseRequest {
         if (name != null && !name.matches(".*[a-zA-Z]{2,}.*")) {
             throw new IllegalArgumentException("Name must contain at least 2 alphabetic characters");
         }
-        if (name != null && name.contains(" ")) {
-            throw new IllegalArgumentException("Name contains excessive whitespace");
-        }
         if (quantity != null && quantity <= 0) {
             throw new IllegalArgumentException("Quantity must be greater than 0");
         }
@@ -72,5 +64,4 @@ public class MedicineUpdateRequest extends BaseRequest {
             throw new IllegalArgumentException("Description is too long");
         }
     }
-
 }

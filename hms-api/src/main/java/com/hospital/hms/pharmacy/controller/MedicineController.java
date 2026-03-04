@@ -16,26 +16,26 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/medicines")
+@RequestMapping("/v1/medicines")
 @RequiredArgsConstructor
 public class MedicineController {
-    private final MedicineGetDetailService medicineGetDetailService;
-    private final MedicineGetAllService medicineGetAllService;
-    private final MedicineCreateService medicineCreateService;
-    private final MedicineDeActiveService medicineDeActiveService;
-    private final MedicineUpdateService medicineUpdateService;
+    private final GetMedicineDetailService getMedicineDetailService;
+    private final GetAllMedicineService getAllMedicineService;
+    private final CreateMedicineService createMedicineService;
+    private final DeActiveMedicineService deActiveMedicineService;
+    private final UpdateMedicineService updateMedicineService;
 
-    @PatchMapping("/de-activate")
+    @PatchMapping("/deactivate")
     public ResponseEntity<ApiResponse<MedicineResponse>> deActiveMedicine(
-            @Valid @RequestBody MedicineDeActiveRequest request,
+            @Valid @RequestBody DeActiveMedicineRequest request,
             HttpServletRequest httpRequest) {
         long startTime = System.currentTimeMillis();
         String traceId = java.util.UUID.randomUUID().toString();
 
-        log.info("[TraceID: {}] De-active medicine with medicine id : {}", traceId, request.getId());
+        log.info("[TraceID: {}] DeActive medicine with medicine id : {}", traceId, request.getId());
 
         request.initialize();
-        MedicineResponse medicineResponse = medicineDeActiveService.execute(request);
+        MedicineResponse medicineResponse = deActiveMedicineService.execute(request);
         long duration = System.currentTimeMillis() - startTime;
 
         ResponseMetadata metadata = ResponseMetadata.builder()
@@ -48,12 +48,12 @@ public class MedicineController {
 
         ApiResponse<MedicineResponse> response = ApiResponse.success(
                 medicineResponse,
-                "Medicine de-activate successfully",
+                "Medicine deActivate successfully",
                 HttpStatus.OK.value(),
                 metadata
         );
 
-        log.info("[TraceID: {}] Medicine de-active successfully with ID: {} (took {}ms)",
+        log.info("[TraceID: {}] Medicine deActive successfully with ID: {} (took {}ms)",
                 traceId, medicineResponse.id(), duration);
 
         return ResponseEntity
@@ -63,7 +63,7 @@ public class MedicineController {
 
     @PostMapping("/create")
     public ResponseEntity<ApiResponse<MedicineResponse>> createMedicine(
-            @Valid @RequestBody MedicineCreateRequest request,
+            @Valid @RequestBody CreateMedicineRequest request,
             HttpServletRequest httpRequest) {
 
         long startTime = System.currentTimeMillis();
@@ -72,7 +72,7 @@ public class MedicineController {
         log.info("[TraceID: {}] Creating new medicine with name: {}", traceId, request.getName());
 
         request.initialize();
-        MedicineResponse medicineResponse = medicineCreateService.execute(request);
+        MedicineResponse medicineResponse = createMedicineService.execute(request);
 
         long duration = System.currentTimeMillis() - startTime;
 
@@ -101,7 +101,7 @@ public class MedicineController {
 
     @GetMapping
     public ResponseEntity<ApiResponse<PaginatedResponse<MedicineResponse>>> getAllMedicines(
-            @Valid @ModelAttribute MedicineGetAllRequest request,
+            @Valid @ModelAttribute GetAllMedicineRequest request,
             HttpServletRequest httpRequest) {
 
         long startTime = System.currentTimeMillis();
@@ -110,7 +110,7 @@ public class MedicineController {
         log.info("[TraceID: {}] Fetching all medicines{}", traceId,
                 request.getId() != null);
 
-        PaginatedResponse<MedicineResponse> medicines = medicineGetAllService.execute(request);
+        PaginatedResponse<MedicineResponse> medicines = getAllMedicineService.execute(request);
 
         long duration = System.currentTimeMillis() - startTime;
 
@@ -139,7 +139,7 @@ public class MedicineController {
 
     @PostMapping("/detail")
     public ResponseEntity<ApiResponse<MedicineResponse>> getMedicine(
-            @RequestBody MedicineGetDetailRequest request,
+            @RequestBody GetMedicineDetailRequest request,
             HttpServletRequest httpRequest) {
 
         long startTime = System.currentTimeMillis();
@@ -149,7 +149,7 @@ public class MedicineController {
 
         request.initialize();
 
-        MedicineResponse response = medicineGetDetailService.execute(request);
+        MedicineResponse response = getMedicineDetailService.execute(request);
         long duration = System.currentTimeMillis() - startTime;
 
         ResponseMetadata metadata = ResponseMetadata.builder()
@@ -172,9 +172,9 @@ public class MedicineController {
         return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 
-    @PutMapping("/update")
+    @PatchMapping("/update")
     public ResponseEntity<ApiResponse<MedicineResponse>> updateCourse(
-            @Valid @RequestBody MedicineUpdateRequest request,
+            @Valid @RequestBody UpdateMedicineRequest request,
             HttpServletRequest httpRequest
     ) {
 
@@ -183,7 +183,7 @@ public class MedicineController {
 
         log.info("[TraceID: {}] Updating medicine with id: {}", traceId, request.getId());
 
-        MedicineResponse response = medicineUpdateService.doProcess(request);
+        MedicineResponse response = updateMedicineService.doProcess(request);
 
         long duration = System.currentTimeMillis() - startTime;
 

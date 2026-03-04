@@ -2,7 +2,7 @@ package com.hospital.hms.pharmacy.service;
 
 import com.hospital.hms.base.service.BaseService;
 import com.hospital.hms.exception.NotFoundException;
-import com.hospital.hms.pharmacy.dto.request.MedicineDeActiveRequest;
+import com.hospital.hms.pharmacy.dto.request.DeActiveMedicineRequest;
 import com.hospital.hms.pharmacy.dto.response.MedicineResponse;
 import com.hospital.hms.pharmacy.entity.Medicine;
 import com.hospital.hms.pharmacy.mapper.MedicineMapper;
@@ -18,14 +18,14 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class MedicineDeActiveService implements BaseService<MedicineDeActiveRequest, MedicineResponse> {
+public class DeActiveMedicineService implements BaseService<DeActiveMedicineRequest, MedicineResponse> {
 
     private final MedicineRepository medicineRepository;
     private final MedicineMapper medicineMapper;
 
     @Override
     @Transactional
-    public MedicineResponse doProcess(MedicineDeActiveRequest request) {
+    public MedicineResponse doProcess(DeActiveMedicineRequest request) {
         log.debug("Processing medicine de-active request: {}", request.getId());
 
 
@@ -47,23 +47,23 @@ public class MedicineDeActiveService implements BaseService<MedicineDeActiveRequ
     }
 
     @Override
-    public void validate(MedicineDeActiveRequest request) {
+    public void validate(DeActiveMedicineRequest request) {
         BaseService.super.validate(request);
     }
 
 
     @Override
-    public MedicineResponse execute(MedicineDeActiveRequest request) {
+    public MedicineResponse execute(DeActiveMedicineRequest request) {
         return BaseService.super.execute(request);
     }
 
     @Override
-    public Optional<MedicineResponse> executeOptional(MedicineDeActiveRequest request) {
+    public Optional<MedicineResponse> executeOptional(DeActiveMedicineRequest request) {
         return BaseService.super.executeOptional(request);
     }
 
     @Override
-    public Optional<MedicineResponse> executeSilent(MedicineDeActiveRequest request) {
+    public Optional<MedicineResponse> executeSilent(DeActiveMedicineRequest request) {
         return BaseService.super.executeSilent(request);
     }
 }

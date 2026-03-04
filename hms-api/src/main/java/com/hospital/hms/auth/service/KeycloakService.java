@@ -135,7 +135,7 @@ public class KeycloakService {
         List<UserRepresentation> usersRepresentation = usersResource.search(username);
 
         if (!usersRepresentation.isEmpty()) {
-            usersResource.delete(usersRepresentation.getFirst().getId());
+            usersResource.delete(usersRepresentation.get(0).getId());
         } else {
             log.warn("Nothing to delete in Keycloak");
         }

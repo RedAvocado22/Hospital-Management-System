@@ -2,7 +2,7 @@ package com.hospital.hms.pharmacy.service;
 
 import com.hospital.hms.base.response.PaginatedResponse;
 import com.hospital.hms.base.service.BaseService;
-import com.hospital.hms.pharmacy.dto.request.MedicineGetAllRequest;
+import com.hospital.hms.pharmacy.dto.request.GetAllMedicineRequest;
 import com.hospital.hms.pharmacy.dto.response.MedicineResponse;
 import com.hospital.hms.pharmacy.entity.Medicine;
 import com.hospital.hms.pharmacy.mapper.MedicineMapper;
@@ -21,14 +21,14 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class MedicineGetAllService implements BaseService<MedicineGetAllRequest, PaginatedResponse<MedicineResponse>> {
+public class GetAllMedicineService implements BaseService<GetAllMedicineRequest, PaginatedResponse<MedicineResponse>> {
 
     private final MedicineRepository medicineRepository;
     private final MedicineMapper medicineMapper;
 
     @Override
     @Transactional(readOnly = true)
-    public PaginatedResponse<MedicineResponse> doProcess(MedicineGetAllRequest request) {
+    public PaginatedResponse<MedicineResponse> doProcess(GetAllMedicineRequest request) {
         log.debug(
                 "Fetching medicine with pagination - page: {}, size: {}, name: {}, quantity: {}, price: {}, description: {}",
                 request.getPage(), request.getSize(),
@@ -50,23 +50,23 @@ public class MedicineGetAllService implements BaseService<MedicineGetAllRequest,
     }
 
     @Override
-    public void validate(MedicineGetAllRequest request) {
+    public void validate(GetAllMedicineRequest request) {
         BaseService.super.validate(request);
         log.debug("No additional validation required for fetching all medicines");
     }
 
     @Override
-    public PaginatedResponse<MedicineResponse> execute(MedicineGetAllRequest request) {
+    public PaginatedResponse<MedicineResponse> execute(GetAllMedicineRequest request) {
         return BaseService.super.execute(request);
     }
 
     @Override
-    public Optional<PaginatedResponse<MedicineResponse>> executeOptional(MedicineGetAllRequest request) {
+    public Optional<PaginatedResponse<MedicineResponse>> executeOptional(GetAllMedicineRequest request) {
         return BaseService.super.executeOptional(request);
     }
 
     @Override
-    public Optional<PaginatedResponse<MedicineResponse>> executeSilent(MedicineGetAllRequest request) {
+    public Optional<PaginatedResponse<MedicineResponse>> executeSilent(GetAllMedicineRequest request) {
         return BaseService.super.executeSilent(request);
     }
 }

@@ -2,7 +2,7 @@ package com.hospital.hms.pharmacy.service;
 
 import com.hospital.hms.base.service.BaseService;
 import com.hospital.hms.exception.NotFoundException;
-import com.hospital.hms.pharmacy.dto.request.MedicineUpdateRequest;
+import com.hospital.hms.pharmacy.dto.request.UpdateMedicineRequest;
 import com.hospital.hms.pharmacy.dto.response.MedicineResponse;
 import com.hospital.hms.pharmacy.entity.Medicine;
 import com.hospital.hms.pharmacy.mapper.MedicineMapper;
@@ -18,14 +18,14 @@ import java.util.Optional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class MedicineUpdateService implements BaseService<MedicineUpdateRequest, MedicineResponse> {
+public class UpdateMedicineService implements BaseService<UpdateMedicineRequest, MedicineResponse> {
 
     private final MedicineRepository medicineRepository;
     private final MedicineMapper medicineMapper;
 
     @Override
     @Transactional
-    public MedicineResponse doProcess(MedicineUpdateRequest request) {
+    public MedicineResponse doProcess(UpdateMedicineRequest request) {
         log.debug("Processing medicine updating request: {}", request.getName());
 
         Medicine medicine = medicineRepository.findById(request.getId()).orElseThrow(
@@ -34,7 +34,6 @@ public class MedicineUpdateService implements BaseService<MedicineUpdateRequest,
 
         medicine.setDescription(request.getDescription());
         medicine.setName(request.getName());
-        medicine.setIsActive(true);
         medicine.setPrice(request.getPrice());
         medicine.setUpdatedAt(LocalDateTime.now());
 
@@ -49,7 +48,7 @@ public class MedicineUpdateService implements BaseService<MedicineUpdateRequest,
     }
 
     @Override
-    public void validate(MedicineUpdateRequest request) {
+    public void validate(UpdateMedicineRequest request) {
         BaseService.super.validate(request);
         log.debug("Starting service-level validation for medicine update: {}", request.getName());
 
@@ -64,17 +63,17 @@ public class MedicineUpdateService implements BaseService<MedicineUpdateRequest,
     }
 
     @Override
-    public MedicineResponse execute(MedicineUpdateRequest request) {
+    public MedicineResponse execute(UpdateMedicineRequest request) {
         return BaseService.super.execute(request);
     }
 
     @Override
-    public Optional<MedicineResponse> executeOptional(MedicineUpdateRequest request) {
+    public Optional<MedicineResponse> executeOptional(UpdateMedicineRequest request) {
         return BaseService.super.executeOptional(request);
     }
 
     @Override
-    public Optional<MedicineResponse> executeSilent(MedicineUpdateRequest request) {
+    public Optional<MedicineResponse> executeSilent(UpdateMedicineRequest request) {
         return BaseService.super.executeSilent(request);
     }
 }

@@ -13,7 +13,7 @@ import java.util.UUID;
 @SuperBuilder
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class MedicineGetAllRequest extends PaginatedRequest {
+public class GetAllMedicineRequest extends PaginatedRequest {
 
     private UUID id;
 

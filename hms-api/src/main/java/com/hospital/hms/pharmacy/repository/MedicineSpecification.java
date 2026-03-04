@@ -1,6 +1,6 @@
 package com.hospital.hms.pharmacy.repository;
 
-import com.hospital.hms.pharmacy.dto.request.MedicineGetAllRequest;
+import com.hospital.hms.pharmacy.dto.request.GetAllMedicineRequest;
 import com.hospital.hms.pharmacy.entity.Medicine;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
@@ -13,7 +13,7 @@ public class MedicineSpecification {
     private MedicineSpecification() {
     }
 
-    public static Specification<Medicine> withFilters(MedicineGetAllRequest request) {
+    public static Specification<Medicine> withFilters(GetAllMedicineRequest request) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
