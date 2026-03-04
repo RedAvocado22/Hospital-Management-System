@@ -1,12 +1,15 @@
 package com.hospital.hms.auth.controller;
 
 import com.hospital.hms.auth.request.SignInRequest;
-import com.hospital.hms.auth.request.SignUpRequest;
 import com.hospital.hms.auth.response.AuthResponse;
 import com.hospital.hms.auth.service.SignInService;
-import com.hospital.hms.auth.service.SignUpService;
 import com.hospital.hms.base.api.ApiResponse;
+import com.hospital.hms.patient.request.CreatePatientRequest;
+import com.hospital.hms.patient.service.CreatePatientService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,16 +28,27 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Authentication", description = "Endpoints for user registration and login")
 public class AuthController {
 
-    private final SignUpService signUpService;
+    private final CreatePatientService createPatientService;
     private final SignInService signInService;
 
     @PostMapping("/signup")
     @Operation(summary = "Register a new user", description = "Creates a new user account in Keycloak and local database")
-    public ResponseEntity<ApiResponse<Void>> signUp(@Valid @RequestBody SignUpRequest request) {
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "201",
+                    description = "User registered successfully",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "400",
+                    description = "Invalid input data or duplicate resource"
+            )
+    })
+    public ResponseEntity<ApiResponse<Void>> signUp(@Valid @RequestBody CreatePatientRequest request) {
         request.initialize();
         log.info("Received sign up request: {}", request.toLogString());
 
-        signUpService.signUpUser(request);
+        createPatientService.execute(request);
 
         log.info("Successfully processed sign up request for: {}", request.getUsername());
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -43,6 +57,17 @@ public class AuthController {
 
     @PostMapping("/signin")
     @Operation(summary = "Authenticate user", description = "Authenticates a user and returns Keycloak access and refresh tokens")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "Login successful",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "401",
+                    description = "Invalid credentials"
+            )
+    })
     public ResponseEntity<ApiResponse<AuthResponse>> signIn(@Valid @RequestBody SignInRequest request) {
         request.initialize();
         log.info("Received sign in request: {}", request.toLogString());
