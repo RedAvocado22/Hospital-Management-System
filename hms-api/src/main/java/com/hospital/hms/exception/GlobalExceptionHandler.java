@@ -6,6 +6,7 @@ import com.hospital.hms.base.api.ResponseMetadata;
 import com.hospital.hms.base.exception.BaseException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -128,6 +129,22 @@ public class GlobalExceptionHandler {
                 "INTERNAL_SERVER_ERROR"
         );
         return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error", List.of(error), traceId, request);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiResponse<Object>> handleDataIntegrityViolationException(
+            Exception ex,
+            HttpServletRequest request) {
+
+        String traceId = generateTraceId();
+        log.error("[TraceID: {}] Unexpected error on {}: {}",
+                traceId, request.getRequestURI(), ex.getMessage(), ex);
+
+        ErrorDetail error = ErrorDetail.generalError(
+                "A record with the provided data already exists. Please contact support with trace ID: " + traceId,
+                "DUPLICATE_RESOURCE"
+        );
+        return buildErrorResponse(HttpStatus.CONFLICT, "An SQL error occurred", List.of(error), traceId, request);
     }
 
     // ==================== Private Helpers ====================
