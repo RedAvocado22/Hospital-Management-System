@@ -1,7 +1,6 @@
 package com.hospital.hms.patient.service;
 
 import com.hospital.hms.auth.entity.Account;
-import com.hospital.hms.auth.repository.RoleRepository;
 import com.hospital.hms.auth.request.AccountRegistrationRequest;
 import com.hospital.hms.auth.service.AccountRegistrationService;
 import com.hospital.hms.base.service.BaseService;
@@ -18,7 +17,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CreatePatientService extends BaseService<CreatePatientRequest, Void> {
 
-    private final RoleRepository roleRepository;
     private final PatientInfoRepository patientInfoRepository;
     private final AccountRegistrationService accountRegistrationService;
 
