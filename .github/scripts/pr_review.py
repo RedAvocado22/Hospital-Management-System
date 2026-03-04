@@ -67,8 +67,8 @@ def get_pr_metadata():
 
 
 def review_with_github_models(diff: str, metadata: dict) -> str:
-    if len(diff) > 20_000:
-        diff = diff[:20_000] + "\n\n... [diff truncated]"
+    if len(diff) > 8_000:
+        diff = diff[:8_000] + "\n\n... [diff truncated]"
 
     user_message = f"""
 PR Title: {metadata['title']}
