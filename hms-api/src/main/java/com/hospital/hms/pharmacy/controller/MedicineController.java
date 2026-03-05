@@ -137,7 +137,7 @@ public class MedicineController {
                 .body(apiResponse);
     }
 
-    @PostMapping("/detail")
+    @GetMapping("/detail")
     public ResponseEntity<ApiResponse<MedicineResponse>> getMedicine(
             @RequestBody @Valid GetMedicineDetailRequest request,
             HttpServletRequest httpRequest) {
