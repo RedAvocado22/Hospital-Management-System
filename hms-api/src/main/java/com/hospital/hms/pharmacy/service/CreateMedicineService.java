@@ -1,6 +1,8 @@
 package com.hospital.hms.pharmacy.service;
 
 import com.hospital.hms.base.service.BaseService;
+import com.hospital.hms.exception.BusinessException;
+import com.hospital.hms.exception.ValidationException;
 import com.hospital.hms.pharmacy.dto.request.CreateMedicineRequest;
 import com.hospital.hms.pharmacy.dto.response.MedicineResponse;
 import com.hospital.hms.pharmacy.entity.Medicine;
@@ -44,13 +46,13 @@ public class CreateMedicineService implements BaseService<CreateMedicineRequest,
         boolean nameExists = medicineRepository.findByName(request.getName()).isPresent();
 
         if (nameExists) {
-            throw new IllegalArgumentException(
+            throw new BusinessException(
                     "A medicine with the name '" + request.getName() + "' already exists. Please use a unique name."
             );
         }
 
         if (request.getDescription().length() < 200) {
-            throw new IllegalArgumentException(
+            throw new ValidationException(
                     "Medicine require very detailed descriptions (minimum 200 characters)"
             );
         }

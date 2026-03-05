@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -51,19 +50,4 @@ public class DeActiveMedicineService implements BaseService<DeActiveMedicineRequ
         BaseService.super.validate(request);
     }
 
-
-    @Override
-    public MedicineResponse execute(DeActiveMedicineRequest request) {
-        return BaseService.super.execute(request);
-    }
-
-    @Override
-    public Optional<MedicineResponse> executeOptional(DeActiveMedicineRequest request) {
-        return BaseService.super.executeOptional(request);
-    }
-
-    @Override
-    public Optional<MedicineResponse> executeSilent(DeActiveMedicineRequest request) {
-        return BaseService.super.executeSilent(request);
-    }
 }

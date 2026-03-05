@@ -1,6 +1,7 @@
 package com.hospital.hms.pharmacy.service;
 
 import com.hospital.hms.base.service.BaseService;
+import com.hospital.hms.exception.BusinessException;
 import com.hospital.hms.exception.NotFoundException;
 import com.hospital.hms.pharmacy.dto.request.UpdateMedicineRequest;
 import com.hospital.hms.pharmacy.dto.response.MedicineResponse;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -54,7 +54,7 @@ public class UpdateMedicineService implements BaseService<UpdateMedicineRequest,
 
         boolean nameExists = medicineRepository.findByName(request.getName()).isPresent();
         if (nameExists) {
-            throw new IllegalArgumentException(
+            throw new BusinessException(
                     "A medicine with the name '" + request.getName() + "' already exists. Please use a unique name."
             );
         }
@@ -62,18 +62,4 @@ public class UpdateMedicineService implements BaseService<UpdateMedicineRequest,
         log.info("Service-level validation passed for course update: {}", request.getName());
     }
 
-    @Override
-    public MedicineResponse execute(UpdateMedicineRequest request) {
-        return BaseService.super.execute(request);
-    }
-
-    @Override
-    public Optional<MedicineResponse> executeOptional(UpdateMedicineRequest request) {
-        return BaseService.super.executeOptional(request);
-    }
-
-    @Override
-    public Optional<MedicineResponse> executeSilent(UpdateMedicineRequest request) {
-        return BaseService.super.executeSilent(request);
-    }
 }

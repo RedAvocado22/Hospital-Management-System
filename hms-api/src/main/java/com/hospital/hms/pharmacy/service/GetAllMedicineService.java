@@ -16,8 +16,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -55,18 +53,4 @@ public class GetAllMedicineService implements BaseService<GetAllMedicineRequest,
         log.debug("No additional validation required for fetching all medicines");
     }
 
-    @Override
-    public PaginatedResponse<MedicineResponse> execute(GetAllMedicineRequest request) {
-        return BaseService.super.execute(request);
-    }
-
-    @Override
-    public Optional<PaginatedResponse<MedicineResponse>> executeOptional(GetAllMedicineRequest request) {
-        return BaseService.super.executeOptional(request);
-    }
-
-    @Override
-    public Optional<PaginatedResponse<MedicineResponse>> executeSilent(GetAllMedicineRequest request) {
-        return BaseService.super.executeSilent(request);
-    }
 }

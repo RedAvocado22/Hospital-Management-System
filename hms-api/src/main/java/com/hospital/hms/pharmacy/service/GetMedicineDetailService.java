@@ -1,6 +1,7 @@
 package com.hospital.hms.pharmacy.service;
 
 import com.hospital.hms.base.service.BaseService;
+import com.hospital.hms.exception.ValidationException;
 import com.hospital.hms.pharmacy.dto.request.GetMedicineDetailRequest;
 import com.hospital.hms.pharmacy.dto.response.MedicineResponse;
 import com.hospital.hms.pharmacy.entity.Medicine;
@@ -40,22 +41,8 @@ public class GetMedicineDetailService implements BaseService<GetMedicineDetailRe
     @Override
     public void validate(GetMedicineDetailRequest request) {
         if (request.getId() == null) {
-            throw new IllegalArgumentException("Medicine id must not be null");
+            throw new ValidationException("Medicine id must not be null");
         }
     }
 
-    @Override
-    public MedicineResponse execute(GetMedicineDetailRequest request) {
-        return BaseService.super.execute(request);
-    }
-
-    @Override
-    public Optional<MedicineResponse> executeOptional(GetMedicineDetailRequest request) {
-        return BaseService.super.executeOptional(request);
-    }
-
-    @Override
-    public Optional<MedicineResponse> executeSilent(GetMedicineDetailRequest request) {
-        return BaseService.super.executeSilent(request);
-    }
 }

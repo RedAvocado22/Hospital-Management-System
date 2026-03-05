@@ -139,7 +139,7 @@ public class MedicineController {
 
     @PostMapping("/detail")
     public ResponseEntity<ApiResponse<MedicineResponse>> getMedicine(
-            @RequestBody GetMedicineDetailRequest request,
+            @RequestBody @Valid GetMedicineDetailRequest request,
             HttpServletRequest httpRequest) {
 
         long startTime = System.currentTimeMillis();
@@ -173,7 +173,7 @@ public class MedicineController {
     }
 
     @PatchMapping("/update")
-    public ResponseEntity<ApiResponse<MedicineResponse>> updateCourse(
+    public ResponseEntity<ApiResponse<MedicineResponse>> updateMedicine(
             @Valid @RequestBody UpdateMedicineRequest request,
             HttpServletRequest httpRequest
     ) {
@@ -183,7 +183,7 @@ public class MedicineController {
 
         log.info("[TraceID: {}] Updating medicine with id: {}", traceId, request.getId());
 
-        MedicineResponse response = updateMedicineService.doProcess(request);
+        MedicineResponse response = updateMedicineService.execute(request);
 
         long duration = System.currentTimeMillis() - startTime;
 
