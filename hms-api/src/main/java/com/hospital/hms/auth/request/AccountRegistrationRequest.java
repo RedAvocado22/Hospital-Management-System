@@ -1,13 +1,15 @@
 package com.hospital.hms.auth.request;
 
 import com.hospital.hms.base.request.BaseRequest;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 @Getter
 @Setter
 @SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 public class AccountRegistrationRequest extends BaseRequest {
     private String username;
 
