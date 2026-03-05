@@ -1,5 +1,6 @@
-package com.hospital.hms.auth.entity;
+package com.hospital.hms.employee.entity;
 
+import com.hospital.hms.auth.entity.Account;
 import com.hospital.hms.base.BaseEntity;
 import com.hospital.hms.department.entity.Department;
 import jakarta.persistence.*;

@@ -8,4 +8,8 @@ public class NotFoundException extends BaseException {
         super(resource + " not found with slug: " + id,
                 "RESOURCE_NOT_FOUND", HttpStatus.NOT_FOUND);
     }
+
+    public NotFoundException(String message) {
+        super(message, "NOT_FOUND_ERROR", HttpStatus.NOT_FOUND);
+    }
 }
