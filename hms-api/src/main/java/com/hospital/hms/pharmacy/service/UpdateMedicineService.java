@@ -1,10 +1,8 @@
 package com.hospital.hms.pharmacy.service;
 
 import com.hospital.hms.base.service.BaseService;
-import com.hospital.hms.exception.BusinessException;
 import com.hospital.hms.exception.NotFoundException;
 import com.hospital.hms.pharmacy.dto.request.UpdateMedicineRequest;
-import com.hospital.hms.pharmacy.dto.response.MedicineResponse;
 import com.hospital.hms.pharmacy.entity.Medicine;
 import com.hospital.hms.pharmacy.mapper.MedicineMapper;
 import com.hospital.hms.pharmacy.repository.MedicineRepository;
@@ -18,14 +16,14 @@ import java.time.LocalDateTime;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UpdateMedicineService extends BaseService<UpdateMedicineRequest, MedicineResponse> {
+public class UpdateMedicineService extends BaseService<UpdateMedicineRequest, Void> {
 
     private final MedicineRepository medicineRepository;
     private final MedicineMapper medicineMapper;
 
     @Override
     @Transactional
-    public MedicineResponse doProcess(UpdateMedicineRequest request) {
+    public Void doProcess(UpdateMedicineRequest request) {
         log.debug("Processing medicine updating request: {}", request.getName());
 
         Medicine medicine = medicineRepository.findById(request.getId()).orElseThrow(
@@ -37,27 +35,15 @@ public class UpdateMedicineService extends BaseService<UpdateMedicineRequest, Me
         medicine.setPrice(request.getPrice());
         medicine.setUpdatedAt(LocalDateTime.now());
 
-        Medicine updatedMedicine = medicineRepository.save(medicine);
+        medicineRepository.save(medicine);
 
-        log.info("Medicine saved with ID: {}",
-                updatedMedicine.getId());
-
-        MedicineResponse response = medicineMapper.toResponse(updatedMedicine);
-
-        return response;
+        return null;
     }
 
     @Override
     public void validate(UpdateMedicineRequest request) {
         super.validate(request);
         log.debug("Starting service-level validation for medicine update: {}", request.getName());
-
-        boolean nameExists = medicineRepository.findByName(request.getName()).isPresent();
-        if (nameExists) {
-            throw new BusinessException(
-                    "A medicine with the name '" + request.getName() + "' already exists. Please use a unique name."
-            );
-        }
 
         log.info("Service-level validation passed for course update: {}", request.getName());
     }

@@ -11,7 +11,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -26,45 +25,23 @@ public class MedicineController {
     private final UpdateMedicineService updateMedicineService;
 
     @PatchMapping("/deactivate")
-    public ResponseEntity<ApiResponse<MedicineResponse>> deActiveMedicine(
-            @Valid @RequestBody DeActiveMedicineRequest request,
-            HttpServletRequest httpRequest) {
+    public ApiResponse<Void> deActiveMedicine(@Valid @RequestBody DeActiveMedicineRequest request, HttpServletRequest httpRequest) {
         long startTime = System.currentTimeMillis();
         String traceId = java.util.UUID.randomUUID().toString();
 
         log.info("[TraceID: {}] DeActive medicine with medicine id : {}", traceId, request.getId());
 
         request.initialize();
-        MedicineResponse medicineResponse = deActiveMedicineService.execute(request);
+        deActiveMedicineService.execute(request);
         long duration = System.currentTimeMillis() - startTime;
 
-        ResponseMetadata metadata = ResponseMetadata.builder()
-                .traceId(traceId)
-                .path(httpRequest.getRequestURI())
-                .method(httpRequest.getMethod())
-                .duration(duration)
-                .apiVersion("v1")
-                .build();
+        ResponseMetadata metadata = ResponseMetadata.builder().traceId(traceId).path(httpRequest.getRequestURI()).method(httpRequest.getMethod()).duration(duration).apiVersion("v1").build();
 
-        ApiResponse<MedicineResponse> response = ApiResponse.success(
-                medicineResponse,
-                "Medicine deActivate successfully",
-                HttpStatus.OK.value(),
-                metadata
-        );
-
-        log.info("[TraceID: {}] Medicine deActive successfully with ID: {} (took {}ms)",
-                traceId, medicineResponse.id(), duration);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(response);
+        return ApiResponse.success(null, "Medicine de-activate successfully", HttpStatus.OK.value(), metadata);
     }
 
     @PostMapping("/create")
-    public ResponseEntity<ApiResponse<MedicineResponse>> createMedicine(
-            @Valid @RequestBody CreateMedicineRequest request,
-            HttpServletRequest httpRequest) {
+    public ApiResponse<Void> createMedicine(@Valid @RequestBody CreateMedicineRequest request, HttpServletRequest httpRequest) {
 
         long startTime = System.currentTimeMillis();
         String traceId = java.util.UUID.randomUUID().toString();
@@ -72,75 +49,38 @@ public class MedicineController {
         log.info("[TraceID: {}] Creating new medicine with name: {}", traceId, request.getName());
 
         request.initialize();
-        MedicineResponse medicineResponse = createMedicineService.execute(request);
+        createMedicineService.execute(request);
 
         long duration = System.currentTimeMillis() - startTime;
 
-        ResponseMetadata metadata = ResponseMetadata.builder()
-                .traceId(traceId)
-                .path(httpRequest.getRequestURI())
-                .method(httpRequest.getMethod())
-                .duration(duration)
-                .apiVersion("v1")
-                .build();
+        ResponseMetadata metadata = ResponseMetadata.builder().traceId(traceId).path(httpRequest.getRequestURI()).method(httpRequest.getMethod()).duration(duration).apiVersion("v1").build();
 
-        ApiResponse<MedicineResponse> response = ApiResponse.success(
-                medicineResponse,
-                "Medicine created successfully",
-                HttpStatus.CREATED.value(),
-                metadata
-        );
-
-        log.info("[TraceID: {}] Medicine created successfully with ID: {} (took {}ms)",
-                traceId, medicineResponse.id(), duration);
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(response);
+        return ApiResponse.success(null, "Medicine created successfully", HttpStatus.CREATED.value(), metadata);
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<PaginatedResponse<MedicineResponse>>> getAllMedicines(
-            @Valid @ModelAttribute GetAllMedicineRequest request,
-            HttpServletRequest httpRequest) {
+    public ApiResponse<PaginatedResponse<MedicineResponse>> getAllMedicines(@Valid @ModelAttribute GetAllMedicineRequest request, HttpServletRequest httpRequest) {
 
         long startTime = System.currentTimeMillis();
         String traceId = java.util.UUID.randomUUID().toString();
 
-        log.info("[TraceID: {}] Fetching all medicines{}", traceId,
-                request.getId() != null);
+        log.info("[TraceID: {}] Fetching all medicines{}", traceId, request.getId() != null);
 
         PaginatedResponse<MedicineResponse> medicines = getAllMedicineService.execute(request);
 
         long duration = System.currentTimeMillis() - startTime;
 
-        ResponseMetadata metadata = ResponseMetadata.builder()
-                .traceId(traceId)
-                .path(httpRequest.getRequestURI())
-                .method(httpRequest.getMethod())
-                .duration(duration)
-                .apiVersion("v1")
-                .build();
+        ResponseMetadata metadata = ResponseMetadata.builder().traceId(traceId).path(httpRequest.getRequestURI()).method(httpRequest.getMethod()).duration(duration).apiVersion("v1").build();
 
-        ApiResponse<PaginatedResponse<MedicineResponse>> apiResponse = ApiResponse.success(
-                medicines,
-                "Medicine retrieved successfully",
-                HttpStatus.OK.value(),
-                metadata
-        );
+        ApiResponse<PaginatedResponse<MedicineResponse>> apiResponse = ApiResponse.success(medicines, "Medicine retrieved successfully", HttpStatus.OK.value(), metadata);
 
-        log.info("[TraceID: {}] Retrieved {} medicine successfully (took {}ms)",
-                traceId, medicines.size(), duration);
+        log.info("[TraceID: {}] Retrieved {} medicine successfully (took {}ms)", traceId, medicines.size(), duration);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(apiResponse);
+        return apiResponse;
     }
 
-    @GetMapping("/detail")
-    public ResponseEntity<ApiResponse<MedicineResponse>> getMedicine(
-            @RequestBody @Valid GetMedicineDetailRequest request,
-            HttpServletRequest httpRequest) {
+    @PostMapping("/detail")
+    public ApiResponse<MedicineResponse> getMedicine(@RequestBody @Valid GetMedicineDetailRequest request, HttpServletRequest httpRequest) {
 
         long startTime = System.currentTimeMillis();
         String traceId = java.util.UUID.randomUUID().toString();
@@ -152,60 +92,29 @@ public class MedicineController {
         MedicineResponse response = getMedicineDetailService.execute(request);
         long duration = System.currentTimeMillis() - startTime;
 
-        ResponseMetadata metadata = ResponseMetadata.builder()
-                .traceId(traceId)
-                .path(httpRequest.getRequestURI())
-                .method(httpRequest.getMethod())
-                .duration(duration)
-                .apiVersion("v1")
-                .build();
-        ApiResponse<MedicineResponse> apiResponse = ApiResponse.success(
-                response,
-                "medicine retrieved successfully",
-                HttpStatus.OK.value(),
-                metadata
-        );
+        ResponseMetadata metadata = ResponseMetadata.builder().traceId(traceId).path(httpRequest.getRequestURI()).method(httpRequest.getMethod()).duration(duration).apiVersion("v1").build();
+        ApiResponse<MedicineResponse> apiResponse = ApiResponse.success(response, "medicine retrieved successfully", HttpStatus.OK.value(), metadata);
 
-        log.info("[TraceID: {}] Retrieved medicine: {} successfully (took {}ms)",
-                traceId, response.name(), duration);
+        log.info("[TraceID: {}] Retrieved medicine: {} successfully (took {}ms)", traceId, response.name(), duration);
 
-        return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+        return apiResponse;
     }
 
     @PatchMapping("/update")
-    public ResponseEntity<ApiResponse<MedicineResponse>> updateMedicine(
-            @Valid @RequestBody UpdateMedicineRequest request,
-            HttpServletRequest httpRequest
-    ) {
+    public ApiResponse<Void> updateMedicine(@Valid @RequestBody UpdateMedicineRequest request, HttpServletRequest httpRequest) {
 
         long startTime = System.currentTimeMillis();
         String traceId = java.util.UUID.randomUUID().toString();
 
         log.info("[TraceID: {}] Updating medicine with id: {}", traceId, request.getId());
 
-        MedicineResponse response = updateMedicineService.execute(request);
+        updateMedicineService.execute(request);
 
         long duration = System.currentTimeMillis() - startTime;
 
-        ResponseMetadata metadata = ResponseMetadata.builder()
-                .traceId(traceId)
-                .path(httpRequest.getRequestURI())
-                .method(httpRequest.getMethod())
-                .duration(duration)
-                .apiVersion("v1")
-                .build();
+        ResponseMetadata metadata = ResponseMetadata.builder().traceId(traceId).path(httpRequest.getRequestURI()).method(httpRequest.getMethod()).duration(duration).apiVersion("v1").build();
 
-        ApiResponse<MedicineResponse> apiResponse = ApiResponse.success(
-                response,
-                "Medicine updated successfully",
-                HttpStatus.OK.value(),
-                metadata
-        );
+        return ApiResponse.success(null, "Medicine updated successfully", HttpStatus.OK.value(), metadata);
 
-
-        log.info("[TraceID: {}] Updated medicine: {} successfully (took {}ms)",
-                traceId, response.name(), duration);
-
-        return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
     }
 }
