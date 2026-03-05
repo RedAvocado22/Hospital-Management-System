@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class DeActiveMedicineService implements BaseService<DeActiveMedicineRequest, MedicineResponse> {
+public class DeActiveMedicineService extends BaseService<DeActiveMedicineRequest, MedicineResponse> {
 
     private final MedicineRepository medicineRepository;
     private final MedicineMapper medicineMapper;
@@ -47,7 +47,7 @@ public class DeActiveMedicineService implements BaseService<DeActiveMedicineRequ
 
     @Override
     public void validate(DeActiveMedicineRequest request) {
-        BaseService.super.validate(request);
+        super.validate(request);
     }
 
 }

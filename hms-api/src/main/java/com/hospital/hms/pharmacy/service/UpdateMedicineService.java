@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UpdateMedicineService implements BaseService<UpdateMedicineRequest, MedicineResponse> {
+public class UpdateMedicineService extends BaseService<UpdateMedicineRequest, MedicineResponse> {
 
     private final MedicineRepository medicineRepository;
     private final MedicineMapper medicineMapper;
@@ -49,7 +49,7 @@ public class UpdateMedicineService implements BaseService<UpdateMedicineRequest,
 
     @Override
     public void validate(UpdateMedicineRequest request) {
-        BaseService.super.validate(request);
+        super.validate(request);
         log.debug("Starting service-level validation for medicine update: {}", request.getName());
 
         boolean nameExists = medicineRepository.findByName(request.getName()).isPresent();

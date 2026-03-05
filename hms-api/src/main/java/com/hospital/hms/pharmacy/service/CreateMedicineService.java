@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CreateMedicineService implements BaseService<CreateMedicineRequest, MedicineResponse> {
+public class CreateMedicineService extends BaseService<CreateMedicineRequest, MedicineResponse> {
 
     private final MedicineRepository medicineRepository;
     private final MedicineMapper medicineMapper;
@@ -39,7 +39,7 @@ public class CreateMedicineService implements BaseService<CreateMedicineRequest,
 
     @Override
     public void validate(CreateMedicineRequest request) {
-        BaseService.super.validate(request);
+        super.validate(request);
 
         log.debug("Starting service-level validation for medicine : {}", request.getName());
 

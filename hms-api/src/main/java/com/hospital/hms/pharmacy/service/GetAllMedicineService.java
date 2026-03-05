@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class GetAllMedicineService implements BaseService<GetAllMedicineRequest, PaginatedResponse<MedicineResponse>> {
+public class GetAllMedicineService extends BaseService<GetAllMedicineRequest, PaginatedResponse<MedicineResponse>> {
 
     private final MedicineRepository medicineRepository;
     private final MedicineMapper medicineMapper;
@@ -49,7 +49,7 @@ public class GetAllMedicineService implements BaseService<GetAllMedicineRequest,
 
     @Override
     public void validate(GetAllMedicineRequest request) {
-        BaseService.super.validate(request);
+        super.validate(request);
         log.debug("No additional validation required for fetching all medicines");
     }
 

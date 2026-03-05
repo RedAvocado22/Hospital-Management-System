@@ -18,7 +18,7 @@ import java.util.Optional;
 @Slf4j
 @Transactional
 @RequiredArgsConstructor
-public class GetMedicineDetailService implements BaseService<GetMedicineDetailRequest, MedicineResponse> {
+public class GetMedicineDetailService extends BaseService<GetMedicineDetailRequest, MedicineResponse> {
 
     private final MedicineRepository medicineRepository;
     private final MedicineMapper medicineMapper;
