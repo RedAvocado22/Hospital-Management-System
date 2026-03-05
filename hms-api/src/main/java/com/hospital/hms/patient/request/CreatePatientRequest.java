@@ -1,4 +1,4 @@
-package com.hospital.hms.auth.request;
+package com.hospital.hms.patient.request;
 
 import com.hospital.hms.base.request.BaseRequest;
 import jakarta.validation.constraints.Email;
@@ -15,7 +15,7 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class SignUpRequest extends BaseRequest {
+public class CreatePatientRequest extends BaseRequest {
 
     @NotBlank(message = "Username is required")
     @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
@@ -34,4 +34,9 @@ public class SignUpRequest extends BaseRequest {
 
     @NotBlank(message = "Last name is required")
     private String lastName;
+
+    @Size(max = 8)
+    private String bloodType;
+
+    private String allergies;
 }

@@ -1,15 +1,16 @@
-package com.hospital.hms.auth.service;
+package com.hospital.hms.keycloak.service;
 
 import com.hospital.hms.auth.repository.AccountRepository;
-import com.hospital.hms.auth.request.SignUpRequest;
 import com.hospital.hms.auth.response.AuthResponse;
 import com.hospital.hms.exception.IdentityProviderException;
+import com.hospital.hms.keycloak.request.KeyCloakRequest;
 import jakarta.ws.rs.core.Response;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.UsersResource;
 import org.keycloak.representations.idm.CredentialRepresentation;
+import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -81,7 +82,10 @@ public class KeycloakService {
             }
         } catch (WebClientResponseException e) {
             log.error("Keycloak authentication failed: {}", e.getResponseBodyAsString());
-            throw new IdentityProviderException("Keycloak Authentication Error: " + e.getResponseBodyAsString(), HttpStatus.UNAUTHORIZED);
+            throw new IdentityProviderException(
+                    "Keycloak Authentication Error: " + e.getResponseBodyAsString(),
+                    HttpStatus.UNAUTHORIZED
+            );
         } catch (Exception e) {
             log.error("Unexpected error during Keycloak authentication", e);
             throw new IdentityProviderException("Authentication failed", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -93,7 +97,7 @@ public class KeycloakService {
     /**
      * Registers a new user in Keycloak.
      */
-    public void createUser(SignUpRequest request) {
+    public String createUser(KeyCloakRequest request) {
         UserRepresentation userRepresentation = new UserRepresentation();
         userRepresentation.setUsername(request.getUsername());
         userRepresentation.setEmail(request.getEmail());
@@ -121,12 +125,41 @@ public class KeycloakService {
                 log.error("Failed to create user in Keycloak. Status: {}", response.getStatus());
                 throw new IdentityProviderException("Failed to register user in Keycloak", HttpStatus.BAD_GATEWAY);
             }
+
+            // Extract User ID from the response Location header
+            String userId = response.getLocation().getPath().replaceAll(".*/([^/]+)$", "$1");
+            log.info("Successfully created user {} with ID {}", request.getUsername(), userId);
+            return userId;
         } catch (IdentityProviderException e) {
             throw e;
         } catch (Exception e) {
             log.error("Error communicating with Keycloak", e);
             throw new IdentityProviderException("Error communicating with Keycloak", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    /**
+     * Assigns a realm-level role to a user.
+     */
+    public void assignRoleToUser(String userId, String roleName) {
+        try {
+            UserRepresentation user = keycloak.realm(realm).users().get(userId).toRepresentation();
+            RoleRepresentation role = keycloak.realm(realm).roles().get(roleName).toRepresentation();
+            keycloak.realm(realm).users().get(userId).roles().realmLevel().add(Collections.singletonList(role));
+            log.info("Assigned role {} to user {}", roleName, user.getUsername());
+        } catch (Exception e) {
+            log.error("Failed to assign role {} to user ID {}", roleName, userId, e);
+            throw new IdentityProviderException(
+                    "Failed to assign permissions in Keycloak", HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    /**
+     * Checks if a user already exists in Keycloak.
+     */
+    public boolean existsByUsername(String username) {
+        return !keycloak.realm(realm).users().search(username).isEmpty();
     }
 
     public void deleteUser(String username) {
