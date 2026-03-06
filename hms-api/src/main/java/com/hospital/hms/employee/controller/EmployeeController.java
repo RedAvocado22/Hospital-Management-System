@@ -1,8 +1,12 @@
 package com.hospital.hms.employee.controller;
 
 import com.hospital.hms.base.api.ApiResponse;
+import com.hospital.hms.base.response.PaginatedResponse;
 import com.hospital.hms.employee.request.CreateEmployeeRequest;
+import com.hospital.hms.employee.request.SearchEmployeeRequest;
+import com.hospital.hms.employee.response.EmployeeResponse;
 import com.hospital.hms.employee.service.CreateEmployeeService;
+import com.hospital.hms.employee.service.GetEmployeeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,10 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/employees")
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class EmployeeController {
 
     private final CreateEmployeeService createEmployeeService;
+    private final GetEmployeeService getEmployeeService;
 
     @Operation(
             summary = "Register a new employee",
@@ -57,6 +59,17 @@ public class EmployeeController {
         createEmployeeService.execute(request);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ApiResponse.success(null, "Employee created successfully", HttpStatus.CREATED.value())
+        );
+    }
+
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<PaginatedResponse<EmployeeResponse>>> getEmployees(
+            @ModelAttribute SearchEmployeeRequest request
+    ) {
+        PaginatedResponse<EmployeeResponse> data = getEmployeeService.execute(request);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.success(data, "Get employees successfully", HttpStatus.OK.value())
         );
     }
 }
