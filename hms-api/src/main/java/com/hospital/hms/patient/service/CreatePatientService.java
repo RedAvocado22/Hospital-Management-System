@@ -2,6 +2,7 @@ package com.hospital.hms.patient.service;
 
 import com.hospital.hms.auth.entity.Account;
 import com.hospital.hms.auth.request.AccountRegistrationRequest;
+import com.hospital.hms.auth.response.AccountResponse;
 import com.hospital.hms.auth.service.AccountRegistrationService;
 import com.hospital.hms.base.service.BaseService;
 import com.hospital.hms.patient.entity.PatientInfo;
@@ -15,14 +16,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CreatePatientService extends BaseService<CreatePatientRequest, Void> {
+public class CreatePatientService extends BaseService<CreatePatientRequest, AccountResponse> {
 
     private final PatientInfoRepository patientInfoRepository;
     private final AccountRegistrationService accountRegistrationService;
 
     @Transactional
     @Override
-    protected Void doProcess(CreatePatientRequest request) {
+    protected AccountResponse doProcess(CreatePatientRequest request) {
         log.info("Attempting to create patient with username: {}", request.getUsername());
 
         AccountRegistrationRequest accountRegistrationRequest = AccountRegistrationRequest.builder()
@@ -47,6 +48,6 @@ public class CreatePatientService extends BaseService<CreatePatientRequest, Void
         log.debug("Patient info saved to local database");
         log.info("Patient {} created successfully", request.getUsername());
 
-        return null;
+        return AccountResponse.from(account);
     }
 }
