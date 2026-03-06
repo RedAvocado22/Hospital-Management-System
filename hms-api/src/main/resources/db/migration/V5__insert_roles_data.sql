@@ -4,9 +4,10 @@
 -- =============================================================
 
 INSERT INTO `role` (`id`, `created_at`, `updated_at`, `name`, `description`)
-VALUES (UUID_TO_BIN(UUID()), NOW(), NOW(), 'admin', 'Administrator role'),
-       (UUID_TO_BIN(UUID()), NOW(), NOW(), 'cashier', 'Cashier role'),
-       (UUID_TO_BIN(UUID()), NOW(), NOW(), 'doctor', 'Doctor role'),
-       (UUID_TO_BIN(UUID()), NOW(), NOW(), 'patient', 'Patient role'),
-       (UUID_TO_BIN(UUID()), NOW(), NOW(), 'pharmacist', 'Pharmacist role'),
-       (UUID_TO_BIN(UUID()), NOW(), NOW(), 'receptionist', 'Receptionist role');
+VALUES
+    (UUID_TO_BIN(UUID()), NOW(), NOW(), 'admin', 'Administrator role'),
+    (UUID_TO_BIN(UUID()), NOW(), NOW(), 'cashier', 'Cashier role'),
+    (UUID_TO_BIN(UUID()), NOW(), NOW(), 'doctor', 'Doctor role'),
+    (UUID_TO_BIN(UUID()), NOW(), NOW(), 'patient', 'Patient role'),
+    (UUID_TO_BIN(UUID()), NOW(), NOW(), 'pharmacist', 'Pharmacist role'),
+    (UUID_TO_BIN(UUID()), NOW(), NOW(), 'receptionist', 'Receptionist role');
