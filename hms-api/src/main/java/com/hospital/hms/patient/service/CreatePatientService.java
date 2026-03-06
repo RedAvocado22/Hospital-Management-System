@@ -21,7 +21,6 @@ public class CreatePatientService extends BaseService<CreatePatientRequest, Acco
     private final PatientInfoRepository patientInfoRepository;
     private final AccountRegistrationService accountRegistrationService;
 
-    @Transactional
     @Override
     protected AccountResponse doProcess(CreatePatientRequest request) {
         log.info("Attempting to create patient with username: {}", request.getUsername());
@@ -49,5 +48,11 @@ public class CreatePatientService extends BaseService<CreatePatientRequest, Acco
         log.info("Patient {} created successfully", request.getUsername());
 
         return AccountResponse.from(account);
+    }
+
+    @Override
+    @Transactional
+    public AccountResponse execute(CreatePatientRequest request) {
+        return super.execute(request);
     }
 }

@@ -66,4 +66,10 @@ public class CreateEmployeeService extends BaseService<CreateEmployeeRequest, Ac
             throw new DuplicateResourceException("Employee code already assigned");
         }
     }
+
+    @Override
+    @Transactional
+    public AccountResponse execute(CreateEmployeeRequest request) {
+        return super.execute(request);
+    }
 }
