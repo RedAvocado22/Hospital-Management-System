@@ -23,7 +23,7 @@ public class CreateMedicineService extends BaseService<CreateMedicineRequest, Me
 
     @Override
     @Transactional
-    public MedicineResponse doProcess(CreateMedicineRequest request) {
+    protected MedicineResponse doProcess(CreateMedicineRequest request) {
         log.debug("Processing medicine creation request: {}", request.getName());
 
         Medicine medicine = medicineMapper.toEntity(request);

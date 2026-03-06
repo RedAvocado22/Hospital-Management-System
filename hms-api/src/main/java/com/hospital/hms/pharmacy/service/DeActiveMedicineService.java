@@ -1,6 +1,7 @@
 package com.hospital.hms.pharmacy.service;
 
 import com.hospital.hms.base.service.BaseService;
+import com.hospital.hms.exception.BusinessException;
 import com.hospital.hms.exception.NotFoundException;
 import com.hospital.hms.pharmacy.dto.request.DeActiveMedicineRequest;
 import com.hospital.hms.pharmacy.dto.response.MedicineResponse;
@@ -24,13 +25,17 @@ public class DeActiveMedicineService extends BaseService<DeActiveMedicineRequest
 
     @Override
     @Transactional
-    public MedicineResponse doProcess(DeActiveMedicineRequest request) {
+    protected MedicineResponse doProcess(DeActiveMedicineRequest request) {
         log.debug("Processing medicine de-active request: {}", request.getId());
 
 
         Medicine medicine = medicineRepository.findById(request.getId()).orElseThrow(
                 () -> new NotFoundException("medicine", request.getId())
         );
+
+        if (!medicine.getIsActive()) {
+            throw new BusinessException("Medicine with ID " + request.getId() + " is already deactivated");
+        }
 
         medicine.setIsActive(false);
         medicine.setUpdatedAt(LocalDateTime.now());
@@ -43,11 +48,6 @@ public class DeActiveMedicineService extends BaseService<DeActiveMedicineRequest
         MedicineResponse response = medicineMapper.toResponse(deActiveMedicine);
 
         return response;
-    }
-
-    @Override
-    public void validate(DeActiveMedicineRequest request) {
-        super.validate(request);
     }
 
 }

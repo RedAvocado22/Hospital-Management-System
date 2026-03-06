@@ -1,6 +1,7 @@
 package com.hospital.hms.pharmacy.service;
 
 import com.hospital.hms.base.service.BaseService;
+import com.hospital.hms.exception.NotFoundException;
 import com.hospital.hms.exception.ValidationException;
 import com.hospital.hms.pharmacy.dto.request.GetMedicineDetailRequest;
 import com.hospital.hms.pharmacy.dto.response.MedicineResponse;
@@ -24,12 +25,12 @@ public class GetMedicineDetailService extends BaseService<GetMedicineDetailReque
     private final MedicineMapper medicineMapper;
 
     @Override
-    public MedicineResponse doProcess(GetMedicineDetailRequest request) {
+    protected MedicineResponse doProcess(GetMedicineDetailRequest request) {
         Optional<Medicine> medicineOpt = medicineRepository.findById(request.getId());
 
         if (medicineOpt.isEmpty()) {
             log.warn("Medicine not found with id: {}", request.getId());
-            throw new RuntimeException("Medicine not found");
+            throw new NotFoundException("Medicine not found");
         }
 
         Medicine medicine = medicineOpt.get();

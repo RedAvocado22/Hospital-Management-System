@@ -26,31 +26,22 @@ public class GetAllMedicineService extends BaseService<GetAllMedicineRequest, Pa
 
     @Override
     @Transactional(readOnly = true)
-    public PaginatedResponse<MedicineResponse> doProcess(GetAllMedicineRequest request) {
-        log.debug(
-                "Fetching medicine with pagination - page: {}, size: {}, name: {}, quantity: {}, price: {}, description: {}",
-                request.getPage(), request.getSize(),
-                request.getName(), request.getQuantity(), request.getPrice(), request.getDescription()
-        );
+    protected PaginatedResponse<MedicineResponse> doProcess(GetAllMedicineRequest request) {
+        log.debug("Fetching medicine with pagination - page: {}, size: {}, name: {}, quantity: {}, price: {}, description: {}", request.getPage(), request.getSize(), request.getName(), request.getQuantity(), request.getPrice(), request.getDescription());
 
         Pageable pageable = request.toPageable();
         Specification<Medicine> spec = MedicineSpecification.withFilters(request);
 
         Page<Medicine> medicinePage = medicineRepository.findAll(spec, pageable);
 
-        log.info("Found {} medicine on page {} of {}",
-                medicinePage.getNumberOfElements(),
-                medicinePage.getNumber(),
-                medicinePage.getTotalPages());
+        if (medicinePage.isEmpty()) {
+            log.debug("No medicines found for given filters");
+        }
 
-        Page<MedicineResponse> courseResponsePage = medicinePage.map(medicineMapper::toResponse);
-        return PaginatedResponse.from(courseResponsePage);
-    }
+        log.info("Found {} medicine on page {} of {}", medicinePage.getNumberOfElements(), medicinePage.getNumber(), medicinePage.getTotalPages());
 
-    @Override
-    public void validate(GetAllMedicineRequest request) {
-        super.validate(request);
-        log.debug("No additional validation required for fetching all medicines");
+        Page<MedicineResponse> responsePage = medicinePage.map(medicineMapper::toResponse);
+        return PaginatedResponse.from(responsePage);
     }
 
 }

@@ -2,6 +2,7 @@ package com.hospital.hms.pharmacy.service;
 
 import com.hospital.hms.base.service.BaseService;
 import com.hospital.hms.exception.NotFoundException;
+import com.hospital.hms.exception.ValidationException;
 import com.hospital.hms.pharmacy.dto.request.UpdateMedicineRequest;
 import com.hospital.hms.pharmacy.dto.response.MedicineResponse;
 import com.hospital.hms.pharmacy.entity.Medicine;
@@ -24,7 +25,7 @@ public class UpdateMedicineService extends BaseService<UpdateMedicineRequest, Me
 
     @Override
     @Transactional
-    public MedicineResponse doProcess(UpdateMedicineRequest request) {
+    protected MedicineResponse doProcess(UpdateMedicineRequest request) {
         log.debug("Processing medicine updating request: {}", request.getName());
 
         Medicine medicine = medicineRepository.findById(request.getId()).orElseThrow(
@@ -52,7 +53,12 @@ public class UpdateMedicineService extends BaseService<UpdateMedicineRequest, Me
         super.validate(request);
         log.debug("Starting service-level validation for medicine update: {}", request.getName());
 
-        log.info("Service-level validation passed for course update: {}", request.getName());
-    }
+        log.info("Service-level validation passed for medicine update: {}", request.getName());
 
+        if (request.getDescription().length() < 200) {
+            throw new ValidationException(
+                    "Medicine require very detailed descriptions (minimum 200 characters)"
+            );
+        }
+    }
 }
