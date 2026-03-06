@@ -4,6 +4,7 @@ import com.hospital.hms.base.service.BaseService;
 import com.hospital.hms.exception.BusinessException;
 import com.hospital.hms.exception.ValidationException;
 import com.hospital.hms.pharmacy.dto.request.CreateMedicineRequest;
+import com.hospital.hms.pharmacy.dto.response.MedicineResponse;
 import com.hospital.hms.pharmacy.entity.Medicine;
 import com.hospital.hms.pharmacy.mapper.MedicineMapper;
 import com.hospital.hms.pharmacy.repository.MedicineRepository;
@@ -15,14 +16,14 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CreateMedicineService extends BaseService<CreateMedicineRequest, Void> {
+public class CreateMedicineService extends BaseService<CreateMedicineRequest, MedicineResponse> {
 
     private final MedicineRepository medicineRepository;
     private final MedicineMapper medicineMapper;
 
     @Override
     @Transactional
-    public Void doProcess(CreateMedicineRequest request) {
+    public MedicineResponse doProcess(CreateMedicineRequest request) {
         log.debug("Processing medicine creation request: {}", request.getName());
 
         Medicine medicine = medicineMapper.toEntity(request);

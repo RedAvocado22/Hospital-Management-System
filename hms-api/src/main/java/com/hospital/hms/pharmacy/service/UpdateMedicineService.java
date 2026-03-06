@@ -3,6 +3,7 @@ package com.hospital.hms.pharmacy.service;
 import com.hospital.hms.base.service.BaseService;
 import com.hospital.hms.exception.NotFoundException;
 import com.hospital.hms.pharmacy.dto.request.UpdateMedicineRequest;
+import com.hospital.hms.pharmacy.dto.response.MedicineResponse;
 import com.hospital.hms.pharmacy.entity.Medicine;
 import com.hospital.hms.pharmacy.mapper.MedicineMapper;
 import com.hospital.hms.pharmacy.repository.MedicineRepository;
@@ -16,14 +17,14 @@ import java.time.LocalDateTime;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UpdateMedicineService extends BaseService<UpdateMedicineRequest, Void> {
+public class UpdateMedicineService extends BaseService<UpdateMedicineRequest, MedicineResponse> {
 
     private final MedicineRepository medicineRepository;
     private final MedicineMapper medicineMapper;
 
     @Override
     @Transactional
-    public Void doProcess(UpdateMedicineRequest request) {
+    public MedicineResponse doProcess(UpdateMedicineRequest request) {
         log.debug("Processing medicine updating request: {}", request.getName());
 
         Medicine medicine = medicineRepository.findById(request.getId()).orElseThrow(
@@ -35,9 +36,15 @@ public class UpdateMedicineService extends BaseService<UpdateMedicineRequest, Vo
         medicine.setPrice(request.getPrice());
         medicine.setUpdatedAt(LocalDateTime.now());
 
-        medicineRepository.save(medicine);
+        Medicine updatedMedicine = medicineRepository.save(medicine);
 
-        return null;
+        log.info("Medicine saved with ID: {}",
+                updatedMedicine.getId());
+
+        MedicineResponse response = medicineMapper.toResponse(updatedMedicine);
+
+        return response;
+
     }
 
     @Override
