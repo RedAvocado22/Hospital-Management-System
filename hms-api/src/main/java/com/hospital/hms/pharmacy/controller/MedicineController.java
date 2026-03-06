@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @Slf4j
 @RestController
 @RequestMapping("/v1/medicines")
@@ -126,13 +128,18 @@ public class MedicineController {
                 .body(apiResponse);
     }
 
-    @PostMapping("/detail")
-    public ResponseEntity<ApiResponse<MedicineResponse>> getMedicine(@RequestBody @Valid GetMedicineDetailRequest request, HttpServletRequest httpRequest) {
+    @GetMapping("/detail/{id}")
+    public ResponseEntity<ApiResponse<MedicineResponse>> getMedicine(
+            @PathVariable UUID id,
+            HttpServletRequest httpRequest) {
 
         long startTime = System.currentTimeMillis();
         String traceId = java.util.UUID.randomUUID().toString();
 
-        log.info("[TraceID: {}] Fetching medicine with Medicine Id: {}", traceId, request.getId());
+        log.info("[TraceID: {}] Fetching medicine with Medicine Id: {}", traceId, id);
+
+        // Tạo request object từ id
+        GetMedicineDetailRequest request = new GetMedicineDetailRequest(id);
 
         MedicineResponse response = getMedicineDetailService.execute(request);
         long duration = System.currentTimeMillis() - startTime;
