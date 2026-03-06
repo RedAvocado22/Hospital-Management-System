@@ -2,6 +2,7 @@ package com.hospital.hms.employee.service;
 
 import com.hospital.hms.auth.entity.Account;
 import com.hospital.hms.auth.request.AccountRegistrationRequest;
+import com.hospital.hms.auth.response.AccountResponse;
 import com.hospital.hms.auth.service.AccountRegistrationService;
 import com.hospital.hms.base.service.BaseService;
 import com.hospital.hms.department.entity.Department;
@@ -19,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CreateEmployeeService extends BaseService<CreateEmployeeRequest, Void> {
+public class CreateEmployeeService extends BaseService<CreateEmployeeRequest, AccountResponse> {
 
     private final DepartmentRepository departmentRepository;
     private final EmployeeInfoRepository employeeInfoRepository;
@@ -27,7 +28,7 @@ public class CreateEmployeeService extends BaseService<CreateEmployeeRequest, Vo
 
     @Override
     @Transactional
-    protected Void doProcess(CreateEmployeeRequest request) {
+    protected AccountResponse doProcess(CreateEmployeeRequest request) {
         log.info("Starting employee creation for username: {}", request.getUsername());
 
         Department department = departmentRepository.findByNameIgnoreCase(request.getDepartment())
@@ -54,7 +55,7 @@ public class CreateEmployeeService extends BaseService<CreateEmployeeRequest, Vo
         employeeInfoRepository.save(info);
 
         log.info("Employee {} created successfully", request.getUsername());
-        return null;
+        return AccountResponse.from(account);
     }
 
     @Override

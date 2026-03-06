@@ -23,5 +23,5 @@ public class Department extends BaseEntity {
     private String name;
 
     @Column(name = "is_active", columnDefinition = "TINYINT(1)", nullable = false)
-    private Boolean isActive;
+    private boolean isActive;
 }

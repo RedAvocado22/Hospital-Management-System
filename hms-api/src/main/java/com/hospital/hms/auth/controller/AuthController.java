@@ -1,6 +1,7 @@
 package com.hospital.hms.auth.controller;
 
 import com.hospital.hms.auth.request.SignInRequest;
+import com.hospital.hms.auth.response.AccountResponse;
 import com.hospital.hms.auth.response.AuthResponse;
 import com.hospital.hms.auth.service.SignInService;
 import com.hospital.hms.base.api.ApiResponse;
@@ -44,14 +45,15 @@ public class AuthController {
                     description = "Invalid input data or duplicate resource"
             )
     })
-    public ResponseEntity<ApiResponse<Void>> signUp(@Valid @RequestBody CreatePatientRequest request) {
+    public ResponseEntity<ApiResponse<AccountResponse>> signUp(@Valid @RequestBody CreatePatientRequest request) {
         log.info("Received sign up request: {}", request.toLogString());
 
-        createPatientService.execute(request);
+        AccountResponse data = createPatientService.execute(request);
 
         log.info("Successfully processed sign up request for: {}", request.getUsername());
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success(null, "User registered successfully", HttpStatus.CREATED.value()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                ApiResponse.success(data, "User registered successfully", HttpStatus.CREATED.value())
+        );
     }
 
     @PostMapping("/signin")
@@ -73,6 +75,8 @@ public class AuthController {
         AuthResponse response = signInService.signInUser(request);
 
         log.info("Successfully processed sign in request for: {}", request.getUsername());
-        return ResponseEntity.ok(ApiResponse.success(response, "Login successful", HttpStatus.OK.value()));
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.success(response, "Login successful", HttpStatus.OK.value())
+        );
     }
 }
