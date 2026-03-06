@@ -1,7 +1,6 @@
 package com.hospital.hms.auth.response;
 
 import com.hospital.hms.auth.entity.Account;
-import com.hospital.hms.auth.entity.Role;
 
 public record AccountResponse(
         String username,
@@ -14,7 +13,7 @@ public record AccountResponse(
 
         String fullName,
 
-        Role role
+        String role
 ) {
     public static AccountResponse from(Account account) {
         return new AccountResponse(
@@ -23,7 +22,7 @@ public record AccountResponse(
                 account.getLastName(),
                 account.getEmail(),
                 account.getFullName(),
-                account.getRole()
+                account.getRole().getName()
         );
     }
 }
