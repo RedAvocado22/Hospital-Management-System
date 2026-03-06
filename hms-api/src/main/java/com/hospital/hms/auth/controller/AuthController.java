@@ -1,6 +1,7 @@
 package com.hospital.hms.auth.controller;
 
 import com.hospital.hms.auth.request.SignInRequest;
+import com.hospital.hms.auth.response.AccountResponse;
 import com.hospital.hms.auth.response.AuthResponse;
 import com.hospital.hms.auth.service.SignInService;
 import com.hospital.hms.base.api.ApiResponse;
@@ -15,6 +16,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,13 +45,15 @@ public class AuthController {
                     description = "Invalid input data or duplicate resource"
             )
     })
-    public ApiResponse<Void> signUp(@Valid @RequestBody CreatePatientRequest request) {
+    public ResponseEntity<ApiResponse<AccountResponse>> signUp(@Valid @RequestBody CreatePatientRequest request) {
         log.info("Received sign up request: {}", request.toLogString());
 
-        createPatientService.execute(request);
+        AccountResponse data = createPatientService.execute(request);
 
         log.info("Successfully processed sign up request for: {}", request.getUsername());
-        return ApiResponse.success(null, "User registered successfully", HttpStatus.CREATED.value());
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                ApiResponse.success(data, "User registered successfully", HttpStatus.CREATED.value())
+        );
     }
 
     @PostMapping("/signin")
@@ -65,12 +69,14 @@ public class AuthController {
                     description = "Invalid credentials"
             )
     })
-    public ApiResponse<AuthResponse> signIn(@Valid @RequestBody SignInRequest request) {
+    public ResponseEntity<ApiResponse<AuthResponse>> signIn(@Valid @RequestBody SignInRequest request) {
         log.info("Received sign in request: {}", request.toLogString());
 
         AuthResponse response = signInService.signInUser(request);
 
         log.info("Successfully processed sign in request for: {}", request.getUsername());
-        return ApiResponse.success(response, "Login successful", HttpStatus.OK.value());
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.success(response, "Login successful", HttpStatus.OK.value())
+        );
     }
 }

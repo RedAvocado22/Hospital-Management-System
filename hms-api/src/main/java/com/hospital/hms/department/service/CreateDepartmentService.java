@@ -4,6 +4,7 @@ import com.hospital.hms.base.service.BaseService;
 import com.hospital.hms.department.entity.Department;
 import com.hospital.hms.department.repository.DepartmentRepository;
 import com.hospital.hms.department.request.CreateDepartmentRequest;
+import com.hospital.hms.department.response.DepartmentResponse;
 import com.hospital.hms.exception.DuplicateResourceException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,22 +14,23 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CreateDepartmentService extends BaseService<CreateDepartmentRequest, Void> {
+public class CreateDepartmentService extends BaseService<CreateDepartmentRequest, DepartmentResponse> {
 
     private final DepartmentRepository departmentRepository;
 
     @Override
     @Transactional
-    protected Void doProcess(CreateDepartmentRequest request) {
+    protected DepartmentResponse doProcess(CreateDepartmentRequest request) {
         log.info("Starting department creation: {}", request.getName());
         Department department = Department.builder()
                 .name(request.getName())
                 .isActive(request.getIsActive())
                 .build();
 
-        departmentRepository.save(department);
+        Department saved = departmentRepository.save(department);
+
         log.info("Department {} created successfully", request.getName());
-        return null;
+        return DepartmentResponse.from(saved);
     }
 
     @Override

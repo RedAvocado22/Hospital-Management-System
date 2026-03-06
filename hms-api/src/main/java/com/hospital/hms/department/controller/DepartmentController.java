@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,19 +28,23 @@ public class DepartmentController {
 
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ApiResponse<PaginatedResponse<DepartmentResponse>> getDepartments(
+    public ResponseEntity<ApiResponse<PaginatedResponse<DepartmentResponse>>> getDepartments(
             @ModelAttribute SearchDepartmentRequest request
     ) {
         PaginatedResponse<DepartmentResponse> response = getDepartmentService.execute(request);
-        return ApiResponse.success(response, "Get departments successfully", HttpStatus.OK.value());
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.success(response, "Get departments successfully", HttpStatus.OK.value())
+        );
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ApiResponse<DepartmentResponse> createDepartment(
+    public ResponseEntity<ApiResponse<DepartmentResponse>> createDepartment(
             @Valid @RequestBody CreateDepartmentRequest request
     ) {
-        createDepartmentService.execute(request);
-        return ApiResponse.success(null, "Department created successfully", HttpStatus.CREATED.value());
+        DepartmentResponse data = createDepartmentService.execute(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                ApiResponse.success(data, "Department created successfully", HttpStatus.CREATED.value())
+        );
     }
 }
