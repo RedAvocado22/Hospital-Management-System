@@ -27,7 +27,6 @@ public class CreateEmployeeService extends BaseService<CreateEmployeeRequest, Ac
     private final AccountRegistrationService accountRegistrationService;
 
     @Override
-    @Transactional
     protected AccountResponse doProcess(CreateEmployeeRequest request) {
         log.info("Starting employee creation for username: {}", request.getUsername());
 
