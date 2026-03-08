@@ -13,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class GetEmployeeDetailRequest extends BaseRequest {
+public class EmployeeIdRequest extends BaseRequest {
     @NotNull(message = "Id are required ")
     private UUID id;
 }
