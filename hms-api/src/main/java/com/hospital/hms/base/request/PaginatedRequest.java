@@ -20,6 +20,7 @@ import org.springframework.data.domain.Sort;
 public abstract class PaginatedRequest extends BaseRequest {
 
     @Min(value = 0, message = "Page number cannot be negative")
+    @Max(value = 10000, message = "Page number can't greater than 10000")
     @Schema(description = "Zero-based page index", example = "0", defaultValue = "0")
     private Integer page = 0;
 
