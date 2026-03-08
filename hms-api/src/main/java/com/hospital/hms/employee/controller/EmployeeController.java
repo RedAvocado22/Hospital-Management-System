@@ -92,7 +92,7 @@ public class EmployeeController {
             )
     })
     public ResponseEntity<ApiResponse<PaginatedResponse<EmployeeResponse>>> getEmployees(
-            @ModelAttribute SearchEmployeeRequest request
+            @Valid @ModelAttribute SearchEmployeeRequest request
     ) {
         PaginatedResponse<EmployeeResponse> data = getEmployeeService.execute(request);
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -169,7 +169,7 @@ public class EmployeeController {
     public ResponseEntity<ApiResponse<EmployeeResponse>> updateEmployee(
             @Parameter(description = "UUID of the employee to update", required = true)
             @PathVariable UUID id,
-            @RequestBody UpdateEmployeeRequest request
+            @Valid @RequestBody UpdateEmployeeRequest request
     ) {
         request.setId(id);
 

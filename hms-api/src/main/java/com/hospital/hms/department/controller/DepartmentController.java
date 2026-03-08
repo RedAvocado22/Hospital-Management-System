@@ -52,7 +52,7 @@ public class DepartmentController {
             )
     })
     public ResponseEntity<ApiResponse<PaginatedResponse<DepartmentResponse>>> getDepartments(
-            @ModelAttribute SearchDepartmentRequest request
+            @Valid @ModelAttribute SearchDepartmentRequest request
     ) {
         PaginatedResponse<DepartmentResponse> response = getDepartmentService.execute(request);
         return ResponseEntity.status(HttpStatus.OK).body(
