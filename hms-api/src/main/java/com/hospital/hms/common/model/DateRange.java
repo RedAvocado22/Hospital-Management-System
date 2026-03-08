@@ -1,5 +1,6 @@
 package com.hospital.hms.common.model;
 
+import com.hospital.hms.exception.ValidationException;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
@@ -12,4 +13,13 @@ public record DateRange(
         @Schema(description = "End date (inclusive)", example = "2026-12-31")
         LocalDate to
 ) {
+    public DateRange {
+        if ((from == null) != (to == null)) {
+            throw new ValidationException("Invalid date range");
+        }
+
+        if (from != null && to != null && from.isAfter(to)) {
+            throw new ValidationException("Invalid date range");
+        }
+    }
 }
