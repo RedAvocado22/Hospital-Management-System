@@ -1,4 +1,4 @@
-package com.hospital.hms.pharmacy.dto.request;
+package com.hospital.hms.pharmacy.request;
 
 import com.hospital.hms.base.request.PaginatedRequest;
 import lombok.Data;

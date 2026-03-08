@@ -1,4 +1,4 @@
-package com.hospital.hms.pharmacy.dto.response;
+package com.hospital.hms.pharmacy.response;
 
 
 import lombok.Builder;

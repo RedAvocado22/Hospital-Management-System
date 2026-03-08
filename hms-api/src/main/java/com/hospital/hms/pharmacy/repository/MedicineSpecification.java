@@ -1,7 +1,7 @@
 package com.hospital.hms.pharmacy.repository;
 
-import com.hospital.hms.pharmacy.dto.request.GetAllMedicineRequest;
 import com.hospital.hms.pharmacy.entity.Medicine;
+import com.hospital.hms.pharmacy.request.GetAllMedicineRequest;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 

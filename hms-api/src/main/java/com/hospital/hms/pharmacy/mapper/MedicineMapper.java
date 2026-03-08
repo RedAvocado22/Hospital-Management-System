@@ -1,8 +1,8 @@
 package com.hospital.hms.pharmacy.mapper;
 
-import com.hospital.hms.pharmacy.dto.request.CreateMedicineRequest;
-import com.hospital.hms.pharmacy.dto.response.MedicineResponse;
 import com.hospital.hms.pharmacy.entity.Medicine;
+import com.hospital.hms.pharmacy.request.CreateMedicineRequest;
+import com.hospital.hms.pharmacy.response.MedicineResponse;
 import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")

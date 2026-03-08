@@ -1,4 +1,4 @@
-package com.hospital.hms.pharmacy.dto.request;
+package com.hospital.hms.pharmacy.request;
 
 import com.hospital.hms.base.request.BaseRequest;
 import jakarta.validation.constraints.NotNull;
@@ -15,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class DeActiveMedicineRequest extends BaseRequest {
+public class GetMedicineDetailRequest extends BaseRequest {
 
     @NotNull(message = "Medicine id are required ")
     private UUID id;

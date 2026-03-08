@@ -1,4 +1,4 @@
-package com.hospital.hms.pharmacy.dto.request;
+package com.hospital.hms.pharmacy.request;
 
 import com.hospital.hms.base.request.BaseRequest;
 import jakarta.validation.constraints.DecimalMin;
@@ -12,31 +12,29 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Data
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class CreateMedicineRequest extends BaseRequest {
+public class UpdateMedicineRequest extends BaseRequest {
+
+    @NotNull(message = "Medicine id are required ")
+    private UUID id;
 
     @NotBlank(message = "Name is required")
     @Size(min = 3, max = 200, message = "Name must be between 3 and 200 characters")
     private String name;
 
-    @NotNull(message = "Quantity is required")
     private Integer quantity;
 
-    @NotNull(message = "Price is required")
     @DecimalMin(value = "0.01", message = "Price must be greater than 0")
     private BigDecimal price;
 
-    @NotBlank(message = "Description is required")
     @Size(min = 20, max = 5000, message = "Description must be between 20 and 5000 characters")
     private String description;
-
-    @NotNull(message = "Active status is required")
-    private Boolean isActive;
 
     @Override
     public void validate() {
@@ -54,9 +52,6 @@ public class CreateMedicineRequest extends BaseRequest {
         if (description != null && description.trim().length() < 20) {
             throw new IllegalArgumentException("Description must have at least 20 non-whitespace characters");
         }
-        if (isActive == null) {
-            throw new IllegalArgumentException("Active status is required");
-        }
         if (name != null && name.equals(description)) {
             throw new IllegalArgumentException("Name and description cannot be identical");
         }
@@ -64,4 +59,5 @@ public class CreateMedicineRequest extends BaseRequest {
             throw new IllegalArgumentException("Description is too long");
         }
     }
+
 }
