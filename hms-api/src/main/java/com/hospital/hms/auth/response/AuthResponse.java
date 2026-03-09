@@ -17,4 +17,9 @@ public record AuthResponse(
 
         @Schema(description = "Refresh token lifetime in seconds", example = "1800")
         Long refreshExpiresIn) {
+
+    @Override
+    public String toString() {
+        return "The token will expire in " + expiresIn + " seconds and the refresh token will expire in " + refreshExpiresIn + " seconds";
+    }
 }
