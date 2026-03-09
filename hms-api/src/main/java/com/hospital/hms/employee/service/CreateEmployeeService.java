@@ -27,7 +27,6 @@ public class CreateEmployeeService extends BaseService<CreateEmployeeRequest, Ac
     private final AccountRegistrationService accountRegistrationService;
 
     @Override
-    @Transactional
     protected AccountResponse doProcess(CreateEmployeeRequest request) {
         log.info("Starting employee creation for username: {}", request.getUsername());
 
@@ -65,5 +64,11 @@ public class CreateEmployeeService extends BaseService<CreateEmployeeRequest, Ac
         if (employeeInfoRepository.existsByCode(request.getCode())) {
             throw new DuplicateResourceException("Employee code already assigned");
         }
+    }
+
+    @Override
+    @Transactional
+    public AccountResponse execute(CreateEmployeeRequest request) {
+        return super.execute(request);
     }
 }

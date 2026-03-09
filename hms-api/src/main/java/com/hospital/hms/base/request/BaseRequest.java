@@ -1,6 +1,7 @@
 package com.hospital.hms.base.request;
 
 import com.hospital.hms.base.UserContext;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,16 +19,19 @@ public abstract class BaseRequest {
     /**
      * Request ID for tracking
      */
+    @Schema(hidden = true)
     private UUID requestId;
 
     /**
      * User context (set by framework)
      */
+    @Schema(hidden = true)
     private UserContext userContext;
 
     /**
      * Timestamp when request was created
      */
+    @Schema(hidden = true)
     private LocalDateTime createdAt;
 
     /**

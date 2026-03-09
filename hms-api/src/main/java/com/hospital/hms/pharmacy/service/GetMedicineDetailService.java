@@ -2,12 +2,11 @@ package com.hospital.hms.pharmacy.service;
 
 import com.hospital.hms.base.service.BaseService;
 import com.hospital.hms.exception.NotFoundException;
-import com.hospital.hms.exception.ValidationException;
-import com.hospital.hms.pharmacy.dto.request.GetMedicineDetailRequest;
-import com.hospital.hms.pharmacy.dto.response.MedicineResponse;
 import com.hospital.hms.pharmacy.entity.Medicine;
 import com.hospital.hms.pharmacy.mapper.MedicineMapper;
 import com.hospital.hms.pharmacy.repository.MedicineRepository;
+import com.hospital.hms.pharmacy.request.GetMedicineDetailRequest;
+import com.hospital.hms.pharmacy.response.MedicineResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -41,9 +40,7 @@ public class GetMedicineDetailService extends BaseService<GetMedicineDetailReque
 
     @Override
     public void validate(GetMedicineDetailRequest request) {
-        if (request.getId() == null) {
-            throw new ValidationException("Medicine id must not be null");
-        }
+        super.validate(request);
     }
 
 }

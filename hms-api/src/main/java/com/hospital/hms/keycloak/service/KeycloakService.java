@@ -155,6 +155,22 @@ public class KeycloakService {
         }
     }
 
+    public void updateRole(String userId, String newRoleName, String oldRoleName) {
+        try {
+            UserRepresentation user = keycloak.realm(realm).users().get(userId).toRepresentation();
+            RoleRepresentation newRole = keycloak.realm(realm).roles().get(newRoleName).toRepresentation();
+            RoleRepresentation oldRole = keycloak.realm(realm).roles().get(oldRoleName).toRepresentation();
+            keycloak.realm(realm).users().get(userId).roles().realmLevel().remove(Collections.singletonList(oldRole));
+            keycloak.realm(realm).users().get(userId).roles().realmLevel().add(Collections.singletonList(newRole));
+            log.info("Update role {} to user {}", newRoleName, user.getUsername());
+        } catch (Exception e) {
+            log.error("Failed to update role {} to user ID {}", newRoleName, userId, e);
+            throw new IdentityProviderException(
+                    "Failed to assign permissions in Keycloak", HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
     /**
      * Checks if a user already exists in Keycloak.
      */
@@ -171,6 +187,20 @@ public class KeycloakService {
             usersResource.delete(usersRepresentation.get(0).getId());
         } else {
             log.warn("Nothing to delete in Keycloak");
+        }
+    }
+
+    public void setUserEnabled(String userId, boolean enabled) {
+        try {
+            UserRepresentation user = keycloak.realm(realm).users().get(userId).toRepresentation();
+            user.setEnabled(enabled);
+            keycloak.realm(realm).users().get(userId).update(user);
+            log.info("User {}'s status is: {}", user.getUsername(), enabled);
+        } catch (Exception e) {
+            log.error("Failed to change user status");
+            throw new IdentityProviderException(
+                    "Failed to assign permissions in Keycloak", HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
     }
 }

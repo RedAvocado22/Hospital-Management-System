@@ -24,9 +24,8 @@ public class GetDepartmentService extends BaseService<SearchDepartmentRequest, P
     @Override
     protected PaginatedResponse<DepartmentResponse> doProcess(SearchDepartmentRequest request) {
         log.debug(
-                "Fetching departments with pagination - page: {}, size: {}, name: {}, active: {}, created at: {}, updated at: {}",
-                request.getPage(), request.getSize(),
-                request.getName(), request.getIsActive(), request.getCreatedAt(), request.getUpdatedAt()
+                "Fetching departments with pagination - page: {}, size: {}",
+                request.getPage(), request.getSize()
         );
         Pageable pageable = request.toPageable();
         Specification<Department> spec = DepartmentSpecification.withFilters(request);

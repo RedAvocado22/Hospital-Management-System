@@ -27,12 +27,20 @@ public class DepartmentSpecification {
                 predicates.add(criteriaBuilder.equal(root.get("isActive"), request.getIsActive()));
             }
 
-            if (request.getCreatedAt() != null) {
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("createdAt"), request.getCreatedAt()));
+            if (request.getCreatedAtRange() != null) {
+                predicates.add(criteriaBuilder.between(
+                        root.get("createdAt"),
+                        request.getCreatedAtRange().from().atStartOfDay(),
+                        request.getCreatedAtRange().to().atTime(23, 59, 59))
+                );
             }
 
-            if (request.getUpdatedAt() != null) {
-                predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("updatedAt"), request.getUpdatedAt()));
+            if (request.getUpdatedAtRange() != null) {
+                predicates.add(criteriaBuilder.between(
+                        root.get("updatedAt"),
+                        request.getUpdatedAtRange().from().atStartOfDay(),
+                        request.getUpdatedAtRange().to().atTime(23, 59, 59))
+                );
             }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
