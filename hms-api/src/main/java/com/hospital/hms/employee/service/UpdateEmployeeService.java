@@ -41,7 +41,6 @@ public class UpdateEmployeeService extends BaseService<UpdateEmployeeRequest, Em
             throw new DuplicateResourceException("Code already exists: " + request.getCode());
         }
 
-
         if (request.getFirstName() != null) employee.getAccount().setFirstName(request.getFirstName());
         if (request.getLastName() != null) employee.getAccount().setLastName(request.getLastName());
         if (request.getDob() != null) employee.getAccount().setDob(request.getDob());
@@ -50,8 +49,6 @@ public class UpdateEmployeeService extends BaseService<UpdateEmployeeRequest, Em
         if (request.getPhone() != null) employee.getAccount().setPhone(request.getPhone());
         if (request.getCode() != null) employee.setCode(request.getCode());
         if (request.getHireDate() != null) employee.setHireDate(request.getHireDate());
-
-        String oldRoleName = employee.getAccount().getRole().getName();
 
         if (request.getRole() != null) {
             Role role = roleRepository.findByNameIgnoreCase(request.getRole())
@@ -67,6 +64,8 @@ public class UpdateEmployeeService extends BaseService<UpdateEmployeeRequest, Em
         EmployeeInfo updated = employeeInfoRepository.save(employee);
 
         if (request.getRole() != null) {
+            String oldRoleName = employee.getAccount().getRole().getName();
+
             try {
                 keycloakService.updateRole(employee.getAccount().getId().toString(), request.getRole(), oldRoleName);
             } catch (Exception e) {
@@ -76,11 +75,6 @@ public class UpdateEmployeeService extends BaseService<UpdateEmployeeRequest, Em
         }
 
         return EmployeeResponse.from(updated);
-    }
-
-    @Override
-    protected void validate(UpdateEmployeeRequest request) {
-        super.validate(request);
     }
 
     @Override
