@@ -10,6 +10,7 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "account")
@@ -48,6 +49,12 @@ public class Account extends BaseEntity {
     @Column(name = "phone", length = 20)
     private String phone;
 
+    @Column(name = "is_synced")
+    private boolean isSynced = false;
+
+    @Column(name = "synced_at")
+    private LocalDateTime syncedAt;
+
     @Column(name = "is_active", columnDefinition = "TINYINT(1)", nullable = false)
     private Boolean isActive;
 
@@ -56,10 +63,15 @@ public class Account extends BaseEntity {
     private Role role;
 
     @PrePersist
-    @PreUpdate
     protected void prepareFullName() {
         String first = this.firstName != null ? this.firstName : "";
         String last = this.lastName != null ? this.lastName : "";
         this.fullName = (first + " " + last).trim();
+    }
+
+    @PreUpdate
+    protected void sync() {
+        this.isSynced = false;
+        prepareFullName();
     }
 }

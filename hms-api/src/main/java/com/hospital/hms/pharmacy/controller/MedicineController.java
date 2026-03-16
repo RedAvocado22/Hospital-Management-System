@@ -2,36 +2,40 @@ package com.hospital.hms.pharmacy.controller;
 
 import com.hospital.hms.base.api.ApiResponse;
 import com.hospital.hms.base.api.ResponseMetadata;
-import com.hospital.hms.pharmacy.dto.request.MedicineGetDetailRequest;
-import com.hospital.hms.pharmacy.dto.response.MedicineResponse;
-import com.hospital.hms.pharmacy.service.MedicineGetDetailService;
+import com.hospital.hms.base.response.PaginatedResponse;
+import com.hospital.hms.pharmacy.request.*;
+import com.hospital.hms.pharmacy.response.MedicineResponse;
+import com.hospital.hms.pharmacy.service.*;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/v1/medicines")
+@RequestMapping("/v1/medicines")
 @RequiredArgsConstructor
 public class MedicineController {
-    private final MedicineGetDetailService medicineGetDetailService;
+    private final GetMedicineDetailService getMedicineDetailService;
+    private final GetAllMedicineService getAllMedicineService;
+    private final CreateMedicineService createMedicineService;
+    private final DeActiveMedicineService deActiveMedicineService;
+    private final UpdateMedicineService updateMedicineService;
 
-    @PostMapping("/detail")
-    public ResponseEntity<ApiResponse<MedicineResponse>> getMedicine(@RequestBody MedicineGetDetailRequest request, HttpServletRequest httpRequest) {
+    @PatchMapping("/deactivate")
+    public ResponseEntity<ApiResponse<Void>> deActiveMedicine(@Valid @RequestBody DeActiveMedicineRequest request, HttpServletRequest httpRequest) {
         long startTime = System.currentTimeMillis();
         String traceId = java.util.UUID.randomUUID().toString();
 
-        log.info("[TraceID: {}] Fetching course with Medicine Id: {}", traceId, request.getId());
+        log.info("[TraceID: {}] De-active medicine with medicine id : {}", traceId, request.getId());
 
-        request.initialize();
+        deActiveMedicineService.execute(request);
 
-        MedicineResponse response = medicineGetDetailService.execute(request);
         long duration = System.currentTimeMillis() - startTime;
 
         ResponseMetadata metadata = ResponseMetadata.builder()
@@ -41,16 +45,161 @@ public class MedicineController {
                 .duration(duration)
                 .apiVersion("v1")
                 .build();
-        ApiResponse<MedicineResponse> apiResponse = ApiResponse.success(
-                response,
-                "Course retrieved successfully",
+
+        ApiResponse<Void> response = ApiResponse.success(
+                null,
+                "De-active medicine successfully",
                 HttpStatus.OK.value(),
                 metadata
         );
 
-        log.info("[TraceID: {}] Retrieved course: {} successfully (took {}ms)",
-                traceId, response.getName(), duration);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
 
-        return ResponseEntity.status(HttpStatus.OK).body(apiResponse);
+    @PostMapping("/create")
+    public ResponseEntity<ApiResponse<MedicineResponse>> createMedicine(@Valid @RequestBody CreateMedicineRequest request, HttpServletRequest httpRequest) {
+
+        long startTime = System.currentTimeMillis();
+        String traceId = java.util.UUID.randomUUID().toString();
+
+        log.info("[TraceID: {}] Creating new medicine with name: {}", traceId, request.getName());
+
+        MedicineResponse response = createMedicineService.execute(request);
+
+        long duration = System.currentTimeMillis() - startTime;
+
+        ResponseMetadata metadata = ResponseMetadata.builder()
+                .traceId(traceId)
+                .path(httpRequest.getRequestURI())
+                .method(httpRequest.getMethod())
+                .duration(duration)
+                .apiVersion("v1")
+                .build();
+
+        ApiResponse<MedicineResponse> apiResponse = ApiResponse.success(
+                response,
+                "Medicine created successfully",
+                HttpStatus.CREATED.value(),
+                metadata
+        );
+
+        log.info("[TraceID: {}] Medicine created successfully with ID: {} (took {}ms)",
+                traceId, response.id(), duration);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(apiResponse);
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<PaginatedResponse<MedicineResponse>>> getAllMedicines(@Valid @ModelAttribute GetAllMedicineRequest request, HttpServletRequest httpRequest) {
+
+        long startTime = System.currentTimeMillis();
+        String traceId = java.util.UUID.randomUUID().toString();
+
+        log.info("[TraceID: {}] Fetching all medicines{}", traceId, request.getId() != null);
+
+        PaginatedResponse<MedicineResponse> medicines = getAllMedicineService.execute(request);
+
+        long duration = System.currentTimeMillis() - startTime;
+
+        ResponseMetadata metadata = ResponseMetadata.builder()
+                .traceId(traceId)
+                .path(httpRequest.getRequestURI())
+                .method(httpRequest.getMethod())
+                .duration(duration)
+                .apiVersion("v1")
+                .build();
+
+        ApiResponse<PaginatedResponse<MedicineResponse>> apiResponse = ApiResponse.success(
+                medicines,
+                "Medicine retrieved successfully",
+                HttpStatus.OK.value(),
+                metadata
+        );
+
+        log.info("[TraceID: {}] Retrieved {} medicine successfully (took {}ms)",
+                traceId, medicines.size(), duration);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(apiResponse);
+    }
+
+    @GetMapping("/detail/{id}")
+    public ResponseEntity<ApiResponse<MedicineResponse>> getMedicine(
+            @PathVariable UUID id,
+            HttpServletRequest httpRequest) {
+
+        long startTime = System.currentTimeMillis();
+        String traceId = java.util.UUID.randomUUID().toString();
+
+        log.info("[TraceID: {}] Fetching medicine with Medicine Id: {}", traceId, id);
+
+        // Tạo request object từ id
+        GetMedicineDetailRequest request = new GetMedicineDetailRequest(id);
+
+        MedicineResponse response = getMedicineDetailService.execute(request);
+        long duration = System.currentTimeMillis() - startTime;
+
+        ResponseMetadata metadata = ResponseMetadata.builder()
+                .traceId(traceId)
+                .path(httpRequest.getRequestURI())
+                .method(httpRequest.getMethod())
+                .duration(duration)
+                .apiVersion("v1")
+                .build();
+
+        ApiResponse<MedicineResponse> apiResponse = ApiResponse.success(
+                response,
+                "medicine retrieved successfully",
+                HttpStatus.OK.value(),
+                metadata
+        );
+
+        log.info("[TraceID: {}] Retrieved medicine: {} successfully (took {}ms)",
+                traceId, response.name(), duration);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(apiResponse);
+    }
+
+    @PatchMapping("/update")
+    public ResponseEntity<ApiResponse<MedicineResponse>> updateMedicine(@Valid @RequestBody UpdateMedicineRequest request, HttpServletRequest httpRequest) {
+
+        long startTime = System.currentTimeMillis();
+        String traceId = java.util.UUID.randomUUID().toString();
+
+        log.info("[TraceID: {}] Updating medicine with id: {}", traceId, request.getId());
+
+        MedicineResponse response = updateMedicineService.execute(request);
+
+        long duration = System.currentTimeMillis() - startTime;
+
+        ResponseMetadata metadata = ResponseMetadata.builder()
+                .traceId(traceId)
+                .path(httpRequest.getRequestURI())
+                .method(httpRequest.getMethod())
+                .duration(duration)
+                .apiVersion("v1")
+                .build();
+
+        ApiResponse<MedicineResponse> apiResponse = ApiResponse.success(
+                response,
+                "Medicine updated successfully",
+                HttpStatus.OK.value(),
+                metadata
+        );
+
+        log.info("[TraceID: {}] Updated medicine: {} successfully (took {}ms)",
+                traceId, response.name(), duration);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(apiResponse);
+
     }
 }

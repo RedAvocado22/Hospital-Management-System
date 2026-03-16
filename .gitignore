@@ -35,3 +35,7 @@ docs/*
 
 # --- Agent ---
 .agent/*
+
+# --- Claude/Gemini context files (local only, never push) ---
+CLAUDE.md
+GEMINI.md

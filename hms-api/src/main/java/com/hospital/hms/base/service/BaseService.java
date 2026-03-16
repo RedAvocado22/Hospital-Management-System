@@ -39,7 +39,7 @@ import java.util.Optional;
  * @param <REQ> Request type (must extend BaseRequest)
  * @param <RES> Response type
  */
-public interface BaseService<REQ extends BaseRequest, RES> {
+public abstract class BaseService<REQ extends BaseRequest, RES> {
 
     /**
      * Core processing logic — implement this in each service.
@@ -53,7 +53,7 @@ public interface BaseService<REQ extends BaseRequest, RES> {
      * @throws BusinessException   if a business rule is violated
      * @throws ValidationException if custom validation fails inside processing
      */
-    RES doProcess(REQ request);
+    protected abstract RES doProcess(REQ request);
 
     /**
      * Validate the request before processing.
@@ -69,7 +69,7 @@ public interface BaseService<REQ extends BaseRequest, RES> {
      * @throws IllegalArgumentException if request is null
      * @throws ValidationException      if validation fails
      */
-    default void validate(REQ request) {
+    protected void validate(REQ request) {
         if (request == null) {
             throw new IllegalArgumentException("Request cannot be null");
         }
@@ -84,14 +84,11 @@ public interface BaseService<REQ extends BaseRequest, RES> {
      * @param request The request object
      * @return The response
      */
-    default RES execute(REQ request) {
-        // 1. Initialize (auto-set requestId, timestamp if missing)
+    public RES execute(REQ request) {
         if (request != null) {
             request.initialize();
         }
-        // 2. Validate
         validate(request);
-        // 3. Process
         return doProcess(request);
     }
 
@@ -103,28 +100,10 @@ public interface BaseService<REQ extends BaseRequest, RES> {
      * @param request The request object
      * @return Optional response (empty if not found)
      */
-    default Optional<RES> executeOptional(REQ request) {
+    public Optional<RES> executeOptional(REQ request) {
         try {
             return Optional.ofNullable(execute(request));
         } catch (NotFoundException e) {
-            return Optional.empty();
-        }
-    }
-
-    /**
-     * Execute silently — swallows exceptions and returns empty.
-     * <p>
-     * Use for fire-and-forget operations (e.g., sending a non-critical notification)
-     * where failure should be logged but not propagated.
-     *
-     * @param request The request object
-     * @return Optional response (empty on any failure)
-     */
-    default Optional<RES> executeSilent(REQ request) {
-        try {
-            return Optional.ofNullable(execute(request));
-        } catch (Exception e) {
-            // Subclasses with @Slf4j can override to add logging
             return Optional.empty();
         }
     }

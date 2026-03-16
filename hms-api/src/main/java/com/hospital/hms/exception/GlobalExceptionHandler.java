@@ -6,10 +6,12 @@ import com.hospital.hms.base.api.ResponseMetadata;
 import com.hospital.hms.base.exception.BaseException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -108,6 +110,26 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, "Invalid request format", List.of(error), traceId, request);
     }
 
+    /**
+     * Handle invalid property references in sort/filter parameters.
+     * Thrown when client requests sorting by a property that doesn't exist on the entity.
+     */
+    @ExceptionHandler(PropertyReferenceException.class)
+    public ResponseEntity<ApiResponse<Object>> handlePropertyReferenceException(
+            PropertyReferenceException ex,
+            HttpServletRequest request) {
+
+        String traceId = generateTraceId();
+        log.error("[TraceID: {}] Invalid property reference on {}: {}",
+                traceId, request.getRequestURI(), ex.getMessage());
+
+        ErrorDetail error = ErrorDetail.generalError(
+                "Invalid property '" + ex.getPropertyName() + "'. Please check your sort/filter parameters.",
+                "INVALID_PROPERTY_REFERENCE"
+        );
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, "Invalid property reference", List.of(error), traceId, request);
+    }
+
     // ==================== Catch-All ====================
 
     /**
@@ -128,6 +150,22 @@ public class GlobalExceptionHandler {
                 "INTERNAL_SERVER_ERROR"
         );
         return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error", List.of(error), traceId, request);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiResponse<Object>> handleDataIntegrityViolationException(
+            Exception ex,
+            HttpServletRequest request) {
+
+        String traceId = generateTraceId();
+        log.error("[TraceID: {}] Unexpected error on {}: {}",
+                traceId, request.getRequestURI(), ex.getMessage(), ex);
+
+        ErrorDetail error = ErrorDetail.generalError(
+                "A record with the provided data already exists. Please contact support with trace ID: " + traceId,
+                "DUPLICATE_RESOURCE"
+        );
+        return buildErrorResponse(HttpStatus.CONFLICT, "handleDataIntegrityViolationException", List.of(error), traceId, request);
     }
 
     // ==================== Private Helpers ====================
