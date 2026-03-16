@@ -9,6 +9,7 @@ import com.hospital.hms.employee.entity.EmployeeInfo;
 import com.hospital.hms.employee.repository.EmployeeInfoRepository;
 import com.hospital.hms.employee.request.UpdateEmployeeRequest;
 import com.hospital.hms.employee.response.EmployeeResponse;
+import com.hospital.hms.exception.BusinessException;
 import com.hospital.hms.exception.DuplicateResourceException;
 import com.hospital.hms.exception.IdentityProviderException;
 import com.hospital.hms.exception.NotFoundException;
@@ -65,6 +66,9 @@ public class UpdateEmployeeService extends BaseService<UpdateEmployeeRequest, Em
 
         if (request.getRole() != null) {
             String oldRoleName = employee.getAccount().getRole().getName();
+
+            if (employee.getAccount().getRole() == null)
+                throw new BusinessException("Employee account has no role assigned");
 
             try {
                 keycloakService.updateRole(employee.getAccount().getId().toString(), request.getRole(), oldRoleName);

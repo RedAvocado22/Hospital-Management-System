@@ -13,6 +13,11 @@ public class JwtContextExtractor {
 
     public static UserContext extractUserContext(Jwt jwt) {
         Object sub = jwt.getClaims().get("sub");
+
+        if (sub == null) {
+            throw new IdentityProviderException("Missing sub claim");
+        }
+        
         Object username = jwt.getClaims().get("preferred_username");
         Object email = jwt.getClaims().get("email");
 
