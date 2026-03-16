@@ -7,11 +7,11 @@ import com.hospital.hms.base.exception.BaseException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
-import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -165,7 +165,7 @@ public class GlobalExceptionHandler {
                 "A record with the provided data already exists. Please contact support with trace ID: " + traceId,
                 "DUPLICATE_RESOURCE"
         );
-        return buildErrorResponse(HttpStatus.CONFLICT, "handleDataIntegrityViolationException", List.of(error), traceId, request);
+        return buildErrorResponse(HttpStatus.CONFLICT, "Duplicate resource.", List.of(error), traceId, request);
     }
 
     // ==================== Private Helpers ====================
