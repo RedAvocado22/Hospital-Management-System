@@ -1,9 +1,14 @@
 package com.hospital.hms.medical.repository;
 
 import com.hospital.hms.medical.entity.MedicalRecord;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -13,4 +18,34 @@ public interface MedicalRecordRepository extends JpaRepository<MedicalRecord, UU
     List<MedicalRecord> findByPatient_Id(UUID patientId);
 
     List<MedicalRecord> findByDoctor_Id(UUID doctorId);
+
+    @Query(
+            value = "SELECT mr.* FROM medical_record mr " +
+                    "JOIN patient_info p ON p.id = mr.patient_id \n" +
+                    "JOIN account pa ON pa.id = p.account_id \n" +
+                    "JOIN account da ON da.id = mr.doctor_id \n" +
+                    "WHERE (:keyword IS NULL OR MATCH(pa.full_name, pa.phone) AGAINST (:keyword IN BOOLEAN MODE))\n" +
+                    "AND (:doctorId IS NULL OR mr.doctor_id = :doctorId) \n" +
+                    "AND (:doctorName IS NULL OR LOWER(da.full_name) LIKE LOWER(CONCAT('%', :doctorName, '%')))\n" +
+                    "AND (:from IS NULL OR mr.created_at >= :from)\n" +
+                    "AND (:to IS NULL OR mr.created_at <= :to)",
+            countQuery = "SELECT COUNT(*) FROM medical_record mr " +
+                    "JOIN patient_info p ON p.id = mr.patient_id \n" +
+                    "JOIN account pa ON pa.id = p.account_id \n" +
+                    "JOIN account da ON da.id = mr.doctor_id \n" +
+                    "WHERE (:keyword IS NULL OR MATCH(pa.full_name, pa.phone) AGAINST (:keyword IN BOOLEAN MODE))\n" +
+                    "AND (:doctorId IS NULL OR mr.doctor_id = :doctorId) \n" +
+                    "AND (:doctorName IS NULL OR LOWER(da.full_name) LIKE LOWER(CONCAT('%', :doctorName, '%')))\n" +
+                    "AND (:from IS NULL OR mr.created_at >= :from)\n" +
+                    "AND (:to IS NULL OR mr.created_at <= :to)",
+            nativeQuery = true
+    )
+    Page<MedicalRecord> getMedicalRecordBy(
+            @Param("keyword") String keyword,
+            @Param("doctorName") String doctorName,
+            @Param("from") LocalDateTime from,
+            @Param("to") LocalDateTime to,
+            @Param("doctorId") UUID doctorId,
+            Pageable pageable
+    );
 }
