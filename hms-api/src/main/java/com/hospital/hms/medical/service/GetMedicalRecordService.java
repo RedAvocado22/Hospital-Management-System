@@ -2,7 +2,6 @@ package com.hospital.hms.medical.service;
 
 import com.hospital.hms.base.response.PaginatedResponse;
 import com.hospital.hms.base.service.BaseService;
-import com.hospital.hms.medical.entity.MedicalRecord;
 import com.hospital.hms.medical.repository.MedicalRecordRepository;
 import com.hospital.hms.medical.request.SearchMedicalRecordRequest;
 import com.hospital.hms.medical.response.MedicalRecordResponse;
@@ -11,8 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -30,18 +27,16 @@ public class GetMedicalRecordService extends BaseService<SearchMedicalRecordRequ
     protected PaginatedResponse<MedicalRecordResponse> doProcess(SearchMedicalRecordRequest request) {
         Pageable pageable = request.toPageable();
 
-        UUID id = request.getUserContext() != null && request.getUserContext().hasRole("ROLE_DOCTOR") ? request.getUserContext().getUserId() : null;
+        String username = request.getUserContext() != null && request.getUserContext().hasRole("ROLE_DOCTOR") ? request.getUserContext().getUsername() : null;
 
-        Page<MedicalRecord> medicalRecords = medicalRecordRepository.getMedicalRecordBy(
+        Page<MedicalRecordResponse> responses = medicalRecordRepository.getMedicalRecordBy(
                 request.getKeyword(),
                 request.getDoctorName(),
                 request.getFrom() != null ? request.getFrom().atStartOfDay() : null,
                 request.getTo() != null ? request.getTo().atTime(23, 59, 59) : null,
-                id,
+                username,
                 pageable
         );
-
-        Page<MedicalRecordResponse> responses = medicalRecords.map(MedicalRecordResponse::from);
 
         return PaginatedResponse.from(responses);
     }
