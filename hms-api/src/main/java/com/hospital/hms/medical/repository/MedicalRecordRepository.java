@@ -36,7 +36,7 @@ public interface MedicalRecordRepository extends JpaRepository<MedicalRecord, UU
                     "AND (:doctorUserName IS NULL OR da.username = :doctorUserName) \n" +
                     "AND (:doctorName IS NULL OR LOWER(da.full_name) LIKE LOWER(CONCAT('%', :doctorName, '%')))\n" +
                     "AND (:from IS NULL OR mr.created_at >= :from)\n" +
-                    "AND (:to IS NULL OR mr.created_at <= :to)",
+                    "AND (:to IS NULL OR mr.created_at < :to)",
             countQuery = "SELECT COUNT(*) FROM medical_record mr " +
                     "JOIN patient_info p ON p.id = mr.patient_id \n" +
                     "JOIN account pa ON pa.id = p.account_id \n" +
@@ -45,7 +45,7 @@ public interface MedicalRecordRepository extends JpaRepository<MedicalRecord, UU
                     "AND (:doctorUserName IS NULL OR da.username = :doctorUserName) \n" +
                     "AND (:doctorName IS NULL OR LOWER(da.full_name) LIKE LOWER(CONCAT('%', :doctorName, '%')))\n" +
                     "AND (:from IS NULL OR mr.created_at >= :from)\n" +
-                    "AND (:to IS NULL OR mr.created_at <= :to)",
+                    "AND (:to IS NULL OR mr.created_at < :to)",
             nativeQuery = true
     )
     Page<MedicalRecordResponse> getMedicalRecordBy(

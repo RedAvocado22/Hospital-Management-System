@@ -30,10 +30,10 @@ public class GetMedicalRecordService extends BaseService<SearchMedicalRecordRequ
         String username = request.getUserContext() != null && request.getUserContext().hasRole("ROLE_DOCTOR") ? request.getUserContext().getUsername() : null;
 
         Page<MedicalRecordResponse> responses = medicalRecordRepository.getMedicalRecordBy(
-                request.getKeyword(),
+                request.getKeyword() != null && request.getKeyword().isBlank() ? null : request.getKeyword(),
                 request.getDoctorName(),
                 request.getFrom() != null ? request.getFrom().atStartOfDay() : null,
-                request.getTo() != null ? request.getTo().atTime(23, 59, 59) : null,
+                request.getTo() != null ? request.getTo().plusDays(1).atStartOfDay() : null,
                 username,
                 pageable
         );
