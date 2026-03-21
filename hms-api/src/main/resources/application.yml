@@ -22,6 +22,7 @@ spring:
         format_sql: true
         default_batch_fetch_size: 16
         jdbc:
+          time_zone: UTC
           batch_size: 25
         order_inserts: true
         order_updates: true

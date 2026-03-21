@@ -4,6 +4,7 @@ import com.hospital.hms.base.service.BaseService;
 import com.hospital.hms.employee.entity.EmployeeInfo;
 import com.hospital.hms.employee.repository.EmployeeInfoRepository;
 import com.hospital.hms.employee.request.EmployeeIdRequest;
+import com.hospital.hms.exception.BusinessException;
 import com.hospital.hms.exception.IdentityProviderException;
 import com.hospital.hms.exception.NotFoundException;
 import com.hospital.hms.keycloak.service.KeycloakService;
@@ -24,6 +25,10 @@ public class DeActiveEmployeeService extends BaseService<EmployeeIdRequest, Void
         EmployeeInfo employee = employeeInfoRepository.findById(request.getId()).orElseThrow(
                 () -> new NotFoundException("Employee with id: " + request.getId() + " not found")
         );
+
+        if (!employee.getAccount().getIsActive()) {
+            throw new BusinessException("Employee is already de-active");
+        }
 
         employee.getAccount().setIsActive(false);
         employeeInfoRepository.save(employee);

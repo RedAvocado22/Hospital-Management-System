@@ -1,9 +1,13 @@
 package com.hospital.hms.base.service;
 
 import com.hospital.hms.base.request.BaseRequest;
+import com.hospital.hms.config.JwtContextExtractor;
 import com.hospital.hms.exception.BusinessException;
 import com.hospital.hms.exception.NotFoundException;
 import com.hospital.hms.exception.ValidationException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 
 import java.util.Optional;
 
@@ -87,6 +91,10 @@ public abstract class BaseService<REQ extends BaseRequest, RES> {
     public RES execute(REQ request) {
         if (request != null) {
             request.initialize();
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication instanceof JwtAuthenticationToken authenticationToken) {
+                request.setUserContext(JwtContextExtractor.extractUserContext(authenticationToken.getToken()));
+            }
         }
         validate(request);
         return doProcess(request);
