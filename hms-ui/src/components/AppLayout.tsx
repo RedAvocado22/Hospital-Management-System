@@ -50,7 +50,7 @@ export default function AppLayout({ navItems, role }: Props) {
       <Sider
         width={240}
         style={{
-          background: '#001529',
+          background: '#0F3D38',
           position: 'fixed',
           height: '100vh',
           left: 0,
@@ -60,12 +60,12 @@ export default function AppLayout({ navItems, role }: Props) {
       >
         <div style={{ padding: '24px 16px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
           <Space>
-            <MedicineBoxOutlined style={{ fontSize: 24, color: '#1890ff' }} />
+            <MedicineBoxOutlined style={{ fontSize: 24, color: '#5EEAD4' }} />
             <div>
-              <Text strong style={{ color: '#fff', fontSize: 16, display: 'block' }}>
+              <Text strong style={{ color: '#fff', fontSize: 18, letterSpacing: '-0.3px', display: 'block' }}>
                 HMS
               </Text>
-              <Text style={{ color: 'rgba(255,255,255,0.45)', fontSize: 12 }}>{role}</Text>
+              <Text style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12 }}>{role}</Text>
             </div>
           </Space>
         </div>
@@ -73,7 +73,7 @@ export default function AppLayout({ navItems, role }: Props) {
           theme="dark"
           mode="inline"
           selectedKeys={[selectedKey]}
-          style={{ marginTop: 8 }}
+          style={{ marginTop: 8, background: '#0F3D38' }}
           items={navItems.map((item) => ({
             key: item.key,
             icon: item.icon,
@@ -99,7 +99,7 @@ export default function AppLayout({ navItems, role }: Props) {
         >
           <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
             <Space style={{ cursor: 'pointer' }}>
-              <Avatar icon={<UserOutlined />} style={{ backgroundColor: '#1890ff' }} />
+              <Avatar icon={<UserOutlined />} style={{ backgroundColor: '#0D9488' }} />
               <Text strong>{user?.username}</Text>
             </Space>
           </Dropdown>

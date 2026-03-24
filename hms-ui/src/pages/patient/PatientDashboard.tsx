@@ -13,9 +13,9 @@ export default function PatientDashboard() {
   const { user } = useAuthStore();
 
   const stats = [
-    { title: 'Upcoming Appointments', value: 0, icon: <CalendarOutlined />, color: '#1890ff' },
-    { title: 'Medical Records', value: 0, icon: <FileTextOutlined />, color: '#52c41a' },
-    { title: 'Notifications', value: 0, icon: <BellOutlined />, color: '#faad14' },
+    { title: 'Upcoming Appointments', value: 0, icon: <CalendarOutlined />, color: '#0D9488' },
+    { title: 'Medical Records', value: 0, icon: <FileTextOutlined />, color: '#16A34A' },
+    { title: 'Notifications', value: 0, icon: <BellOutlined />, color: '#F59E0B' },
   ];
 
   return (
@@ -27,7 +27,7 @@ export default function PatientDashboard() {
       {/* Profile Card */}
       <Card style={{ marginBottom: 24, borderRadius: 8 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-          <Avatar size={80} icon={<UserOutlined />} style={{ backgroundColor: '#1890ff', flexShrink: 0 }} />
+          <Avatar size={80} icon={<UserOutlined />} style={{ backgroundColor: '#0D9488', flexShrink: 0 }} />
           <div style={{ flex: 1 }}>
             <Title level={4} style={{ marginBottom: 4 }}>
               {user?.username}
@@ -44,12 +44,21 @@ export default function PatientDashboard() {
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         {stats.map((stat) => (
           <Col xs={24} sm={8} key={stat.title}>
-            <Card style={{ borderRadius: 8, textAlign: 'center' }}>
-              <div style={{ fontSize: 32, color: stat.color, marginBottom: 8 }}>{stat.icon}</div>
-              <Title level={2} style={{ margin: 0, color: stat.color }}>
-                {stat.value}
-              </Title>
-              <Text type="secondary">{stat.title}</Text>
+            <Card style={{ borderRadius: 8 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                <div style={{
+                  width: 44, height: 44, borderRadius: 10,
+                  background: `${stat.color}18`,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: 20, color: stat.color, flexShrink: 0,
+                }}>
+                  {stat.icon}
+                </div>
+                <div>
+                  <Title level={3} style={{ margin: 0 }}>{stat.value}</Title>
+                  <Text type="secondary" style={{ fontSize: 13 }}>{stat.title}</Text>
+                </div>
+              </div>
             </Card>
           </Col>
         ))}
