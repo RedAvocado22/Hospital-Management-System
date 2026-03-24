@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -20,6 +21,12 @@ import org.springframework.stereotype.Service;
 public class GetDepartmentService extends BaseService<SearchDepartmentRequest, PaginatedResponse<DepartmentResponse>> {
 
     private final DepartmentRepository departmentRepository;
+
+    @Override
+    @Transactional(readOnly = true)
+    public PaginatedResponse<DepartmentResponse> execute(SearchDepartmentRequest request) {
+        return super.execute(request);
+    }
 
     @Override
     protected PaginatedResponse<DepartmentResponse> doProcess(SearchDepartmentRequest request) {
