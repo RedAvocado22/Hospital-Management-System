@@ -1,4 +1,4 @@
-import { Table, Card, Input, Button, Space, Tag, Typography, Select, Popconfirm, message } from 'antd';
+import { Table, Card, Input, Button, Space, Tag, Typography, Select, Popconfirm, message, Divider } from 'antd';
 import { SearchOutlined, PlusOutlined, CheckCircleOutlined, StopOutlined } from '@ant-design/icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -161,6 +161,7 @@ export default function EmployeeListPage() {
           </Button>
         </Space>
 
+        <Divider style={{ margin: '0 0 16px 0' }} />
         <Table
           dataSource={data?.data?.content ?? []}
           columns={columns}

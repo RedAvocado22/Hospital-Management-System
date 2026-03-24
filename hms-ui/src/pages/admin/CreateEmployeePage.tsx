@@ -51,7 +51,7 @@ export default function CreateEmployeePage() {
         {error && <Alert message={error} type="error" showIcon style={{ marginBottom: 16 }} />}
 
         <Form layout="vertical" onFinish={onFinish} size="large">
-          <Title level={5} style={{ marginBottom: 16 }}>Personal Information</Title>
+          <Title level={5} style={{ marginBottom: 16, paddingBottom: 12, borderBottom: '1px solid #EEF1F5' }}>Personal Information</Title>
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item label="First Name" name="firstName" rules={[{ required: true }]}>
@@ -89,7 +89,7 @@ export default function CreateEmployeePage() {
             <Input.TextArea placeholder="Home address" rows={2} />
           </Form.Item>
 
-          <Title level={5} style={{ marginTop: 8, marginBottom: 16 }}>Account Information</Title>
+          <Title level={5} style={{ marginTop: 8, marginBottom: 16, paddingBottom: 12, borderBottom: '1px solid #EEF1F5' }}>Account Information</Title>
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item label="Username" name="username" rules={[{ required: true }]}>
@@ -111,7 +111,7 @@ export default function CreateEmployeePage() {
             <Input.Password placeholder="Password" />
           </Form.Item>
 
-          <Title level={5} style={{ marginTop: 8, marginBottom: 16 }}>Employment Information</Title>
+          <Title level={5} style={{ marginTop: 8, marginBottom: 16, paddingBottom: 12, borderBottom: '1px solid #EEF1F5' }}>Employment Information</Title>
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item label="Employee Code" name="code" rules={[{ required: true }]}>

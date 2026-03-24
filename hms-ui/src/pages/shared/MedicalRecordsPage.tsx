@@ -1,4 +1,4 @@
-import { Table, Card, Input, Button, Space, Typography, DatePicker } from 'antd';
+import { Table, Card, Input, Button, Space, Typography, DatePicker, Divider } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -117,6 +117,7 @@ export default function MedicalRecordsPage() {
           <Button onClick={handleReset}>Reset</Button>
         </Space>
 
+        <Divider style={{ margin: '0 0 16px 0' }} />
         <Table
           dataSource={data?.data?.content ?? []}
           columns={columns}

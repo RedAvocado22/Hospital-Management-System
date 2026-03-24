@@ -46,16 +46,16 @@ export default function RegisterPage() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: '#F5F7FA',
         padding: '24px',
       }}
     >
       <Card
-        style={{ width: 560, borderRadius: 12, boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}
-        bodyStyle={{ padding: '40px' }}
+        style={{ width: 560, borderRadius: 12, boxShadow: '0 4px 24px rgba(0,0,0,0.08)' }}
+        styles={{ body: { padding: '40px' } }}
       >
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <MedicineBoxOutlined style={{ fontSize: 48, color: '#1890ff' }} />
+          <MedicineBoxOutlined style={{ fontSize: 48, color: '#0D9488' }} />
           <Title level={2} style={{ marginTop: 12, marginBottom: 4 }}>
             Patient Registration
           </Title>
