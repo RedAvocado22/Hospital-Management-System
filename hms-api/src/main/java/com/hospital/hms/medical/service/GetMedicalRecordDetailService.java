@@ -1,8 +1,8 @@
 package com.hospital.hms.medical.service;
 
 import com.hospital.hms.base.service.BaseService;
-import com.hospital.hms.employee.entity.EmployeeInfo;
-import com.hospital.hms.employee.repository.EmployeeInfoRepository;
+import com.hospital.hms.employee.response.EmployeeResponse;
+import com.hospital.hms.employee.service.EmployeeQueryService;
 import com.hospital.hms.exception.NotFoundException;
 import com.hospital.hms.medical.entity.MedicalRecord;
 import com.hospital.hms.medical.repository.MedicalRecordRepository;
@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class GetMedicalRecordDetailService extends BaseService<MedicalRecordIdRequest, MedicalRecordDetailResponse> {
 
     private final MedicalRecordRepository medicalRecordRepository;
-    private final EmployeeInfoRepository employeeInfoRepository;
+    private final EmployeeQueryService employeeQueryService;
 
     @Override
     @Transactional(readOnly = true)
@@ -28,12 +28,12 @@ public class GetMedicalRecordDetailService extends BaseService<MedicalRecordIdRe
 
     @Override
     protected MedicalRecordDetailResponse doProcess(MedicalRecordIdRequest request) {
+        if (request.getUserContext() == null) {
+            throw new AccessDeniedException("You do not have permission to access this resource");
+        }
+
         MedicalRecord md = medicalRecordRepository.findById(request.getId()).orElseThrow(
                 () -> new NotFoundException("Medical record with id: " + request.getId() + " not found")
-        );
-
-        EmployeeInfo ei = employeeInfoRepository.findByAccount_Id(md.getDoctor().getId()).orElseThrow(
-                () -> new NotFoundException("Employee info with id: " + md.getDoctor().getId() + " not found")
         );
 
         if (
@@ -43,7 +43,8 @@ public class GetMedicalRecordDetailService extends BaseService<MedicalRecordIdRe
             throw new AccessDeniedException("You are not allow to view this medical record");
         }
 
+        EmployeeResponse employeeResponse = employeeQueryService.getByAccountId(md.getDoctor().getId());
 
-        return MedicalRecordDetailResponse.from(md, ei);
+        return MedicalRecordDetailResponse.from(md, employeeResponse);
     }
 }
