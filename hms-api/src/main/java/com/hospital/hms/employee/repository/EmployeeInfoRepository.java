@@ -18,6 +18,9 @@ public interface EmployeeInfoRepository extends JpaRepository<EmployeeInfo, UUID
     @EntityGraph(attributePaths = {"account", "department"})
     Optional<EmployeeInfo> findById(UUID id);
 
+    @EntityGraph(attributePaths = {"account", "department"})
+    Optional<EmployeeInfo> findByAccount_Id(UUID id);
+
     @Override
     @EntityGraph(attributePaths = {"account", "department"})
     Page<EmployeeInfo> findAll(Specification<EmployeeInfo> spec, Pageable pageable);
