@@ -1,7 +1,7 @@
 package com.hospital.hms.medical.response;
 
 import com.hospital.hms.common.enums.Gender;
-import com.hospital.hms.employee.entity.EmployeeInfo;
+import com.hospital.hms.employee.response.EmployeeResponse;
 import com.hospital.hms.medical.entity.MedicalRecord;
 import com.hospital.hms.patient.entity.PatientInfo;
 
@@ -43,19 +43,19 @@ public record MedicalRecordDetailResponse(
             String departmentName,
             String code
     ) {
-        public static DoctorSummary from(EmployeeInfo employeeInfo) {
+        public static DoctorSummary from(EmployeeResponse employeeResponse) {
             return new DoctorSummary(
-                    employeeInfo.getAccount().getFullName(),
-                    employeeInfo.getDepartment().getName(),
-                    employeeInfo.getCode()
+                    employeeResponse.fullName(),
+                    employeeResponse.department().name(),
+                    employeeResponse.code()
             );
         }
     }
 
-    public static MedicalRecordDetailResponse from(MedicalRecord medicalRecord, EmployeeInfo employeeInfo) {
+    public static MedicalRecordDetailResponse from(MedicalRecord medicalRecord, EmployeeResponse employeeResponse) {
         return new MedicalRecordDetailResponse(
                 PatientInfoResponse.from(medicalRecord.getPatient()),
-                DoctorSummary.from(employeeInfo),
+                DoctorSummary.from(employeeResponse),
                 medicalRecord.getDescription(),
                 medicalRecord.getDoctorAdvice()
         );

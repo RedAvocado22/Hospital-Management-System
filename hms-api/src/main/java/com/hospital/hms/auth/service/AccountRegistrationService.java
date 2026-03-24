@@ -27,6 +27,11 @@ public class AccountRegistrationService extends BaseService<AccountRegistrationR
 
     @Override
     @Transactional
+    public Account execute(AccountRegistrationRequest request) {
+        return super.execute(request);
+    }
+
+    @Override
     protected Account doProcess(AccountRegistrationRequest request) {
         log.debug("User saved to local database: {}", request.getUsername());
 
@@ -45,7 +50,6 @@ public class AccountRegistrationService extends BaseService<AccountRegistrationR
         accountRepository.save(account);
 
         try {
-            //3. save to keycloak
             String keycloakUserId;
             KeyCloakRequest keyCloakRequest = KeyCloakRequest.builder()
                     .username(request.getUsername())
@@ -56,7 +60,6 @@ public class AccountRegistrationService extends BaseService<AccountRegistrationR
                     .build();
             keycloakUserId = keycloakService.createUser(keyCloakRequest);
 
-            // 4. Assign permissions in Keycloak
             keycloakService.assignRoleToUser(keycloakUserId, role.getName().toUpperCase());
         } catch (Exception e) {
             log.error("Keycloak error during account creation - rolling back", e);
