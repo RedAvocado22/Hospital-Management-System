@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { createEmployee } from '../../api/employees';
 import { getDepartments } from '../../api/departments';
 import type { CreateEmployeeRequest } from '../../types';
+import { ROLE_NAMES } from '../../constants/roles';
 import dayjs from 'dayjs';
 
 const { Title } = Typography;
@@ -154,17 +155,17 @@ export default function CreateEmployeePage() {
             <Col span={12}>
               <Form.Item label="Role" name="role" rules={[{ required: true }]}>
                 <Select placeholder="Select role">
-                  <Select.Option value="DOCTOR">Doctor</Select.Option>
-                  <Select.Option value="RECEPTIONIST">Receptionist</Select.Option>
-                  <Select.Option value="PHARMACIST">Pharmacist</Select.Option>
-                  <Select.Option value="CASHIER">Cashier</Select.Option>
+                  <Select.Option value={ROLE_NAMES.DOCTOR}>Doctor</Select.Option>
+                  <Select.Option value={ROLE_NAMES.RECEPTIONIST}>Receptionist</Select.Option>
+                  <Select.Option value={ROLE_NAMES.PHARMACIST}>Pharmacist</Select.Option>
+                  <Select.Option value={ROLE_NAMES.CASHIER}>Cashier</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
             <Col span={12}>
               <Form.Item label="Department" name="departmentId" rules={[{ required: true }]}>
                 <Select placeholder="Select department" loading={!deptData}>
-                  {deptData?.data?.map((dept) => (
+                  {deptData?.data?.content?.map((dept) => (
                     <Select.Option key={dept.id} value={dept.id}>
                       {dept.name}
                     </Select.Option>
