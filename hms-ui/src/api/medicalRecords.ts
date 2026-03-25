@@ -1,5 +1,5 @@
 import api from './axiosInstance';
-import type { ApiResponse, PaginatedResponse, MedicalRecord } from '../types';
+import type { ApiResponse, PaginatedResponse, MedicalRecord, MedicalRecordDetail } from '../types';
 
 export const getMedicalRecords = (params: {
   page?: number;
@@ -9,3 +9,9 @@ export const getMedicalRecords = (params: {
   from?: string;
   to?: string;
 }) => api.get<ApiResponse<PaginatedResponse<MedicalRecord>>>('/medical-records', { params });
+
+export const getMedicalRecordById = (id: string) =>
+  api.get<ApiResponse<MedicalRecordDetail>>(`/medical-records/${id}`);
+
+export const updateMedicalRecord = (id: string, data: { description: string; advice: string }) =>
+  api.put<ApiResponse<MedicalRecordDetail>>(`/medical-records/${id}`, data);
