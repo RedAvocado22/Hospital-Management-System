@@ -2,10 +2,12 @@ package com.hospital.hms.medical.controller;
 
 import com.hospital.hms.base.api.ApiResponse;
 import com.hospital.hms.base.response.PaginatedResponse;
+import com.hospital.hms.medical.request.CreateMedicalRecordRequest;
 import com.hospital.hms.medical.request.MedicalRecordIdRequest;
 import com.hospital.hms.medical.request.SearchMedicalRecordRequest;
 import com.hospital.hms.medical.response.MedicalRecordDetailResponse;
 import com.hospital.hms.medical.response.MedicalRecordResponse;
+import com.hospital.hms.medical.service.CreateMedicalRecordService;
 import com.hospital.hms.medical.service.GetMedicalRecordDetailService;
 import com.hospital.hms.medical.service.GetMedicalRecordService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -28,6 +30,7 @@ public class MedicalRecordController {
 
     private final GetMedicalRecordService getMedicalRecordService;
     private final GetMedicalRecordDetailService getMedicalRecordDetailService;
+    private final CreateMedicalRecordService createMedicalRecordService;
 
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'DOCTOR')")
@@ -50,6 +53,17 @@ public class MedicalRecordController {
         MedicalRecordDetailResponse data = getMedicalRecordDetailService.execute(request);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ApiResponse.success(data, "Get medical record detail successfully", HttpStatus.OK.value())
+        );
+    }
+
+    @PostMapping
+    @PreAuthorize("hasRole('ROLE_DOCTOR')")
+    public ResponseEntity<ApiResponse<MedicalRecordDetailResponse>> createMedicalRecord(
+            @Valid @RequestBody CreateMedicalRecordRequest request
+    ) {
+        MedicalRecordDetailResponse data = createMedicalRecordService.execute(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                ApiResponse.success(data, "Create medical record successfully", HttpStatus.CREATED.value())
         );
     }
 }
