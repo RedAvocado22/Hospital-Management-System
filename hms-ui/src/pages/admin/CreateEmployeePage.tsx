@@ -54,12 +54,12 @@ export default function CreateEmployeePage() {
           <Title level={5} style={{ marginBottom: 16, paddingBottom: 12, borderBottom: '1px solid #EEF1F5' }}>Personal Information</Title>
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item label="First Name" name="firstName" rules={[{ required: true }]}>
+              <Form.Item label="First Name" name="firstName" rules={[{ required: true }, { min: 2, message: 'At least 2 characters' }, { max: 50, message: 'Max 50 characters' }]}>
                 <Input placeholder="First name" />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item label="Last Name" name="lastName" rules={[{ required: true }]}>
+              <Form.Item label="Last Name" name="lastName" rules={[{ required: true }, { min: 2, message: 'At least 2 characters' }, { max: 50, message: 'Max 50 characters' }]}>
                 <Input placeholder="Last name" />
               </Form.Item>
             </Col>
@@ -68,7 +68,7 @@ export default function CreateEmployeePage() {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item label="Date of Birth" name="dob" rules={[{ required: true }]}>
-                <DatePicker style={{ width: '100%' }} />
+                <DatePicker style={{ width: '100%' }} disabledDate={(d) => d.isAfter(new Date())} />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -81,23 +81,39 @@ export default function CreateEmployeePage() {
             </Col>
           </Row>
 
-          <Form.Item label="Phone" name="phone" rules={[{ required: true }]}>
+          <Form.Item
+            label="Phone"
+            name="phone"
+            rules={[
+              { required: true },
+              { pattern: /^[0-9+\-\s]{9,15}$/, message: 'Enter a valid phone number' },
+            ]}
+          >
             <Input placeholder="Phone number" />
           </Form.Item>
 
-          <Form.Item label="Address" name="address" rules={[{ required: true }]}>
+          <Form.Item label="Address" name="address" rules={[{ required: true }, { min: 5, message: 'At least 5 characters' }]}>
             <Input.TextArea placeholder="Home address" rows={2} />
           </Form.Item>
 
           <Title level={5} style={{ marginTop: 8, marginBottom: 16, paddingBottom: 12, borderBottom: '1px solid #EEF1F5' }}>Account Information</Title>
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item label="Username" name="username" rules={[{ required: true }]}>
+              <Form.Item
+                label="Username"
+                name="username"
+                rules={[
+                  { required: true },
+                  { min: 3, message: 'At least 3 characters' },
+                  { max: 30, message: 'Max 30 characters' },
+                  { pattern: /^[a-zA-Z0-9_]+$/, message: 'Only letters, numbers and underscores' },
+                ]}
+              >
                 <Input placeholder="Username" />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item label="Email" name="email" rules={[{ required: true }, { type: 'email' }]}>
+              <Form.Item label="Email" name="email" rules={[{ required: true }, { type: 'email', message: 'Enter a valid email' }]}>
                 <Input placeholder="Email" />
               </Form.Item>
             </Col>
@@ -114,7 +130,16 @@ export default function CreateEmployeePage() {
           <Title level={5} style={{ marginTop: 8, marginBottom: 16, paddingBottom: 12, borderBottom: '1px solid #EEF1F5' }}>Employment Information</Title>
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item label="Employee Code" name="code" rules={[{ required: true }]}>
+              <Form.Item
+                label="Employee Code"
+                name="code"
+                rules={[
+                  { required: true },
+                  { min: 2, message: 'At least 2 characters' },
+                  { max: 20, message: 'Max 20 characters' },
+                  { pattern: /^[A-Z0-9]+$/, message: 'Uppercase letters and numbers only' },
+                ]}
+              >
                 <Input placeholder="e.g. EMP001" />
               </Form.Item>
             </Col>

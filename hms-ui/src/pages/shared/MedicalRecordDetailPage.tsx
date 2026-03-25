@@ -144,16 +144,24 @@ export default function MedicalRecordDetailPage() {
           <Form.Item
             name="description"
             label="Description"
-            rules={[{ required: true, message: 'Description is required' }]}
+            rules={[
+              { required: true, message: 'Description is required' },
+              { min: 10, message: 'At least 10 characters' },
+              { max: 2000, message: 'Max 2000 characters' },
+            ]}
           >
-            <TextArea rows={4} />
+            <TextArea rows={4} showCount maxLength={2000} />
           </Form.Item>
           <Form.Item
             name="advice"
             label="Doctor Advice"
-            rules={[{ required: true, message: 'Advice is required' }]}
+            rules={[
+              { required: true, message: 'Advice is required' },
+              { min: 10, message: 'At least 10 characters' },
+              { max: 2000, message: 'Max 2000 characters' },
+            ]}
           >
-            <TextArea rows={4} />
+            <TextArea rows={4} showCount maxLength={2000} />
           </Form.Item>
         </Form>
       </Modal>
