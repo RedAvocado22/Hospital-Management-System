@@ -15,7 +15,8 @@ public interface MedicalRecordResponse {
 
     UUID getDoctorId();
 
-    String getDoctorAdvice();
+    @org.springframework.beans.factory.annotation.Value("#{target.doctorAdvice}")
+    String getAdvice();
 
     String getDescription();
 

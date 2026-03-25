@@ -11,7 +11,7 @@ public record MedicalRecordDetailResponse(
         PatientInfoResponse patient,
         DoctorSummary doctor,
         String description,
-        String doctorAdvice
+        String advice
 
 ) {
     public record PatientInfoResponse(
