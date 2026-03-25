@@ -1,4 +1,5 @@
 import type { JwtPayload, UserInfo } from '../types';
+import { ROLES } from '../constants/roles';
 
 export function decodeJwt(token: string): JwtPayload | null {
   try {
@@ -28,8 +29,8 @@ export function extractUserInfo(token: string): UserInfo | null {
 }
 
 export function getPrimaryRole(roles: string[]): string {
-  const priority = ['ROLE_ADMIN', 'ROLE_DOCTOR', 'ROLE_RECEPTIONIST', 'ROLE_PHARMACIST', 'ROLE_CASHIER', 'ROLE_PATIENT'];
-  return priority.find((r) => roles.includes(r)) ?? 'ROLE_PATIENT';
+  const priority = [ROLES.ADMIN, ROLES.DOCTOR, ROLES.RECEPTIONIST, ROLES.PHARMACIST, ROLES.CASHIER, ROLES.PATIENT];
+  return priority.find((r) => roles.includes(r)) ?? ROLES.PATIENT;
 }
 
 export function isTokenExpired(token: string): boolean {
@@ -41,9 +42,9 @@ export function isTokenExpired(token: string): boolean {
 export function getRoleRedirectPath(roles: string[]): string {
   const role = getPrimaryRole(roles);
   switch (role) {
-    case 'ROLE_ADMIN': return '/admin/employees';
-    case 'ROLE_DOCTOR': return '/doctor/medical-records';
-    case 'ROLE_RECEPTIONIST': return '/receptionist/medical-records';
+    case ROLES.ADMIN: return '/admin/employees';
+    case ROLES.DOCTOR: return '/doctor/medical-records';
+    case ROLES.RECEPTIONIST: return '/receptionist/medical-records';
     default: return '/patient/dashboard';
   }
 }

@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getEmployees, deactivateEmployee, activateEmployee } from '../../api/employees';
 import type { Employee } from '../../types';
+import { ROLE_NAMES } from '../../constants/roles';
 
 const { Title } = Typography;
 
@@ -63,11 +64,11 @@ export default function EmployeeListPage() {
       key: 'role',
       render: (role: { name: string }) => {
         const colorMap: Record<string, string> = {
-          DOCTOR: 'blue',
-          RECEPTIONIST: 'green',
-          PHARMACIST: 'purple',
-          CASHIER: 'orange',
-          ADMIN: 'red',
+          [ROLE_NAMES.DOCTOR]: 'blue',
+          [ROLE_NAMES.RECEPTIONIST]: 'green',
+          [ROLE_NAMES.PHARMACIST]: 'purple',
+          [ROLE_NAMES.CASHIER]: 'orange',
+          [ROLE_NAMES.ADMIN]: 'red',
         };
         return <Tag color={colorMap[role?.name] ?? 'default'}>{role?.name}</Tag>;
       },
@@ -147,10 +148,10 @@ export default function EmployeeListPage() {
             allowClear
             onChange={(val) => { setRole(val); setPage(1); }}
           >
-            <Select.Option value="DOCTOR">Doctor</Select.Option>
-            <Select.Option value="RECEPTIONIST">Receptionist</Select.Option>
-            <Select.Option value="PHARMACIST">Pharmacist</Select.Option>
-            <Select.Option value="CASHIER">Cashier</Select.Option>
+            <Select.Option value={ROLE_NAMES.DOCTOR}>Doctor</Select.Option>
+            <Select.Option value={ROLE_NAMES.RECEPTIONIST}>Receptionist</Select.Option>
+            <Select.Option value={ROLE_NAMES.PHARMACIST}>Pharmacist</Select.Option>
+            <Select.Option value={ROLE_NAMES.CASHIER}>Cashier</Select.Option>
           </Select>
           <Button
             type="primary"
