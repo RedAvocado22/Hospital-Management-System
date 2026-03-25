@@ -1,4 +1,4 @@
-import { Table, Card, Input, Button, Space, Typography, DatePicker, Divider } from 'antd';
+import { Table, Card, Input, Button, Space, Typography, DatePicker, Divider, Alert } from 'antd';
 import { SearchOutlined, EyeOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -19,7 +19,7 @@ export default function MedicalRecordsPage() {
   const [searchInput, setSearchInput] = useState('');
   const [doctorInput, setDoctorInput] = useState('');
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ['medical-records', page, keyword, doctorName, dateRange],
     queryFn: () =>
       getMedicalRecords({
@@ -134,6 +134,15 @@ export default function MedicalRecordsPage() {
         </Space>
 
         <Divider style={{ margin: '0 0 16px 0' }} />
+        {isError && (
+          <Alert
+            type="error"
+            message="Failed to load medical records"
+            description="The request failed. Check your connection or try again."
+            showIcon
+            style={{ marginBottom: 16 }}
+          />
+        )}
         <Table
           dataSource={data?.data?.content ?? []}
           columns={columns}

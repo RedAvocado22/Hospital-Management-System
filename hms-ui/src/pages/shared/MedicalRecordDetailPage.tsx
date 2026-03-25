@@ -5,6 +5,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { getMedicalRecordById, updateMedicalRecord } from '../../api/medicalRecords';
 import { useAuthStore } from '../../store/authStore';
+import { ROLES } from '../../constants/roles';
 import dayjs from 'dayjs';
 
 const { Title, Text } = Typography;
@@ -15,7 +16,7 @@ export default function MedicalRecordDetailPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const user = useAuthStore((s) => s.user);
-  const isDoctor = user?.roles.includes('ROLE_DOCTOR') ?? false;
+  const isDoctor = user?.roles.includes(ROLES.DOCTOR) ?? false;
 
   const [editOpen, setEditOpen] = useState(false);
   const [form] = Form.useForm();
