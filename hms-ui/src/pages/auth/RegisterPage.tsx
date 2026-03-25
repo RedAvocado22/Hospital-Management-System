@@ -69,18 +69,27 @@ export default function RegisterPage() {
         <Form layout="vertical" onFinish={onFinish} size="large">
           <Row gutter={16}>
             <Col span={12}>
-              <Form.Item label="First Name" name="firstName" rules={[{ required: true }]}>
+              <Form.Item label="First Name" name="firstName" rules={[{ required: true }, { min: 2, message: 'At least 2 characters' }, { max: 50, message: 'Max 50 characters' }]}>
                 <Input placeholder="First name" />
               </Form.Item>
             </Col>
             <Col span={12}>
-              <Form.Item label="Last Name" name="lastName" rules={[{ required: true }]}>
+              <Form.Item label="Last Name" name="lastName" rules={[{ required: true }, { min: 2, message: 'At least 2 characters' }, { max: 50, message: 'Max 50 characters' }]}>
                 <Input placeholder="Last name" />
               </Form.Item>
             </Col>
           </Row>
 
-          <Form.Item label="Username" name="username" rules={[{ required: true }]}>
+          <Form.Item
+            label="Username"
+            name="username"
+            rules={[
+              { required: true },
+              { min: 3, message: 'At least 3 characters' },
+              { max: 30, message: 'Max 30 characters' },
+              { pattern: /^[a-zA-Z0-9_]+$/, message: 'Only letters, numbers and underscores' },
+            ]}
+          >
             <Input placeholder="Choose a username" />
           </Form.Item>
 
@@ -103,7 +112,7 @@ export default function RegisterPage() {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item label="Date of Birth" name="dob" rules={[{ required: true }]}>
-                <DatePicker style={{ width: '100%' }} />
+                <DatePicker style={{ width: '100%' }} disabledDate={(d) => d.isAfter(new Date())} />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -116,11 +125,18 @@ export default function RegisterPage() {
             </Col>
           </Row>
 
-          <Form.Item label="Phone" name="phone" rules={[{ required: true }]}>
+          <Form.Item
+            label="Phone"
+            name="phone"
+            rules={[
+              { required: true },
+              { pattern: /^[0-9+\-\s]{9,15}$/, message: 'Enter a valid phone number' },
+            ]}
+          >
             <Input placeholder="Phone number" />
           </Form.Item>
 
-          <Form.Item label="Address" name="address" rules={[{ required: true }]}>
+          <Form.Item label="Address" name="address" rules={[{ required: true }, { min: 5, message: 'At least 5 characters' }]}>
             <Input.TextArea placeholder="Home address" rows={2} />
           </Form.Item>
 

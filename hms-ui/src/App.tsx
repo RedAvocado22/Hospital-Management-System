@@ -15,6 +15,7 @@ import ReceptionistLayout from "./pages/receptionist/ReceptionistLayout";
 import PatientLayout from "./pages/patient/PatientLayout";
 import PatientDashboard from "./pages/patient/PatientDashboard";
 import MedicalRecordsPage from "./pages/shared/MedicalRecordsPage";
+import MedicalRecordDetailPage from "./pages/shared/MedicalRecordDetailPage";
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -91,6 +92,10 @@ export default function App() {
                                 path="medical-records"
                                 element={<MedicalRecordsPage />}
                             />
+                            <Route
+                                path="medical-records/:id"
+                                element={<MedicalRecordDetailPage />}
+                            />
                         </Route>
 
                         {/* Doctor */}
@@ -111,6 +116,10 @@ export default function App() {
                             <Route
                                 path="medical-records"
                                 element={<MedicalRecordsPage />}
+                            />
+                            <Route
+                                path="medical-records/:id"
+                                element={<MedicalRecordDetailPage />}
                             />
                         </Route>
 
@@ -134,6 +143,10 @@ export default function App() {
                             <Route
                                 path="medical-records"
                                 element={<MedicalRecordsPage />}
+                            />
+                            <Route
+                                path="medical-records/:id"
+                                element={<MedicalRecordDetailPage />}
                             />
                         </Route>
 

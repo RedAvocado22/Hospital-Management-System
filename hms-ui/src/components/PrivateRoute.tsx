@@ -1,5 +1,6 @@
 import { Navigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
+import { isTokenExpired } from '../utils/jwt';
 
 interface Props {
   children: React.ReactNode;
@@ -7,9 +8,14 @@ interface Props {
 }
 
 export default function PrivateRoute({ children, allowedRoles }: Props) {
-  const { isAuthenticated, user } = useAuthStore();
+  const { isAuthenticated, user, accessToken, logout } = useAuthStore();
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || !accessToken) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (isTokenExpired(accessToken)) {
+    logout();
     return <Navigate to="/login" replace />;
   }
 
