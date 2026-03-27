@@ -40,7 +40,7 @@ public class GetMedicalRecordDetailService extends BaseService<MedicalRecordIdRe
                 request.getUserContext().hasRole("DOCTOR")
                         && !request.getUserContext().getUserId().equals(md.getDoctor().getId())
         ) {
-            throw new AccessDeniedException("You are not allow to view this medical record");
+            throw new AccessDeniedException("You are not allowed to view this medical record");
         }
 
         EmployeeResponse employeeResponse = employeeQueryService.getByAccountId(md.getDoctor().getId());
