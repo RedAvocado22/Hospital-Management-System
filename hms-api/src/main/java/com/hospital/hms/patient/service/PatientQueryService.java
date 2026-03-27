@@ -23,4 +23,10 @@ public class PatientQueryService {
         return patientInfoRepository.getReferenceById(id);
     }
 
+    public UUID getPatientIdByAccountId(UUID id) {
+        PatientInfo pi = patientInfoRepository.findByAccount_Id(id).orElseThrow(
+                () -> new NotFoundException("Patient with id " + id + " not found")
+        );
+        return pi.getId();
+    }
 }
