@@ -9,10 +9,12 @@ import com.hospital.hms.medical.repository.MedicalRecordRepository;
 import com.hospital.hms.medical.request.UpdateMedicalRecordRequest;
 import com.hospital.hms.medical.response.MedicalRecordDetailResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UpdateMedicalRecordService extends BaseService<UpdateMedicalRecordRequest, MedicalRecordDetailResponse> {
@@ -32,11 +34,16 @@ public class UpdateMedicalRecordService extends BaseService<UpdateMedicalRecordR
             throw new AccessDeniedException("You do not have permission to access this resource");
         }
 
+        log.info("Updating medical record id: {} by doctor: {}",
+                request.getId(), request.getUserContext().getUserId());
+
         MedicalRecord response = medicalRecordRepository.findById(request.getId()).orElseThrow(
                 () -> new NotFoundException("Medical record not found")
         );
 
         if (!response.getDoctor().getId().equals(request.getUserContext().getUserId())) {
+            log.warn("Access denied: doctor {} attempted to update record {}",
+                    request.getUserContext().getUserId(), request.getId());
             throw new AccessDeniedException("You do not have permission to access this resource");
         }
 
@@ -49,6 +56,8 @@ public class UpdateMedicalRecordService extends BaseService<UpdateMedicalRecordR
         }
 
         MedicalRecord saved = medicalRecordRepository.save(response);
+
+        log.info("Medical record {} updated successfully", saved.getId());
 
         EmployeeResponse er = employeeQueryService.getByAccountId(saved.getDoctor().getId());
 

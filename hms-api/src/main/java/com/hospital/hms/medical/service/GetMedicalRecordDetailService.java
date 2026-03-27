@@ -9,10 +9,12 @@ import com.hospital.hms.medical.repository.MedicalRecordRepository;
 import com.hospital.hms.medical.request.MedicalRecordIdRequest;
 import com.hospital.hms.medical.response.MedicalRecordDetailResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GetMedicalRecordDetailService extends BaseService<MedicalRecordIdRequest, MedicalRecordDetailResponse> {
@@ -32,6 +34,9 @@ public class GetMedicalRecordDetailService extends BaseService<MedicalRecordIdRe
             throw new AccessDeniedException("You do not have permission to access this resource");
         }
 
+        log.debug("Fetching medical record id: {} for user: {}",
+                request.getId(), request.getUserContext().getUserId());
+
         MedicalRecord md = medicalRecordRepository.findById(request.getId()).orElseThrow(
                 () -> new NotFoundException("Medical record with id: " + request.getId() + " not found")
         );
@@ -40,6 +45,8 @@ public class GetMedicalRecordDetailService extends BaseService<MedicalRecordIdRe
                 request.getUserContext().hasRole("DOCTOR")
                         && !request.getUserContext().getUserId().equals(md.getDoctor().getId())
         ) {
+            log.warn("Access denied: doctor {} attempted to view record {}",
+                    request.getUserContext().getUserId(), request.getId());
             throw new AccessDeniedException("You are not allowed to view this medical record");
         }
 
