@@ -105,6 +105,15 @@ export interface MedicalRecordDetail {
   createdAt: string;
 }
 
+export interface Medicine {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  quantity: number;
+  isActive: boolean;
+}
+
 export interface CreateEmployeeRequest {
   username: string;
   email: string;
@@ -117,6 +126,6 @@ export interface CreateEmployeeRequest {
   phone: string;
   code: string;
   hireDate: string;
-  departmentId: string;
+  department: string;
   role: string;
 }

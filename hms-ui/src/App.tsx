@@ -16,6 +16,8 @@ import PatientLayout from "./pages/patient/PatientLayout";
 import PatientDashboard from "./pages/patient/PatientDashboard";
 import MedicalRecordsPage from "./pages/shared/MedicalRecordsPage";
 import MedicalRecordDetailPage from "./pages/shared/MedicalRecordDetailPage";
+import PharmacistLayout from "./pages/pharmacist/PharmacistLayout";
+import MedicineListPage from "./pages/pharmacist/MedicineListPage";
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -147,6 +149,25 @@ export default function App() {
                             <Route
                                 path="medical-records/:id"
                                 element={<MedicalRecordDetailPage />}
+                            />
+                        </Route>
+
+                        {/* Pharmacist */}
+                        <Route
+                            path="/pharmacist"
+                            element={
+                                <PrivateRoute allowedRoles={["ROLE_PHARMACIST"]}>
+                                    <PharmacistLayout />
+                                </PrivateRoute>
+                            }
+                        >
+                            <Route
+                                index
+                                element={<Navigate to="medicines" replace />}
+                            />
+                            <Route
+                                path="medicines"
+                                element={<MedicineListPage />}
                             />
                         </Route>
 
