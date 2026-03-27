@@ -24,5 +24,4 @@ public class EmployeeQueryService {
 
         return EmployeeResponse.from(ei);
     }
-
 }
