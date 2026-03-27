@@ -13,13 +13,14 @@ export default function EmployeeListPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [keyword, setKeyword] = useState('');
   const [role, setRole] = useState<string | undefined>();
   const [searchInput, setSearchInput] = useState('');
 
   const { data, isLoading } = useQuery({
-    queryKey: ['employees', page, keyword, role],
-    queryFn: () => getEmployees({ page: page - 1, size: 10, keyword, role }).then((r) => r.data),
+    queryKey: ['employees', page, pageSize, keyword, role],
+    queryFn: () => getEmployees({ page: page - 1, size: pageSize, keyword, role }).then((r) => r.data),
   });
 
   const deactivateMutation = useMutation({
@@ -170,9 +171,11 @@ export default function EmployeeListPage() {
           loading={isLoading}
           pagination={{
             current: page,
-            pageSize: 10,
+            pageSize: pageSize,
             total: data?.data?.totalElements ?? 0,
-            onChange: (p) => setPage(p),
+            onChange: (p, ps) => { setPage(p); setPageSize(ps); },
+            showSizeChanger: true,
+            pageSizeOptions: ['5', '10', '20', '50'],
             showTotal: (total) => `${total} employees`,
           }}
         />

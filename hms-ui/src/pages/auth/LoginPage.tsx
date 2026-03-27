@@ -31,7 +31,12 @@ export default function LoginPage() {
       }
     } catch (err: unknown) {
       const axiosErr = err as { response?: { data?: { message?: string } } };
-      setError(axiosErr.response?.data?.message ?? 'Invalid username or password');
+      const raw = axiosErr.response?.data?.message ?? '';
+      if (raw.includes('Account disabled')) {
+        setError('This account has been deactivated. Please contact an administrator if you believe this is a mistake.');
+      } else {
+        setError(raw || 'Invalid username or password');
+      }
     } finally {
       setLoading(false);
     }

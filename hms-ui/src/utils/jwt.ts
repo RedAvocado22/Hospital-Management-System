@@ -42,9 +42,10 @@ export function isTokenExpired(token: string): boolean {
 export function getRoleRedirectPath(roles: string[]): string {
   const role = getPrimaryRole(roles);
   switch (role) {
-    case ROLES.ADMIN: return '/admin/employees';
-    case ROLES.DOCTOR: return '/doctor/medical-records';
-    case ROLES.RECEPTIONIST: return '/receptionist/medical-records';
+    case 'ROLE_ADMIN': return '/admin/employees';
+    case 'ROLE_DOCTOR': return '/doctor/medical-records';
+    case 'ROLE_RECEPTIONIST': return '/receptionist/medical-records';
+    case 'ROLE_PHARMACIST': return '/pharmacist/medicines';
     default: return '/patient/dashboard';
   }
 }
