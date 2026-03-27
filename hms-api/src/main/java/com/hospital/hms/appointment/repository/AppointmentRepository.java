@@ -16,4 +16,6 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
     List<Appointment> findByDoctor_Id(UUID doctorId);
 
     List<Appointment> findByStatus(AppointmentStatus status);
+
+    Integer countAppointmentByDoctorSchedule_Id(UUID doctorScheduleId);
 }
