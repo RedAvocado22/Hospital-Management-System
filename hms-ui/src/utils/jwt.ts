@@ -1,4 +1,5 @@
 import type { JwtPayload, UserInfo } from '../types';
+import { ROLES } from '../constants/roles';
 
 export function decodeJwt(token: string): JwtPayload | null {
   try {
@@ -28,8 +29,8 @@ export function extractUserInfo(token: string): UserInfo | null {
 }
 
 export function getPrimaryRole(roles: string[]): string {
-  const priority = ['ROLE_ADMIN', 'ROLE_DOCTOR', 'ROLE_RECEPTIONIST', 'ROLE_PHARMACIST', 'ROLE_CASHIER', 'ROLE_PATIENT'];
-  return priority.find((r) => roles.includes(r)) ?? 'ROLE_PATIENT';
+  const priority = [ROLES.ADMIN, ROLES.DOCTOR, ROLES.RECEPTIONIST, ROLES.PHARMACIST, ROLES.CASHIER, ROLES.PATIENT];
+  return priority.find((r) => roles.includes(r)) ?? ROLES.PATIENT;
 }
 
 export function isTokenExpired(token: string): boolean {

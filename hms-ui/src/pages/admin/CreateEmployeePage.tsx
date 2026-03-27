@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { createEmployee } from '../../api/employees';
 import { getDepartments } from '../../api/departments';
 import type { CreateEmployeeRequest } from '../../types';
+import { ROLE_NAMES } from '../../constants/roles';
 import dayjs from 'dayjs';
 
 const { Title } = Typography;
