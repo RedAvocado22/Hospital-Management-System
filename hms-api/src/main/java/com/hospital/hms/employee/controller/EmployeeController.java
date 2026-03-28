@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
+@Slf4j
 @RestController
 @RequestMapping("/employees")
 @RequiredArgsConstructor
@@ -64,7 +66,11 @@ public class EmployeeController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Void>> createEmployee(@Valid @RequestBody CreateEmployeeRequest request) {
+        log.info("Creating employee: {}", request.getUsername());
+
         createEmployeeService.execute(request);
+
+        log.info("Employee created: {}", request.getUsername());
         return ResponseEntity.status(HttpStatus.OK).body(
                 ApiResponse.success(null, "Employee created successfully", HttpStatus.CREATED.value())
         );
@@ -173,7 +179,11 @@ public class EmployeeController {
     ) {
         request.setId(id);
 
+        log.info("Updating employee id: {}", id);
+
         EmployeeResponse data = updateEmployeeService.execute(request);
+
+        log.info("Employee {} updated", id);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ApiResponse.success(data, "Update employee successfully", HttpStatus.OK.value())
         );
@@ -207,9 +217,12 @@ public class EmployeeController {
             @Parameter(description = "UUID of the employee to deactivate", required = true)
             @PathVariable UUID id
     ) {
+        log.info("Deactivating employee id: {}", id);
+
         EmployeeIdRequest request = new EmployeeIdRequest(id);
         deActiveEmployeeService.execute(request);
 
+        log.info("Employee {} deactivated", id);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ApiResponse.success(null, "Employee deactivated successfully", HttpStatus.OK.value())
         );
@@ -243,9 +256,12 @@ public class EmployeeController {
             @Parameter(description = "UUID of the employee to activate", required = true)
             @PathVariable UUID id
     ) {
+        log.info("Activating employee id: {}", id);
+
         EmployeeIdRequest request = new EmployeeIdRequest(id);
         activeEmployeeService.execute(request);
 
+        log.info("Employee {} activated", id);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ApiResponse.success(null, "Employee activated successfully", HttpStatus.OK.value())
         );

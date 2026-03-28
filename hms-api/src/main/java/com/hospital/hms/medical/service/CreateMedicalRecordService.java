@@ -11,10 +11,12 @@ import com.hospital.hms.medical.request.CreateMedicalRecordRequest;
 import com.hospital.hms.medical.response.MedicalRecordDetailResponse;
 import com.hospital.hms.patient.service.PatientQueryService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CreateMedicalRecordService extends BaseService<CreateMedicalRecordRequest, MedicalRecordDetailResponse> {
@@ -37,6 +39,9 @@ public class CreateMedicalRecordService extends BaseService<CreateMedicalRecordR
             throw new AccessDeniedException("You do not have permission to access this resource");
         }
 
+        log.info("Creating medical record — patientId: {}, doctorId: {}",
+                request.getPatientId(), request.getUserContext().getUserId());
+
         MedicalRecord mr = MedicalRecord.builder()
                 .patient(patientQueryService.getReferenceById(request.getPatientId()))
                 .doctor(accountQueryService.getReferenceById(request.getUserContext().getUserId()))
@@ -45,6 +50,8 @@ public class CreateMedicalRecordService extends BaseService<CreateMedicalRecordR
                 .build();
 
         MedicalRecord saved = medicalRecordRepository.save(mr);
+
+        log.info("Medical record created, id: {}", saved.getId());
 
         invoiceQueryService.initInvoices(saved.getId());
 
