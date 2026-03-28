@@ -3,7 +3,7 @@ package com.hospital.hms.appointment.service;
 import com.hospital.hms.appointment.entity.Appointment;
 import com.hospital.hms.appointment.repository.AppointmentRepository;
 import com.hospital.hms.appointment.request.BookAppointmentRequest;
-import com.hospital.hms.appointment.response.BookAppointmentResponse;
+import com.hospital.hms.appointment.response.AppointmentResponse;
 import com.hospital.hms.auth.service.AccountQueryService;
 import com.hospital.hms.base.service.BaseService;
 import com.hospital.hms.common.enums.AppointmentStatus;
@@ -23,7 +23,7 @@ import java.time.LocalTime;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class BookAppointmentService extends BaseService<BookAppointmentRequest, BookAppointmentResponse> {
+public class BookAppointmentService extends BaseService<BookAppointmentRequest, AppointmentResponse> {
 
     private final DoctorScheduleQueryService doctorScheduleQueryService;
     private final AppointmentSlotService appointmentSlotService;
@@ -33,12 +33,12 @@ public class BookAppointmentService extends BaseService<BookAppointmentRequest, 
 
     @Override
     @Transactional
-    public BookAppointmentResponse execute(BookAppointmentRequest request) {
+    public AppointmentResponse execute(BookAppointmentRequest request) {
         return super.execute(request);
     }
 
     @Override
-    protected BookAppointmentResponse doProcess(BookAppointmentRequest request) {
+    protected AppointmentResponse doProcess(BookAppointmentRequest request) {
         log.info("Booking appointment — doctorId: {}, patientId: {}, date: {}",
                 request.getDoctorId(), request.getPatientId(), request.getDate());
 
@@ -65,7 +65,7 @@ public class BookAppointmentService extends BaseService<BookAppointmentRequest, 
 
             log.info("Appointment booked, id: {}", appointment.getId());
 
-            return BookAppointmentResponse.from(appointment, request);
+            return AppointmentResponse.from(appointment, request);
         } else {
             log.warn("Slot fully booked — key: {}", key);
             throw new BusinessException("This schedule is fully booked");

@@ -17,9 +17,11 @@ public class AppointmentSlotService {
 
     private static final String BOOK_SLOT_SCRIPT = """
             local current = redis.call('GET', KEYS[1])
+            
             if not current then
                 redis.call('SET', KEYS[1], ARGV[1])
             end
+            
             local val = redis.call('INCR', KEYS[1])
             if val > tonumber(ARGV[2]) then
                 redis.call('DECR', KEYS[1])
@@ -28,7 +30,24 @@ public class AppointmentSlotService {
             
             return 1
             """;
+    private static final String CANCEL_SLOT_SCRIPT = """
+            local current = redis.call('GET', KEYS[1])
+            
+            if not current then
+                return 0
+            end
+            
+            local val = redis.call('DECR', KEYS[1])
+            if val < 0 then
+                redis.call('INCR', KEYS[1])
+                return 0
+            end
+            
+            return 1
+            """;
+
     private static final RedisScript<Long> BOOK_SLOT_REDIS_SCRIPT = RedisScript.of(BOOK_SLOT_SCRIPT, Long.class);
+    private static final RedisScript<Long> CANCEL_SLOT_REDIS_SCRIPT = RedisScript.of(CANCEL_SLOT_SCRIPT, Long.class);
 
     private final StringRedisTemplate template;
     private final AppointmentRepository appointmentRepository;
@@ -48,6 +67,17 @@ public class AppointmentSlotService {
         );
 
         log.debug("Slot booking result for key {}: {}", key, value);
+
+        return value != null && value > 0;
+    }
+
+    public boolean cancelSlot(String key) {
+        Long value = template.execute(
+                CANCEL_SLOT_REDIS_SCRIPT,
+                List.of(key)
+        );
+
+        log.debug("Slot cancel result for key {}: {}", key, value);
 
         return value != null && value > 0;
     }

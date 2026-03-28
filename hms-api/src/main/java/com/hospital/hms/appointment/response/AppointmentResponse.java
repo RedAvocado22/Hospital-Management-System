@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.UUID;
 
-public record BookAppointmentResponse(
+public record AppointmentResponse(
         UUID id,
         UUID doctorId,
         UUID patientId,
@@ -18,8 +18,8 @@ public record BookAppointmentResponse(
         String reason,
         AppointmentStatus status
 ) {
-    public static BookAppointmentResponse from(Appointment appointment, BookAppointmentRequest request) {
-        return new BookAppointmentResponse(
+    public static AppointmentResponse from(Appointment appointment, BookAppointmentRequest request) {
+        return new AppointmentResponse(
                 appointment.getId(),
                 request.getDoctorId(),
                 request.getPatientId(),
