@@ -8,7 +8,7 @@ import com.hospital.hms.medical.entity.DoctorSchedule;
 import com.hospital.hms.medical.mapper.DoctorScheduleMapper;
 import com.hospital.hms.medical.repository.DoctorScheduleRepository;
 import com.hospital.hms.medical.request.SearchDoctorScheduleRequest;
-import com.hospital.hms.medical.response.DoctorScheduleResponse;
+import com.hospital.hms.medical.response.DoctorScheduleDetailResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -21,14 +21,14 @@ import java.time.LocalDate;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class SearchDoctorScheduleService extends BaseService<SearchDoctorScheduleRequest, PaginatedResponse<DoctorScheduleResponse>> {
+public class SearchDoctorScheduleService extends BaseService<SearchDoctorScheduleRequest, PaginatedResponse<DoctorScheduleDetailResponse>> {
     private final DoctorScheduleRepository doctorScheduleRepository;
     private final AccountRepository accountRepository;
     private final DoctorScheduleMapper doctorScheduleMapper;
 
     @Override
     @Transactional(readOnly = true)
-    protected PaginatedResponse<DoctorScheduleResponse> doProcess(SearchDoctorScheduleRequest request) {
+    protected PaginatedResponse<DoctorScheduleDetailResponse> doProcess(SearchDoctorScheduleRequest request) {
         log.debug("Search doctor schedule request received");
 
         Page<DoctorSchedule> doctorSchedulePage;
@@ -37,12 +37,12 @@ public class SearchDoctorScheduleService extends BaseService<SearchDoctorSchedul
         if (request.getDoctorId() == null) {
             doctorSchedulePage = doctorScheduleRepository.findByDate(date, pageable);
         } else {
-            if (!accountRepository.existsById(request.getDoctorId())) {
+            if (!accountRepository.existsByIdAndRoleName(request.getDoctorId(), "doctor")) {
                 throw new NotFoundException("Doctor does not exist in the system");
             }
             doctorSchedulePage = doctorScheduleRepository.findByDoctor_IdAndDate(request.getDoctorId(), date, pageable);
         }
-        Page<DoctorScheduleResponse> responses = doctorSchedulePage.map(doctorScheduleMapper::toResponse);
+        Page<DoctorScheduleDetailResponse> responses = doctorSchedulePage.map(doctorScheduleMapper::toResponse);
         return PaginatedResponse.from(responses);
     }
 }

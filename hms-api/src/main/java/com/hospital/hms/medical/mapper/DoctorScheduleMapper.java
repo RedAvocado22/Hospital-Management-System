@@ -1,7 +1,7 @@
 package com.hospital.hms.medical.mapper;
 
 import com.hospital.hms.medical.entity.DoctorSchedule;
-import com.hospital.hms.medical.response.DoctorScheduleResponse;
+import com.hospital.hms.medical.response.DoctorScheduleDetailResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
@@ -11,8 +11,8 @@ public interface DoctorScheduleMapper {
 
     @Mappings({
             @Mapping(source = "doctor.id", target = "doctorId"),
-            @Mapping(source = "doctor.fullName", target = "fullName")
+            @Mapping(source = "doctor.fullName", target = "doctorName")
     })
-    DoctorScheduleResponse toResponse(DoctorSchedule doctorSchedule);
+    DoctorScheduleDetailResponse toResponse(DoctorSchedule doctorSchedule);
 
 }

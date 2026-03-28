@@ -4,7 +4,7 @@ import com.hospital.hms.base.api.ApiResponse;
 import com.hospital.hms.base.api.ResponseMetadata;
 import com.hospital.hms.base.response.PaginatedResponse;
 import com.hospital.hms.medical.request.SearchDoctorScheduleRequest;
-import com.hospital.hms.medical.response.DoctorScheduleResponse;
+import com.hospital.hms.medical.response.DoctorScheduleDetailResponse;
 import com.hospital.hms.medical.service.SearchDoctorScheduleService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -26,13 +26,13 @@ public class DoctorScheduleController {
     private final SearchDoctorScheduleService searchDoctorScheduleService;
 
     @GetMapping()
-    public ResponseEntity<ApiResponse<PaginatedResponse<DoctorScheduleResponse>>> getDoctorSchedule(@ModelAttribute SearchDoctorScheduleRequest request, HttpServletRequest httpRequest) {
+    public ResponseEntity<ApiResponse<PaginatedResponse<DoctorScheduleDetailResponse>>> getDoctorSchedule(@ModelAttribute SearchDoctorScheduleRequest request, HttpServletRequest httpRequest) {
         long startTime = System.currentTimeMillis();
         String traceId = java.util.UUID.randomUUID().toString();
 
         log.info("[TraceID: {}] Get Doctor Schedule with doctor id : {}", traceId, request.getDoctorId());
 
-        PaginatedResponse<DoctorScheduleResponse> response = searchDoctorScheduleService.execute(request);
+        PaginatedResponse<DoctorScheduleDetailResponse> response = searchDoctorScheduleService.execute(request);
 
         long duration = System.currentTimeMillis() - startTime;
 
@@ -44,7 +44,7 @@ public class DoctorScheduleController {
                 .apiVersion("v1")
                 .build();
 
-        ApiResponse<PaginatedResponse<DoctorScheduleResponse>> apiResponse = ApiResponse.success(
+        ApiResponse<PaginatedResponse<DoctorScheduleDetailResponse>> apiResponse = ApiResponse.success(
                 response,
                 "Get Doctor Schedule successfully",
                 HttpStatus.OK.value(),
