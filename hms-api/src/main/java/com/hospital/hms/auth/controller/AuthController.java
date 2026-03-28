@@ -33,16 +33,34 @@ public class AuthController {
     private final SignInService signInService;
 
     @PostMapping("/signup")
-    @Operation(summary = "Register a new user", description = "Creates a new user account in Keycloak and local database")
+    @Operation(
+            summary = "Register a new patient",
+            description = """
+                    Registers a new patient account. This is the only public registration endpoint — \
+                    employees are created by an Admin via POST /employees.
+
+                    **What happens internally:**
+                    1. Validates username and email uniqueness
+                    2. Saves Account + PatientInfo to MySQL
+                    3. Provisions the user in Keycloak and assigns the PATIENT role
+
+                    If Keycloak provisioning fails, the MySQL record is rolled back (two-phase compensation). \
+                    The caller always gets a consistent result.
+                    """
+    )
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "201",
-                    description = "User registered successfully",
+                    description = "Patient registered successfully",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class))
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "400",
-                    description = "Invalid input data or duplicate resource"
+                    description = "Invalid input data or duplicate username/email"
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "503",
+                    description = "Keycloak unavailable — registration rolled back"
             )
     })
     public ResponseEntity<ApiResponse<AccountResponse>> signUp(@Valid @RequestBody CreatePatientRequest request) {
@@ -57,16 +75,31 @@ public class AuthController {
     }
 
     @PostMapping("/signin")
-    @Operation(summary = "Authenticate user", description = "Authenticates a user and returns Keycloak access and refresh tokens")
+    @Operation(
+            summary = "Sign in",
+            description = """
+                    Authenticates a user against Keycloak and returns a JWT access token and refresh token.
+
+                    **Token usage:** Include the access token in the Authorization header as `Bearer <token>` \
+                    for all protected endpoints.
+
+                    **Token lifetime:** Access token expires per Keycloak realm config (default 5 minutes). \
+                    Use the refresh token to obtain a new access token without re-login.
+                    """
+    )
     @ApiResponses(value = {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "200",
-                    description = "Login successful",
+                    description = "Login successful — returns accessToken, refreshToken, and expiry info",
                     content = @Content(schema = @Schema(implementation = ApiResponse.class))
             ),
             @io.swagger.v3.oas.annotations.responses.ApiResponse(
                     responseCode = "401",
-                    description = "Invalid credentials"
+                    description = "Invalid username or password"
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "503",
+                    description = "Keycloak unavailable"
             )
     })
     public ResponseEntity<ApiResponse<AuthResponse>> signIn(@Valid @RequestBody SignInRequest request) {

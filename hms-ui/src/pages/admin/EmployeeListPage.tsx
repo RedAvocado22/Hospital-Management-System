@@ -1,10 +1,11 @@
-import { Table, Card, Input, Button, Space, Tag, Typography, Select, Popconfirm, message } from 'antd';
+import { Table, Card, Input, Button, Space, Tag, Typography, Select, Popconfirm, message, Divider } from 'antd';
 import { SearchOutlined, PlusOutlined, CheckCircleOutlined, StopOutlined } from '@ant-design/icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getEmployees, deactivateEmployee, activateEmployee } from '../../api/employees';
 import type { Employee } from '../../types';
+import { ROLE_NAMES } from '../../constants/roles';
 
 const { Title } = Typography;
 
@@ -12,13 +13,14 @@ export default function EmployeeListPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [keyword, setKeyword] = useState('');
   const [role, setRole] = useState<string | undefined>();
   const [searchInput, setSearchInput] = useState('');
 
   const { data, isLoading } = useQuery({
-    queryKey: ['employees', page, keyword, role],
-    queryFn: () => getEmployees({ page: page - 1, size: 10, keyword, role }).then((r) => r.data),
+    queryKey: ['employees', page, pageSize, keyword, role],
+    queryFn: () => getEmployees({ page: page - 1, size: pageSize, keyword, role }).then((r) => r.data),
   });
 
   const deactivateMutation = useMutation({
@@ -63,11 +65,11 @@ export default function EmployeeListPage() {
       key: 'role',
       render: (role: { name: string }) => {
         const colorMap: Record<string, string> = {
-          DOCTOR: 'blue',
-          RECEPTIONIST: 'green',
-          PHARMACIST: 'purple',
-          CASHIER: 'orange',
-          ADMIN: 'red',
+          [ROLE_NAMES.DOCTOR]: 'blue',
+          [ROLE_NAMES.RECEPTIONIST]: 'green',
+          [ROLE_NAMES.PHARMACIST]: 'purple',
+          [ROLE_NAMES.CASHIER]: 'orange',
+          [ROLE_NAMES.ADMIN]: 'red',
         };
         return <Tag color={colorMap[role?.name] ?? 'default'}>{role?.name}</Tag>;
       },
@@ -147,10 +149,10 @@ export default function EmployeeListPage() {
             allowClear
             onChange={(val) => { setRole(val); setPage(1); }}
           >
-            <Select.Option value="DOCTOR">Doctor</Select.Option>
-            <Select.Option value="RECEPTIONIST">Receptionist</Select.Option>
-            <Select.Option value="PHARMACIST">Pharmacist</Select.Option>
-            <Select.Option value="CASHIER">Cashier</Select.Option>
+            <Select.Option value={ROLE_NAMES.DOCTOR}>Doctor</Select.Option>
+            <Select.Option value={ROLE_NAMES.RECEPTIONIST}>Receptionist</Select.Option>
+            <Select.Option value={ROLE_NAMES.PHARMACIST}>Pharmacist</Select.Option>
+            <Select.Option value={ROLE_NAMES.CASHIER}>Cashier</Select.Option>
           </Select>
           <Button
             type="primary"
@@ -161,6 +163,7 @@ export default function EmployeeListPage() {
           </Button>
         </Space>
 
+        <Divider style={{ margin: '0 0 16px 0' }} />
         <Table
           dataSource={data?.data?.content ?? []}
           columns={columns}
@@ -168,9 +171,11 @@ export default function EmployeeListPage() {
           loading={isLoading}
           pagination={{
             current: page,
-            pageSize: 10,
+            pageSize: pageSize,
             total: data?.data?.totalElements ?? 0,
-            onChange: (p) => setPage(p),
+            onChange: (p, ps) => { setPage(p); setPageSize(ps); },
+            showSizeChanger: true,
+            pageSizeOptions: ['5', '10', '20', '50'],
             showTotal: (total) => `${total} employees`,
           }}
         />

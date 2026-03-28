@@ -75,8 +75,43 @@ export interface MedicalRecord {
   patientName: string;
   doctorName: string;
   description: string;
-  doctorAdvice: string;
+  advice: string;
   createdAt: string;
+}
+
+export interface PatientInfoResponse {
+  fullName: string;
+  gender: string | null;
+  dob: string | null;
+  address: string | null;
+  phone: string | null;
+  email: string;
+  bloodType: string | null;
+  allergies: string | null;
+}
+
+export interface DoctorSummary {
+  fullName: string;
+  departmentName: string;
+  code: string;
+}
+
+export interface MedicalRecordDetail {
+  id: string;
+  patient: PatientInfoResponse;
+  doctor: DoctorSummary;
+  description: string;
+  advice: string;
+  createdAt: string;
+}
+
+export interface Medicine {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  quantity: number;
+  isActive: boolean;
 }
 
 export interface CreateEmployeeRequest {
@@ -91,6 +126,6 @@ export interface CreateEmployeeRequest {
   phone: string;
   code: string;
   hireDate: string;
-  departmentId: string;
+  department: string;
   role: string;
 }

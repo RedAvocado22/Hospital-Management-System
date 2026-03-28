@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "appointment")
@@ -36,7 +36,7 @@ public class Appointment extends BaseEntity {
     private DoctorSchedule schedule;
 
     @Column(name = "date", nullable = false)
-    private LocalDateTime date;
+    private LocalDate date;
 
     @Column(name = "reason", columnDefinition = "TEXT")
     private String reason;

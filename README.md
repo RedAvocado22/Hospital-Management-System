@@ -1,86 +1,104 @@
-# 🏥 Hospital Management System
+# Hospital Management System
 
-An outpatient hospital management system built for the SWD392 course.
+## Overview
 
-## The Problem
+A production-grade hospital management REST API built as a course project (SWD392) simulating real-world clinical workflows — patient registration, appointment scheduling, medical records, pharmacy, and billing. The backend is a stateless JWT-secured Spring Boot service integrated with Keycloak for identity and Redis for concurrent slot management. The frontend is a React 19 + TypeScript SPA. The project is a two-person team effort with clear domain ownership and a shared base infrastructure.
 
-Outpatient hospitals deal with a lot of moving parts — receptionists managing patient queues, doctors writing medical records and prescriptions, pharmacists tracking medicine stock, cashiers handling invoices — and in many clinics this is still done on paper or disconnected spreadsheets. Patients have no way to book appointments online or view their own records.
-
-This system puts all of that into one platform: patient check-in → doctor examination → prescription → billing, with every role seeing only what they need.
-
-## What we're practicing here
-
-- **Keycloak** for auth instead of hand-rolling JWT — OAuth2 / OpenID Connect with role-based access
-- **Flyway** for versioned database migrations — no more `ddl-auto: update`
-- **Redis** for caching and session management
-- **Docker Compose** to spin up the full infra stack in one command
-- **Modular package structure** with a unified `BaseService` pipeline pattern
-- **Standardized API responses** via `ApiResponse<T>` wrapper across all endpoints
+---
 
 ## Tech Stack
 
-| Layer | Stack |
-|---|---|
-| **API** | Java 17, Spring Boot, Spring Security, Spring Data JPA |
-| **Database** | MySQL 8.0, Flyway |
-| **Cache** | Redis 7.4 |
-| **Auth** | Keycloak 26 (OAuth2 / JWT) |
-| **Frontend** | React 19, TypeScript, Vite, Ant Design 6 |
-| **State** | Zustand, React Query, Zod |
+| Layer        | Technology                                              |
+|--------------|---------------------------------------------------------|
+| Backend      | Spring Boot 3.4.3 (Java 17), Spring Data JPA, Hibernate |
+| Auth         | Keycloak 26.1 (JWT OAuth2 Resource Server)              |
+| Database     | MySQL 8.0, Flyway migrations                            |
+| Cache        | Redis 7.4 (appointment slots, JWT blacklist)            |
+| Mapping      | MapStruct 1.6.3                                         |
+| API Docs     | SpringDoc OpenAPI 2.8.4 (Swagger UI)                    |
+| Export       | OpenPDF, Apache POI                                     |
+| Frontend     | React 19, TypeScript, Vite                              |
+| Infra        | Docker Compose                                          |
 
-## Project Structure
+---
+
+## Architecture
 
 ```
-├── hms-api/                     # Spring Boot backend
-│   ├── src/.../hms/
-│   │   ├── auth/                # Accounts, roles, employees
-│   │   ├── patient/             # Patient info, insurance
-│   │   ├── medical/             # Records, doctor schedules
-│   │   ├── pharmacy/            # Medicines, prescriptions
-│   │   ├── billing/             # Invoices, payments
-│   │   ├── appointment/         # Booking
-│   │   ├── notification/        # Reminders
-│   │   ├── base/                # BaseService, ApiResponse, DTOs
-│   │   └── exception/           # Global error handling
-│   ├── resources/db/migration/  # Flyway SQL
-│   └── compose.yaml             # Docker infra
-│
-├── hms-ui/                      # React frontend (Vite)
-└── docs/                        # Design docs (gitignored)
+Controller → Service → Repository → Entity (JPA) → MySQL
 ```
 
-## Setup
+All services implement a **template method pipeline**: `execute() → validate() → doProcess()`. The `execute()` method is the transaction boundary and the only public entry point — calling `doProcess()` directly bypasses validation and Spring's AOP proxy (which would silently break `@Transactional`).
 
-**Prerequisites:** Java 17+, Maven 3.9+, Node 20+, Docker
+Every endpoint returns a uniform `ApiResponse<T>`. Every entity extends `BaseEntity` (UUID PK, `createdAt`, `updatedAt`). Roles arrive in the JWT under `realm_access.roles`, extracted and prefixed with `ROLE_` by `KeycloakRoleConverter`.
+
+Infrastructure boundaries are strict: all Keycloak calls go through `KeycloakService`, all Redis slot operations through `AppointmentSlotService`, all JWT blacklisting through `TokenBlacklistService`, all notifications through `NotificationDispatcher`. No other class touches these systems directly.
+
+---
+
+## Running Locally
 
 ```bash
-# 1. env
-cp .env.example .env         # fill in your credentials
-
-# 2. infra
+# 1. Start infrastructure (MySQL, Redis, Keycloak)
 cd hms-api
-docker compose up -d          # MySQL :3306, Redis :6379, Keycloak :9090
+docker-compose up -d
 
-# 3. backend
-mvn spring-boot:run           # API → localhost:8080/api
-                              # Swagger → localhost:8080/api/swagger-ui.html
-
-# 4. frontend
-cd ../hms-ui
-npm install && npm run dev    # UI → localhost:5173
+# 2. Start the API
+./mvnw spring-boot:run
 ```
 
-## Roles
+| Service    | URL                                       |
+|------------|-------------------------------------------|
+| API        | http://localhost:8080/api                 |
+| Swagger UI | http://localhost:8080/api/swagger-ui.html |
+| Keycloak   | http://localhost:9090                     |
+| Frontend   | http://localhost:5173                     |
 
-| Role | What they do |
-|---|---|
-| **Admin** | Employee & department management |
-| **Doctor** | Medical records, prescriptions, OPD appointments |
-| **Reception** | Patient check-in, exam queue, insurance validation |
-| **Pharmacist** | Medicine inventory |
-| **Cashier** | Billing & payments |
-| **Patient** | Book appointments, view records |
+---
 
-## Environment Variables
+## Contributors
 
-All variables are listed in [`.env.example`](.env.example). The app won't start without them — no hardcoded defaults for credentials.
+### Nguyen Minh Cuong — Backend & Frontend
+
+**Modules:** Base infrastructure, Auth, Employee, Department, Medical Records, Appointment Booking, Frontend (Employee pages, Medical Records pages)
+
+---
+
+**Zero overbooking under concurrent load — Redis Lua atomic booking**
+
+Appointment slots are tracked as Redis counters. The naive approach (GET → check → INCR) has a race window: two concurrent requests both read the same value, both pass the check, both book — slot exceeded. The fix is a single Lua script that Redis executes atomically. No other command can interleave. Cold-start seeds the counter from the DB count so the system stays consistent after Redis restarts or evictions.
+
+```
+slots:{doctorId}:{date}:{startTime}-{endTime}
+```
+
+---
+
+**~90% fewer DB queries on paginated reads — N+1 eliminated via EntityGraph**
+
+Default JPA lazy loading fires one query per associated entity. A page of 20 medical records with doctor + patient associations = 41 queries. `@EntityGraph` per repository method specifies exact joins — 2 queries total regardless of page size. No `FetchType.EAGER` (which would over-fetch on every code path).
+
+---
+
+**3 SELECT queries eliminated per write — JPA proxy references**
+
+`POST /medical-records` creates 3 records atomically (MedicalRecord + ServiceInvoice + MedicineInvoice). FK assignments use `getReferenceById()` — a JPA proxy that holds the ID without hitting the DB. No SELECT before INSERT for patient, doctor, or record references.
+
+---
+
+**Other highlights**
+
+- **ABAC** — Doctors filtered to own records at SQL level, not post-fetch. PATIENT booking resolves `patientId` from JWT — cannot spoof another patient's ID.
+- **Full-text search** — `MATCH...AGAINST (IN BOOLEAN MODE)` on a MySQL FULLTEXT index. Avoids `LIKE '%keyword%'` which can't use indexes and degrades on large tables.
+- **Two-phase Keycloak sync** — MySQL insert first, Keycloak second. On failure: compensation delete + rethrow → `@Transactional` rollback. No ghost users.
+- **`open-in-view: false`** — Prevents hidden lazy queries firing during JSON serialization after the session should be closed.
+- **Template method BaseService** — Shared `execute() → validate() → doProcess()` pipeline. `@Transactional` placed on `execute()`, not `doProcess()` — avoids Spring AOP self-invocation where the proxy is bypassed and the annotation silently does nothing.
+- **Domain boundary query services** — No cross-domain repository imports. Each domain exposes a `QueryService` returning DTOs as its public API.
+
+---
+
+### [Person 2 Name] — Backend
+
+**Modules:** Patient registration, Pharmacy (medicine CRUD, stock management, full-text search), Doctor Schedule management, Medical Exam Queue / Receptionist flow, Insurance validation
+
+*(Technical highlights — to be filled in)*

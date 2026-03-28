@@ -1,7 +1,8 @@
-import { Table, Card, Input, Button, Space, Typography, DatePicker } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { Table, Card, Input, Button, Space, Typography, DatePicker, Divider, Alert } from 'antd';
+import { SearchOutlined, EyeOutlined } from '@ant-design/icons';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getMedicalRecords } from '../../api/medicalRecords';
 import type { MedicalRecord } from '../../types';
 import dayjs from 'dayjs';
@@ -10,6 +11,7 @@ const { Title, Text } = Typography;
 const { RangePicker } = DatePicker;
 
 export default function MedicalRecordsPage() {
+  const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [keyword, setKeyword] = useState('');
   const [doctorName, setDoctorName] = useState('');
@@ -17,7 +19,7 @@ export default function MedicalRecordsPage() {
   const [searchInput, setSearchInput] = useState('');
   const [doctorInput, setDoctorInput] = useState('');
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ['medical-records', page, keyword, doctorName, dateRange],
     queryFn: () =>
       getMedicalRecords({
@@ -51,8 +53,8 @@ export default function MedicalRecordsPage() {
     },
     {
       title: 'Doctor Advice',
-      dataIndex: 'doctorAdvice',
-      key: 'doctorAdvice',
+      dataIndex: 'advice',
+      key: 'advice',
       ellipsis: true,
     },
     {
@@ -61,6 +63,20 @@ export default function MedicalRecordsPage() {
       key: 'createdAt',
       width: 160,
       render: (date: string) => dayjs(date).format('DD/MM/YYYY HH:mm'),
+    },
+    {
+      title: '',
+      key: 'actions',
+      width: 80,
+      render: (_: unknown, record: MedicalRecord) => (
+        <Button
+          size="small"
+          icon={<EyeOutlined />}
+          onClick={() => navigate(`./${record.id}`)}
+        >
+          View
+        </Button>
+      ),
     },
   ];
 
@@ -117,6 +133,16 @@ export default function MedicalRecordsPage() {
           <Button onClick={handleReset}>Reset</Button>
         </Space>
 
+        <Divider style={{ margin: '0 0 16px 0' }} />
+        {isError && (
+          <Alert
+            type="error"
+            message="Failed to load medical records"
+            description="The request failed. Check your connection or try again."
+            showIcon
+            style={{ marginBottom: 16 }}
+          />
+        )}
         <Table
           dataSource={data?.data?.content ?? []}
           columns={columns}

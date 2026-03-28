@@ -31,7 +31,12 @@ export default function LoginPage() {
       }
     } catch (err: unknown) {
       const axiosErr = err as { response?: { data?: { message?: string } } };
-      setError(axiosErr.response?.data?.message ?? 'Invalid username or password');
+      const raw = axiosErr.response?.data?.message ?? '';
+      if (raw.includes('Account disabled')) {
+        setError('This account has been deactivated. Please contact an administrator if you believe this is a mistake.');
+      } else {
+        setError(raw || 'Invalid username or password');
+      }
     } finally {
       setLoading(false);
     }
@@ -44,15 +49,15 @@ export default function LoginPage() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        background: '#F5F7FA',
       }}
     >
       <Card
-        style={{ width: 420, borderRadius: 12, boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}
-        bodyStyle={{ padding: '40px' }}
+        style={{ width: 420, borderRadius: 12, boxShadow: '0 4px 24px rgba(0,0,0,0.08)' }}
+        styles={{ body: { padding: '40px' } }}
       >
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <MedicineBoxOutlined style={{ fontSize: 48, color: '#1890ff' }} />
+          <MedicineBoxOutlined style={{ fontSize: 48, color: '#0D9488' }} />
           <Title level={2} style={{ marginTop: 12, marginBottom: 4 }}>
             HMS
           </Title>

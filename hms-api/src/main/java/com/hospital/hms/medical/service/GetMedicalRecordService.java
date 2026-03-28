@@ -6,11 +6,13 @@ import com.hospital.hms.medical.repository.MedicalRecordRepository;
 import com.hospital.hms.medical.request.SearchMedicalRecordRequest;
 import com.hospital.hms.medical.response.MedicalRecordResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class GetMedicalRecordService extends BaseService<SearchMedicalRecordRequest, PaginatedResponse<MedicalRecordResponse>> {
@@ -28,6 +30,9 @@ public class GetMedicalRecordService extends BaseService<SearchMedicalRecordRequ
         Pageable pageable = request.toPageable();
 
         String username = request.getUserContext() != null && request.getUserContext().hasRole("ROLE_DOCTOR") ? request.getUserContext().getUsername() : null;
+
+        log.debug("Searching medical records — keyword: {}, doctorName: {}, doctorFilter: {}",
+                request.getKeyword(), request.getDoctorName(), username);
 
         Page<MedicalRecordResponse> responses = medicalRecordRepository.getMedicalRecordBy(
                 request.getKeyword() != null && request.getKeyword().isBlank() ? null : request.getKeyword(),
