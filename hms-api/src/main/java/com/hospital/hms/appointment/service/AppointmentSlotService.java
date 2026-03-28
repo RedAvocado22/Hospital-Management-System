@@ -2,6 +2,7 @@ package com.hospital.hms.appointment.service;
 
 import com.hospital.hms.appointment.repository.AppointmentRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AppointmentSlotService {
@@ -54,6 +56,7 @@ public class AppointmentSlotService {
         Integer count = 0;
         if (template.opsForValue().get(key) == null) {
             count = appointmentRepository.countAppointmentByDoctorSchedule_Id(doctorScheduleId);
+            log.debug("Redis key {} not found — seeding from DB, count: {}", key, count);
         }
 
         Long value = template.execute(
@@ -62,6 +65,8 @@ public class AppointmentSlotService {
                 count.toString(),
                 maxPatients.toString()
         );
+
+        log.debug("Slot booking result for key {}: {}", key, value);
 
         return value != null && value > 0;
     }

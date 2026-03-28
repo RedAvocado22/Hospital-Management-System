@@ -60,23 +60,40 @@ docker-compose up -d
 
 ### Nguyen Minh Cuong — Backend & Frontend
 
-**Modules:** Base infrastructure, Auth, Employee, Department, Medical Records, Frontend (Employee pages, Medical Records pages, JWT utils, role constants)
+**Modules:** Base infrastructure, Auth, Employee, Department, Medical Records, Appointment Booking, Frontend (Employee pages, Medical Records pages)
 
-- **BaseService template method** — Designed the `execute() → validate() → doProcess()` pipeline shared by all services. Subclasses override `execute()` (not `doProcess()`) to place `@Transactional` on the proxy-visible method — avoiding the Spring AOP self-invocation trap where `@Transactional` on an internal method is silently skipped by the JVM proxy.
+---
 
-- **JPA Specification + EntityGraph** — Dynamic multi-predicate filtering (10+ optional fields) via the JPA Criteria API. `@EntityGraph` on individual repository methods specifies exact joins per query — eliminates N+1 without global `FetchType.EAGER`, which would over-fetch on every query path.
+**Zero overbooking under concurrent load — Redis Lua atomic booking**
 
-- **MySQL full-text search** — Native `MATCH...AGAINST (IN BOOLEAN MODE)` query for patient search by name/phone across joined tables. Custom Flyway V8 migration adds the FULLTEXT index. A separate `countQuery` is explicitly provided so Spring Data can paginate correctly — without it, the ORM can't derive the count from a complex native join.
+Appointment slots are tracked as Redis counters. The naive approach (GET → check → INCR) has a race window: two concurrent requests both read the same value, both pass the check, both book — slot exceeded. The fix is a single Lua script that Redis executes atomically. No other command can interleave. Cold-start seeds the counter from the DB count so the system stays consistent after Redis restarts or evictions.
 
-- **Attribute-Based Access Control (ABAC)** — Doctors see only their own medical records. The filter is injected at the SQL level (`:doctorId IS NULL OR mr.doctor_id = :doctorId`) rather than applied post-fetch. Post-fetch filtering corrupts paginated total counts — the predicate belongs in the query, not in application code.
+```
+slots:{doctorId}:{date}:{startTime}-{endTime}
+```
 
-- **Two-phase sync with compensation** — Account creation: MySQL insert first, then Keycloak registration. On Keycloak failure: `keycloakService.deleteUser()` (compensation) + rethrow → `@Transactional` rolls back MySQL. Prevents ghost users where MySQL has a row but Keycloak has no corresponding identity.
+---
 
-- **Transactional composition** — `POST /medical-records` atomically creates three DB records (MedicalRecord + ServiceInvoice + MedicineInvoice) in one `@Transactional`. Uses `getReferenceById()` for FK assignments to skip redundant SELECT queries — the proxy is sufficient; the full entity is never needed.
+**~90% fewer DB queries on paginated reads — N+1 eliminated via EntityGraph**
 
-- **Domain boundary services** — Each domain exposes a `QueryService` (plain `@Service`, returns DTOs) as its public API. Other domains inject this instead of importing foreign repositories or entities directly. Keeps coupling explicit, boundaries clear, and each domain independently swappable.
+Default JPA lazy loading fires one query per associated entity. A page of 20 medical records with doctor + patient associations = 41 queries. `@EntityGraph` per repository method specifies exact joins — 2 queries total regardless of page size. No `FetchType.EAGER` (which would over-fetch on every code path).
 
-- **`open-in-view: false`** — Disabled Spring's default open-session-in-view. Session closes after the repository call, not after the HTTP response is written. Forces all lazy association access into explicit `@Transactional` scopes — prevents the classic silent lazy query during JSON serialization that degrades production throughput.
+---
+
+**3 SELECT queries eliminated per write — JPA proxy references**
+
+`POST /medical-records` creates 3 records atomically (MedicalRecord + ServiceInvoice + MedicineInvoice). FK assignments use `getReferenceById()` — a JPA proxy that holds the ID without hitting the DB. No SELECT before INSERT for patient, doctor, or record references.
+
+---
+
+**Other highlights**
+
+- **ABAC** — Doctors filtered to own records at SQL level, not post-fetch. PATIENT booking resolves `patientId` from JWT — cannot spoof another patient's ID.
+- **Full-text search** — `MATCH...AGAINST (IN BOOLEAN MODE)` on a MySQL FULLTEXT index. Avoids `LIKE '%keyword%'` which can't use indexes and degrades on large tables.
+- **Two-phase Keycloak sync** — MySQL insert first, Keycloak second. On failure: compensation delete + rethrow → `@Transactional` rollback. No ghost users.
+- **`open-in-view: false`** — Prevents hidden lazy queries firing during JSON serialization after the session should be closed.
+- **Template method BaseService** — Shared `execute() → validate() → doProcess()` pipeline. `@Transactional` placed on `execute()`, not `doProcess()` — avoids Spring AOP self-invocation where the proxy is bypassed and the annotation silently does nothing.
+- **Domain boundary query services** — No cross-domain repository imports. Each domain exposes a `QueryService` returning DTOs as its public API.
 
 ---
 
