@@ -30,4 +30,17 @@ public record AppointmentResponse(
                 appointment.getStatus()
         );
     }
+
+    public static AppointmentResponse from(Appointment appointment) {
+        return new AppointmentResponse(
+                appointment.getId(),
+                appointment.getDoctor().getId(),
+                appointment.getPatient().getId(),
+                appointment.getDate(),
+                appointment.getSchedule().getStartTime(),
+                appointment.getSchedule().getEndTime(),
+                appointment.getReason(),
+                appointment.getStatus()
+        );
+    }
 }
