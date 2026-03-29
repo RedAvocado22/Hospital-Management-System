@@ -5,6 +5,7 @@ import com.hospital.hms.appointment.request.BookAppointmentRequest;
 import com.hospital.hms.appointment.response.AppointmentResponse;
 import com.hospital.hms.appointment.service.BookAppointmentService;
 import com.hospital.hms.appointment.service.CancelAppointmentService;
+import com.hospital.hms.appointment.service.ConfirmAppointmentService;
 import com.hospital.hms.base.api.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import java.util.UUID;
 public class AppointmentController {
     private final BookAppointmentService bookAppointmentService;
     private final CancelAppointmentService cancelAppointmentService;
+    private final ConfirmAppointmentService confirmAppointmentService;
 
     @PostMapping
     @PreAuthorize("hasAnyRole('PATIENT', 'RECEPTIONIST')")
@@ -53,6 +55,22 @@ public class AppointmentController {
         log.info("Appointment cancelled successfully");
         return ResponseEntity.status(HttpStatus.OK).body(
                 ApiResponse.success(data, "Cancelled successfully", HttpStatus.OK.value())
+        );
+    }
+
+    @PatchMapping("/{id}/confirm")
+    @PreAuthorize("hasAnyRole('DOCTOR', 'RECEPTIONIST', 'ADMIN')")
+    public ResponseEntity<ApiResponse<AppointmentResponse>> confirmAppointment(
+            @PathVariable UUID id
+    ) {
+        log.info("Confirm appointment with id: {}", id);
+
+        AppointmentIdRequest request = new AppointmentIdRequest(id);
+        AppointmentResponse data = confirmAppointmentService.execute(request);
+
+        log.info("Appointment confirmed successfully");
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.success(data, "Confirmed successfully", HttpStatus.OK.value())
         );
     }
 }
