@@ -7,6 +7,7 @@ import com.hospital.hms.patient.entity.PatientInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Schema(description = "Full detail view of a single medical record")
 public record MedicalRecordDetailResponse(
@@ -22,6 +23,8 @@ public record MedicalRecordDetailResponse(
 ) {
     @Schema(description = "Slim patient profile included in medical record detail")
     public record PatientInfoResponse(
+            @Schema(description = "Patient's id")
+            UUID id,
             @Schema(description = "Patient's full name", example = "Nguyen Van A")
             String fullName,
             @Schema(description = "Patient's gender", example = "MALE")
@@ -41,6 +44,7 @@ public record MedicalRecordDetailResponse(
     ) {
         public static PatientInfoResponse from(PatientInfo patientInfo) {
             return new PatientInfoResponse(
+                    patientInfo.getId(),
                     patientInfo.getAccount().getFullName(),
                     patientInfo.getAccount().getGender(),
                     patientInfo.getAccount().getDob(),
