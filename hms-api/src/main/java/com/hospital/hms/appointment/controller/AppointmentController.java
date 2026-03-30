@@ -2,11 +2,14 @@ package com.hospital.hms.appointment.controller;
 
 import com.hospital.hms.appointment.request.AppointmentIdRequest;
 import com.hospital.hms.appointment.request.BookAppointmentRequest;
+import com.hospital.hms.appointment.request.SearchAppointmentRequest;
 import com.hospital.hms.appointment.response.AppointmentResponse;
 import com.hospital.hms.appointment.service.BookAppointmentService;
 import com.hospital.hms.appointment.service.CancelAppointmentService;
 import com.hospital.hms.appointment.service.ConfirmAppointmentService;
+import com.hospital.hms.appointment.service.GetAppointmentService;
 import com.hospital.hms.base.api.ApiResponse;
+import com.hospital.hms.base.response.PaginatedResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +28,23 @@ public class AppointmentController {
     private final BookAppointmentService bookAppointmentService;
     private final CancelAppointmentService cancelAppointmentService;
     private final ConfirmAppointmentService confirmAppointmentService;
+    private final GetAppointmentService getAppointmentService;
+
+    @GetMapping
+    @PreAuthorize("hasAnyRole('PATIENT', 'DOCTOR', 'RECEPTIONIST', 'ADMIN')")
+    public ResponseEntity<ApiResponse<PaginatedResponse<AppointmentResponse>>> getAllAppointments(
+            @ModelAttribute SearchAppointmentRequest request
+    ) {
+        log.info("Fetching appointments — status: {}, doctorName: {}, patientName: {}",
+                request.getStatus(), request.getDoctorName(), request.getPatientName());
+
+        PaginatedResponse<AppointmentResponse> data = getAppointmentService.execute(request);
+
+        log.info("Fetched {} appointments", data.content().size());
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.success(data, "Get appointments successfully", HttpStatus.OK.value())
+        );
+    }
 
     @PostMapping
     @PreAuthorize("hasAnyRole('PATIENT', 'RECEPTIONIST')")
