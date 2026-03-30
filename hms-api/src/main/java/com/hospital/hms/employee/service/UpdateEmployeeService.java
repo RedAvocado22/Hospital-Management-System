@@ -1,15 +1,13 @@
 package com.hospital.hms.employee.service;
 
-import com.hospital.hms.auth.entity.Role;
-import com.hospital.hms.auth.repository.RoleRepository;
+import com.hospital.hms.auth.service.RoleQueryService;
 import com.hospital.hms.base.service.BaseService;
-import com.hospital.hms.department.entity.Department;
-import com.hospital.hms.department.repository.DepartmentRepository;
+import com.hospital.hms.department.dto.DepartmentInfo;
+import com.hospital.hms.department.service.DepartmentQueryService;
 import com.hospital.hms.employee.entity.EmployeeInfo;
 import com.hospital.hms.employee.repository.EmployeeInfoRepository;
 import com.hospital.hms.employee.request.UpdateEmployeeRequest;
-import com.hospital.hms.employee.response.EmployeeResponse;
-import com.hospital.hms.exception.BusinessException;
+import com.hospital.hms.employee.response.EmployeeDetailResponse;
 import com.hospital.hms.exception.DuplicateResourceException;
 import com.hospital.hms.exception.IdentityProviderException;
 import com.hospital.hms.exception.NotFoundException;
@@ -19,20 +17,24 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UpdateEmployeeService extends BaseService<UpdateEmployeeRequest, EmployeeResponse> {
+public class UpdateEmployeeService extends BaseService<UpdateEmployeeRequest, EmployeeDetailResponse> {
     private final EmployeeInfoRepository employeeInfoRepository;
-    private final RoleRepository roleRepository;
-    private final DepartmentRepository departmentRepository;
     private final KeycloakService keycloakService;
+    private final DepartmentQueryService departmentQueryService;
+    private final RoleQueryService roleQueryService;
 
     @Override
-    protected EmployeeResponse doProcess(UpdateEmployeeRequest request) {
+    protected EmployeeDetailResponse doProcess(UpdateEmployeeRequest request) {
         EmployeeInfo employee = employeeInfoRepository.findById(request.getId()).orElseThrow(
                 () -> new NotFoundException("Employee not found: " + request.getId())
         );
+
+        String oldRoleName = null;
 
         if (request.getCode() != null
                 && !request.getCode().isEmpty()
@@ -52,24 +54,18 @@ public class UpdateEmployeeService extends BaseService<UpdateEmployeeRequest, Em
         if (request.getHireDate() != null) employee.setHireDate(request.getHireDate());
 
         if (request.getRole() != null) {
-            Role role = roleRepository.findByNameIgnoreCase(request.getRole())
-                    .orElseThrow(() -> new NotFoundException("Role not found: " + request.getRole()));
-            employee.getAccount().setRole(role);
+            oldRoleName = employee.getAccount().getRole().getName();
+            UUID roleId = roleQueryService.getRoleIdByName(request.getRole());
+            employee.getAccount().setRole(roleQueryService.getReferenceById(roleId));
         }
         if (request.getDepartment() != null) {
-            Department department = departmentRepository.findByNameIgnoreCase(request.getDepartment())
-                    .orElseThrow(() -> new NotFoundException("Department not found: " + request.getDepartment()));
-            employee.setDepartment(department);
+            DepartmentInfo departmentInfo = departmentQueryService.getDepartmentIdByName(request.getDepartment());
+            employee.setDepartment(departmentQueryService.getReferenceById(departmentInfo.id()));
         }
 
-        EmployeeInfo updated = employeeInfoRepository.save(employee);
+        employeeInfoRepository.save(employee);
 
         if (request.getRole() != null) {
-            String oldRoleName = employee.getAccount().getRole().getName();
-
-            if (employee.getAccount().getRole() == null)
-                throw new BusinessException("Employee account has no role assigned");
-
             try {
                 keycloakService.updateRole(employee.getAccount().getId().toString(), request.getRole(), oldRoleName);
             } catch (Exception e) {
@@ -78,12 +74,12 @@ public class UpdateEmployeeService extends BaseService<UpdateEmployeeRequest, Em
             }
         }
 
-        return EmployeeResponse.from(updated);
+        return EmployeeDetailResponse.from(employee);
     }
 
     @Override
     @Transactional
-    public EmployeeResponse execute(UpdateEmployeeRequest request) {
+    public EmployeeDetailResponse execute(UpdateEmployeeRequest request) {
         return super.execute(request);
     }
 }

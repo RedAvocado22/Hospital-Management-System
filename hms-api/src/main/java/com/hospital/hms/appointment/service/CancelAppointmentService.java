@@ -38,10 +38,6 @@ public class CancelAppointmentService extends BaseService<AppointmentIdRequest, 
                 () -> new NotFoundException("Appointment not found")
         );
 
-        if (!appointment.getStatus().equals(AppointmentStatus.PENDING) && !appointment.getStatus().equals(AppointmentStatus.CONFIRMED)) {
-            throw new BusinessException("Appointment only cancel when pending");
-        }
-
         if (request.getUserContext().hasRole("ROLE_PATIENT")) {
             UUID patientAccountId = appointment.getPatient().getAccount().getId();
             if (!patientAccountId.equals(request.getUserContext().getUserId())) {
@@ -49,6 +45,10 @@ public class CancelAppointmentService extends BaseService<AppointmentIdRequest, 
                         request.getUserContext().getUserId(), request.getId(), patientAccountId);
                 throw new AccessDeniedException("You do not have permission to do this");
             }
+        }
+
+        if (!appointment.getStatus().equals(AppointmentStatus.PENDING) && !appointment.getStatus().equals(AppointmentStatus.CONFIRMED)) {
+            throw new BusinessException("Appointment only cancel when pending or confirmed");
         }
 
         String key = "slots:" + appointment.getDoctor().getId() + ":" + appointment.getDate() + ":" + appointment.getSchedule().getStartTime() + "-" + appointment.getSchedule().getEndTime();

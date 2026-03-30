@@ -4,7 +4,7 @@ import com.hospital.hms.base.service.BaseService;
 import com.hospital.hms.employee.entity.EmployeeInfo;
 import com.hospital.hms.employee.repository.EmployeeInfoRepository;
 import com.hospital.hms.employee.request.EmployeeIdRequest;
-import com.hospital.hms.employee.response.EmployeeResponse;
+import com.hospital.hms.employee.response.EmployeeDetailResponse;
 import com.hospital.hms.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,12 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class GetEmployeeDetailService extends BaseService<EmployeeIdRequest, EmployeeResponse> {
+public class GetEmployeeDetailService extends BaseService<EmployeeIdRequest, EmployeeDetailResponse> {
 
     private final EmployeeInfoRepository employeeInfoRepository;
 
     @Override
-    protected EmployeeResponse doProcess(EmployeeIdRequest request) {
+    protected EmployeeDetailResponse doProcess(EmployeeIdRequest request) {
         log.info("Fetching employee with id: {}", request.getId());
 
         EmployeeInfo employee = employeeInfoRepository.findById(request.getId()).orElseThrow(
@@ -27,7 +27,7 @@ public class GetEmployeeDetailService extends BaseService<EmployeeIdRequest, Emp
         );
 
         log.info("Found employee with id: {}", employee.getId());
-        return EmployeeResponse.from(employee);
+        return EmployeeDetailResponse.from(employee);
     }
 
     @Override
@@ -37,7 +37,7 @@ public class GetEmployeeDetailService extends BaseService<EmployeeIdRequest, Emp
 
     @Override
     @Transactional(readOnly = true)
-    public EmployeeResponse execute(EmployeeIdRequest request) {
+    public EmployeeDetailResponse execute(EmployeeIdRequest request) {
         return super.execute(request);
     }
 }

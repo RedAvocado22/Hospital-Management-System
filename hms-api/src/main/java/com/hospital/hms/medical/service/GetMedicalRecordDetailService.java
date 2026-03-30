@@ -1,13 +1,15 @@
 package com.hospital.hms.medical.service;
 
 import com.hospital.hms.base.service.BaseService;
-import com.hospital.hms.employee.response.EmployeeResponse;
+import com.hospital.hms.employee.dto.EmployeeSummary;
 import com.hospital.hms.employee.service.EmployeeQueryService;
 import com.hospital.hms.exception.NotFoundException;
 import com.hospital.hms.medical.entity.MedicalRecord;
 import com.hospital.hms.medical.repository.MedicalRecordRepository;
 import com.hospital.hms.medical.request.MedicalRecordIdRequest;
 import com.hospital.hms.medical.response.MedicalRecordDetailResponse;
+import com.hospital.hms.patient.dto.PatientSummary;
+import com.hospital.hms.patient.service.PatientQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
@@ -21,6 +23,7 @@ public class GetMedicalRecordDetailService extends BaseService<MedicalRecordIdRe
 
     private final MedicalRecordRepository medicalRecordRepository;
     private final EmployeeQueryService employeeQueryService;
+    private final PatientQueryService patientQueryService;
 
     @Override
     @Transactional(readOnly = true)
@@ -37,21 +40,22 @@ public class GetMedicalRecordDetailService extends BaseService<MedicalRecordIdRe
         log.debug("Fetching medical record id: {} for user: {}",
                 request.getId(), request.getUserContext().getUserId());
 
-        MedicalRecord md = medicalRecordRepository.findById(request.getId()).orElseThrow(
+        MedicalRecord mr = medicalRecordRepository.findById(request.getId()).orElseThrow(
                 () -> new NotFoundException("Medical record with id: " + request.getId() + " not found")
         );
 
         if (
                 request.getUserContext().hasRole("DOCTOR")
-                        && !request.getUserContext().getUserId().equals(md.getDoctor().getId())
+                        && !request.getUserContext().getUserId().equals(mr.getDoctor().getId())
         ) {
             log.warn("Access denied: doctor {} attempted to view record {}",
                     request.getUserContext().getUserId(), request.getId());
             throw new AccessDeniedException("You are not allowed to view this medical record");
         }
 
-        EmployeeResponse employeeResponse = employeeQueryService.getByAccountId(md.getDoctor().getId());
+        EmployeeSummary employeeInfo = employeeQueryService.getInfoByAccountId(mr.getDoctor().getId());
+        PatientSummary patientSummary = PatientSummary.from(mr.getPatient());
 
-        return MedicalRecordDetailResponse.from(md, employeeResponse);
+        return MedicalRecordDetailResponse.from(mr, employeeInfo, patientSummary);
     }
 }

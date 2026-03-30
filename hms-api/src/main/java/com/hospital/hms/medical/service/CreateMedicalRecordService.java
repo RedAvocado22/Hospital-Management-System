@@ -3,12 +3,13 @@ package com.hospital.hms.medical.service;
 import com.hospital.hms.auth.service.AccountQueryService;
 import com.hospital.hms.base.service.BaseService;
 import com.hospital.hms.billing.service.InvoiceQueryService;
-import com.hospital.hms.employee.response.EmployeeResponse;
+import com.hospital.hms.employee.dto.EmployeeSummary;
 import com.hospital.hms.employee.service.EmployeeQueryService;
 import com.hospital.hms.medical.entity.MedicalRecord;
 import com.hospital.hms.medical.repository.MedicalRecordRepository;
 import com.hospital.hms.medical.request.CreateMedicalRecordRequest;
 import com.hospital.hms.medical.response.MedicalRecordDetailResponse;
+import com.hospital.hms.patient.dto.PatientSummary;
 import com.hospital.hms.patient.service.PatientQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,8 +56,9 @@ public class CreateMedicalRecordService extends BaseService<CreateMedicalRecordR
 
         invoiceQueryService.initInvoices(saved.getId());
 
-        EmployeeResponse er = employeeQueryService.getByAccountId(request.getUserContext().getUserId());
+        EmployeeSummary employeeInfo = employeeQueryService.getInfoByAccountId(request.getUserContext().getUserId());
+        PatientSummary patientSummary = patientQueryService.getById(request.getPatientId());
 
-        return MedicalRecordDetailResponse.from(saved, er);
+        return MedicalRecordDetailResponse.from(saved, employeeInfo, patientSummary);
     }
 }
