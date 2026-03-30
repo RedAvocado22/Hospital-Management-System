@@ -6,7 +6,7 @@ import com.hospital.hms.employee.request.CreateEmployeeRequest;
 import com.hospital.hms.employee.request.EmployeeIdRequest;
 import com.hospital.hms.employee.request.SearchEmployeeRequest;
 import com.hospital.hms.employee.request.UpdateEmployeeRequest;
-import com.hospital.hms.employee.response.EmployeeResponse;
+import com.hospital.hms.employee.response.EmployeeDetailResponse;
 import com.hospital.hms.employee.service.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -97,10 +97,10 @@ public class EmployeeController {
                     description = "Access denied — Admin role required"
             )
     })
-    public ResponseEntity<ApiResponse<PaginatedResponse<EmployeeResponse>>> getEmployees(
+    public ResponseEntity<ApiResponse<PaginatedResponse<EmployeeDetailResponse>>> getEmployees(
             @Valid @ModelAttribute SearchEmployeeRequest request
     ) {
-        PaginatedResponse<EmployeeResponse> data = getEmployeeService.execute(request);
+        PaginatedResponse<EmployeeDetailResponse> data = getEmployeeService.execute(request);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ApiResponse.success(data, "Get employees successfully", HttpStatus.OK.value())
         );
@@ -131,13 +131,13 @@ public class EmployeeController {
                     description = "Employee not found"
             )
     })
-    public ResponseEntity<ApiResponse<EmployeeResponse>> getEmployee(
+    public ResponseEntity<ApiResponse<EmployeeDetailResponse>> getEmployee(
             @Parameter(description = "UUID of the employee to retrieve", required = true)
             @PathVariable UUID id
     ) {
         EmployeeIdRequest request = new EmployeeIdRequest(id);
 
-        EmployeeResponse data = getEmployeeDetailService.execute(request);
+        EmployeeDetailResponse data = getEmployeeDetailService.execute(request);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ApiResponse.success(data, "Get employee successfully", HttpStatus.OK.value())
         );
@@ -172,7 +172,7 @@ public class EmployeeController {
                     description = "Employee, Department, or Role not found"
             )
     })
-    public ResponseEntity<ApiResponse<EmployeeResponse>> updateEmployee(
+    public ResponseEntity<ApiResponse<EmployeeDetailResponse>> updateEmployee(
             @Parameter(description = "UUID of the employee to update", required = true)
             @PathVariable UUID id,
             @Valid @RequestBody UpdateEmployeeRequest request
@@ -181,7 +181,7 @@ public class EmployeeController {
 
         log.info("Updating employee id: {}", id);
 
-        EmployeeResponse data = updateEmployeeService.execute(request);
+        EmployeeDetailResponse data = updateEmployeeService.execute(request);
 
         log.info("Employee {} updated", id);
         return ResponseEntity.status(HttpStatus.OK).body(

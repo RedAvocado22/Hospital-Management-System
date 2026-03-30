@@ -6,7 +6,7 @@ import com.hospital.hms.employee.entity.EmployeeInfo;
 import com.hospital.hms.employee.repository.EmployeeInfoRepository;
 import com.hospital.hms.employee.repository.EmployeeSpecification;
 import com.hospital.hms.employee.request.SearchEmployeeRequest;
-import com.hospital.hms.employee.response.EmployeeResponse;
+import com.hospital.hms.employee.response.EmployeeDetailResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -18,12 +18,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class GetEmployeeService extends BaseService<SearchEmployeeRequest, PaginatedResponse<EmployeeResponse>> {
+public class GetEmployeeService extends BaseService<SearchEmployeeRequest, PaginatedResponse<EmployeeDetailResponse>> {
 
     private final EmployeeInfoRepository employeeInfoRepository;
 
     @Override
-    protected PaginatedResponse<EmployeeResponse> doProcess(SearchEmployeeRequest request) {
+    protected PaginatedResponse<EmployeeDetailResponse> doProcess(SearchEmployeeRequest request) {
         log.debug(
                 "Fetching employees with pagination - page: {}, size: {}",
                 request.getPage(), request.getSize()
@@ -40,7 +40,7 @@ public class GetEmployeeService extends BaseService<SearchEmployeeRequest, Pagin
                 employees.getTotalPages()
         );
 
-        Page<EmployeeResponse> employeeResponsePage = employees.map(EmployeeResponse::from);
+        Page<EmployeeDetailResponse> employeeResponsePage = employees.map(EmployeeDetailResponse::from);
 
         return PaginatedResponse.from(employeeResponsePage);
     }
@@ -52,7 +52,7 @@ public class GetEmployeeService extends BaseService<SearchEmployeeRequest, Pagin
 
     @Override
     @Transactional(readOnly = true)
-    public PaginatedResponse<EmployeeResponse> execute(SearchEmployeeRequest request) {
+    public PaginatedResponse<EmployeeDetailResponse> execute(SearchEmployeeRequest request) {
         return super.execute(request);
     }
 }
