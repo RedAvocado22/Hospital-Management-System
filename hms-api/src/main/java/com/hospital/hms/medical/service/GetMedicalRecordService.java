@@ -12,6 +12,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -29,17 +31,17 @@ public class GetMedicalRecordService extends BaseService<SearchMedicalRecordRequ
     protected PaginatedResponse<MedicalRecordResponse> doProcess(SearchMedicalRecordRequest request) {
         Pageable pageable = request.toPageable();
 
-        String username = request.getUserContext() != null && request.getUserContext().hasRole("ROLE_DOCTOR") ? request.getUserContext().getUsername() : null;
+        UUID doctorId = request.getUserContext() != null && request.getUserContext().hasRole("ROLE_DOCTOR") ? request.getUserContext().getUserId() : null;
 
         log.debug("Searching medical records — keyword: {}, doctorName: {}, doctorFilter: {}",
-                request.getKeyword(), request.getDoctorName(), username);
+                request.getKeyword(), request.getDoctorName(), doctorId);
 
         Page<MedicalRecordResponse> responses = medicalRecordRepository.getMedicalRecordBy(
                 request.getKeyword() != null && request.getKeyword().isBlank() ? null : request.getKeyword(),
                 request.getDoctorName(),
                 request.getFrom() != null ? request.getFrom().atStartOfDay() : null,
                 request.getTo() != null ? request.getTo().plusDays(1).atStartOfDay() : null,
-                username,
+                doctorId,
                 pageable
         );
 

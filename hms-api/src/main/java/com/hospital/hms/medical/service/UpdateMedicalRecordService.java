@@ -1,13 +1,15 @@
 package com.hospital.hms.medical.service;
 
 import com.hospital.hms.base.service.BaseService;
-import com.hospital.hms.employee.response.EmployeeResponse;
+import com.hospital.hms.employee.dto.EmployeeSummary;
 import com.hospital.hms.employee.service.EmployeeQueryService;
 import com.hospital.hms.exception.NotFoundException;
 import com.hospital.hms.medical.entity.MedicalRecord;
 import com.hospital.hms.medical.repository.MedicalRecordRepository;
 import com.hospital.hms.medical.request.UpdateMedicalRecordRequest;
 import com.hospital.hms.medical.response.MedicalRecordDetailResponse;
+import com.hospital.hms.patient.dto.PatientSummary;
+import com.hospital.hms.patient.service.PatientQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
@@ -21,6 +23,7 @@ public class UpdateMedicalRecordService extends BaseService<UpdateMedicalRecordR
 
     private final MedicalRecordRepository medicalRecordRepository;
     private final EmployeeQueryService employeeQueryService;
+    private final PatientQueryService patientQueryService;
 
     @Override
     @Transactional
@@ -59,8 +62,9 @@ public class UpdateMedicalRecordService extends BaseService<UpdateMedicalRecordR
 
         log.info("Medical record {} updated successfully", saved.getId());
 
-        EmployeeResponse er = employeeQueryService.getByAccountId(saved.getDoctor().getId());
+        EmployeeSummary employeeInfo = employeeQueryService.getInfoByAccountId(saved.getDoctor().getId());
+        PatientSummary patientSummary = patientQueryService.getById(response.getPatient().getId());
 
-        return MedicalRecordDetailResponse.from(saved, er);
+        return MedicalRecordDetailResponse.from(saved, employeeInfo, patientSummary);
     }
 }

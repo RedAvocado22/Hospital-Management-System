@@ -34,7 +34,7 @@ public interface MedicalRecordRepository extends JpaRepository<MedicalRecord, UU
                     "JOIN account pa ON pa.id = p.account_id \n" +
                     "JOIN account da ON da.id = mr.doctor_id \n" +
                     "WHERE (:keyword IS NULL OR MATCH(pa.full_name, pa.phone) AGAINST (:keyword IN BOOLEAN MODE))\n" +
-                    "AND (:doctorUserName IS NULL OR da.username = :doctorUserName) \n" +
+                    "AND (:doctorId IS NULL OR da.id = UUID_TO_BIN(:doctorId)) \n" +
                     "AND (:doctorName IS NULL OR LOWER(da.full_name) LIKE LOWER(CONCAT('%', :doctorName, '%')))\n" +
                     "AND (:from IS NULL OR mr.created_at >= :from)\n" +
                     "AND (:to IS NULL OR mr.created_at < :to)",
@@ -43,7 +43,7 @@ public interface MedicalRecordRepository extends JpaRepository<MedicalRecord, UU
                     "JOIN account pa ON pa.id = p.account_id \n" +
                     "JOIN account da ON da.id = mr.doctor_id \n" +
                     "WHERE (:keyword IS NULL OR MATCH(pa.full_name, pa.phone) AGAINST (:keyword IN BOOLEAN MODE))\n" +
-                    "AND (:doctorUserName IS NULL OR da.username = :doctorUserName) \n" +
+                    "AND (:doctorId IS NULL OR da.id = UUID_TO_BIN(:doctorId)) \n" +
                     "AND (:doctorName IS NULL OR LOWER(da.full_name) LIKE LOWER(CONCAT('%', :doctorName, '%')))\n" +
                     "AND (:from IS NULL OR mr.created_at >= :from)\n" +
                     "AND (:to IS NULL OR mr.created_at < :to)",
@@ -54,7 +54,7 @@ public interface MedicalRecordRepository extends JpaRepository<MedicalRecord, UU
             @Param("doctorName") String doctorName,
             @Param("from") LocalDateTime from,
             @Param("to") LocalDateTime to,
-            @Param("doctorUserName") String username,
+            @Param("doctorId") UUID doctorId,
             Pageable pageable
     );
 }

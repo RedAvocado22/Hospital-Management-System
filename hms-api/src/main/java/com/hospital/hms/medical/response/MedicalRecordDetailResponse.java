@@ -1,9 +1,9 @@
 package com.hospital.hms.medical.response;
 
 import com.hospital.hms.common.enums.Gender;
-import com.hospital.hms.employee.response.EmployeeResponse;
+import com.hospital.hms.employee.dto.EmployeeSummary;
 import com.hospital.hms.medical.entity.MedicalRecord;
-import com.hospital.hms.patient.entity.PatientInfo;
+import com.hospital.hms.patient.dto.PatientSummary;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
@@ -42,17 +42,17 @@ public record MedicalRecordDetailResponse(
             @Schema(description = "Known allergies, comma-separated or free text", example = "Penicillin, shellfish")
             String allergies
     ) {
-        public static PatientInfoResponse from(PatientInfo patientInfo) {
+        public static PatientInfoResponse from(PatientSummary patient) {
             return new PatientInfoResponse(
-                    patientInfo.getId(),
-                    patientInfo.getAccount().getFullName(),
-                    patientInfo.getAccount().getGender(),
-                    patientInfo.getAccount().getDob(),
-                    patientInfo.getAccount().getAddress(),
-                    patientInfo.getAccount().getPhone(),
-                    patientInfo.getAccount().getEmail(),
-                    patientInfo.getBloodType(),
-                    patientInfo.getAllergies()
+                    patient.id(),
+                    patient.fullName(),
+                    patient.gender(),
+                    patient.dob(),
+                    patient.address(),
+                    patient.phone(),
+                    patient.email(),
+                    patient.bloodType(),
+                    patient.allergies()
             );
         }
     }
@@ -66,19 +66,19 @@ public record MedicalRecordDetailResponse(
             @Schema(description = "Employee code of the doctor", example = "EMP-0042")
             String code
     ) {
-        public static DoctorSummary from(EmployeeResponse employeeResponse) {
+        public static DoctorSummary from(EmployeeSummary employeeSummary) {
             return new DoctorSummary(
-                    employeeResponse.fullName(),
-                    employeeResponse.department().name(),
-                    employeeResponse.code()
+                    employeeSummary.fullName(),
+                    employeeSummary.department().name(),
+                    employeeSummary.code()
             );
         }
     }
 
-    public static MedicalRecordDetailResponse from(MedicalRecord medicalRecord, EmployeeResponse employeeResponse) {
+    public static MedicalRecordDetailResponse from(MedicalRecord medicalRecord, EmployeeSummary employeeSummary, PatientSummary patientSummary) {
         return new MedicalRecordDetailResponse(
-                PatientInfoResponse.from(medicalRecord.getPatient()),
-                DoctorSummary.from(employeeResponse),
+                PatientInfoResponse.from(patientSummary),
+                DoctorSummary.from(employeeSummary),
                 medicalRecord.getDescription(),
                 medicalRecord.getDoctorAdvice()
         );
