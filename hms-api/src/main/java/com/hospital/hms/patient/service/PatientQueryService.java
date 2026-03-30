@@ -31,8 +31,9 @@ public class PatientQueryService {
         return PatientSummary.from(pi);
     }
 
+    @Transactional(readOnly = true)
     public PatientSummary getById(UUID id) {
-        PatientInfo pi = patientInfoRepository.findById(id).orElseThrow(
+        PatientInfo pi = patientInfoRepository.findWithAccountById(id).orElseThrow(
                 () -> new NotFoundException("Patient with id " + id + " not found")
         );
         return PatientSummary.from(pi);

@@ -40,22 +40,22 @@ public class GetMedicalRecordDetailService extends BaseService<MedicalRecordIdRe
         log.debug("Fetching medical record id: {} for user: {}",
                 request.getId(), request.getUserContext().getUserId());
 
-        MedicalRecord md = medicalRecordRepository.findById(request.getId()).orElseThrow(
+        MedicalRecord mr = medicalRecordRepository.findById(request.getId()).orElseThrow(
                 () -> new NotFoundException("Medical record with id: " + request.getId() + " not found")
         );
 
         if (
                 request.getUserContext().hasRole("DOCTOR")
-                        && !request.getUserContext().getUserId().equals(md.getDoctor().getId())
+                        && !request.getUserContext().getUserId().equals(mr.getDoctor().getId())
         ) {
             log.warn("Access denied: doctor {} attempted to view record {}",
                     request.getUserContext().getUserId(), request.getId());
             throw new AccessDeniedException("You are not allowed to view this medical record");
         }
 
-        EmployeeSummary employeeInfo = employeeQueryService.getInfoByAccountId(md.getDoctor().getId());
-        PatientSummary patientSummary = patientQueryService.getById(md.getPatient().getId());
+        EmployeeSummary employeeInfo = employeeQueryService.getInfoByAccountId(mr.getDoctor().getId());
+        PatientSummary patientSummary = PatientSummary.from(mr.getPatient());
 
-        return MedicalRecordDetailResponse.from(md, employeeInfo, patientSummary);
+        return MedicalRecordDetailResponse.from(mr, employeeInfo, patientSummary);
     }
 }
