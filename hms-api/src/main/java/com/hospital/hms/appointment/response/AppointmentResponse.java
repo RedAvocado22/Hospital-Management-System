@@ -1,7 +1,6 @@
 package com.hospital.hms.appointment.response;
 
 import com.hospital.hms.appointment.entity.Appointment;
-import com.hospital.hms.appointment.request.BookAppointmentRequest;
 import com.hospital.hms.common.enums.AppointmentStatus;
 
 import java.time.LocalDate;
@@ -19,20 +18,6 @@ public record AppointmentResponse(
         LocalTime endTime,
         AppointmentStatus status
 ) {
-    public static AppointmentResponse from(Appointment appointment, BookAppointmentRequest request) {
-        return new AppointmentResponse(
-                appointment.getId(),
-                request.getDoctorId(),
-                null,
-                request.getPatientId(),
-                null,
-                appointment.getDate(),
-                request.getStartTime(),
-                request.getEndTime(),
-                appointment.getStatus()
-        );
-    }
-
     public static AppointmentResponse from(Appointment appointment) {
         return new AppointmentResponse(
                 appointment.getId(),

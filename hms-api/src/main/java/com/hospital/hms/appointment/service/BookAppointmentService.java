@@ -9,7 +9,7 @@ import com.hospital.hms.base.service.BaseService;
 import com.hospital.hms.common.enums.AppointmentStatus;
 import com.hospital.hms.exception.BusinessException;
 import com.hospital.hms.exception.ValidationException;
-import com.hospital.hms.medical.response.DoctorScheduleDetailResponse;
+import com.hospital.hms.medical.dto.DoctorScheduleInfo;
 import com.hospital.hms.medical.service.DoctorScheduleQueryService;
 import com.hospital.hms.patient.service.PatientQueryService;
 import lombok.RequiredArgsConstructor;
@@ -39,33 +39,42 @@ public class BookAppointmentService extends BaseService<BookAppointmentRequest, 
 
     @Override
     protected AppointmentResponse doProcess(BookAppointmentRequest request) {
-        log.info("Booking appointment — doctorId: {}, patientId: {}, date: {}",
-                request.getDoctorId(), request.getPatientId(), request.getDate());
+        log.info("Booking appointment — doctor schedule with id: {}", request.getScheduleId());
 
-        DoctorScheduleDetailResponse doctorSchedule = doctorScheduleQueryService.findDoctorSchedule(
-                request.getDoctorId(), request.getDate(), request.getStartTime(), request.getEndTime()
-        );
+        DoctorScheduleInfo schedule = doctorScheduleQueryService.findDoctorSchedule(request.getScheduleId());
 
-        if (!doctorSchedule.isAvailable()) {
+        if (!schedule.isAvailable()) {
             throw new BusinessException("Doctor is not available");
         }
 
-        String key = "slots:" + request.getDoctorId() + ":" + request.getDate() + ":" + request.getStartTime() + "-" + request.getEndTime();
+        if (schedule.date().isBefore(LocalDate.now())) {
+            throw new ValidationException("Date must not be in the past");
+        }
 
-        if (appointmentSlotService.bookSlot(doctorSchedule.id(), key, doctorSchedule.maxPatients())) {
+        if (schedule.date().isEqual(LocalDate.now()) && schedule.startTime().isBefore(LocalTime.now())) {
+            throw new ValidationException("Start time cannot be in the past");
+        }
+
+        if (schedule.startTime().isAfter(schedule.endTime())) {
+            throw new ValidationException("Start time must be before end time");
+        }
+
+        String key = "slots:" + schedule.doctorId() + ":" + schedule.date() + ":" + schedule.startTime() + "-" + schedule.endTime();
+
+        if (appointmentSlotService.bookSlot(schedule.id(), key, schedule.maxPatients())) {
             Appointment appointment = Appointment.builder()
-                    .doctor(accountQueryService.getReferenceById(request.getDoctorId()))
-                    .date(request.getDate())
+                    .doctor(accountQueryService.getReferenceById(schedule.doctorId()))
+                    .date(schedule.date())
                     .patient(patientQueryService.getReferenceById(request.getPatientId()))
-                    .schedule(doctorScheduleQueryService.getReferenceById(doctorSchedule.id()))
+                    .schedule(doctorScheduleQueryService.getReferenceById(schedule.id()))
                     .reason(request.getReason())
                     .status(AppointmentStatus.PENDING)
                     .build();
-            appointmentRepository.save(appointment);
+            Appointment saved = appointmentRepository.save(appointment);
 
-            log.info("Appointment booked, id: {}", appointment.getId());
+            log.info("Appointment booked, id: {}", saved.getId());
 
-            return AppointmentResponse.from(appointment, request);
+            return AppointmentResponse.from(saved);
         } else {
             log.warn("Slot fully booked — key: {}", key);
             throw new BusinessException("This schedule is fully booked");
@@ -78,18 +87,6 @@ public class BookAppointmentService extends BaseService<BookAppointmentRequest, 
 
         if (request.getUserContext() == null) {
             throw new ValidationException("User context is missing");
-        }
-
-        if (request.getDate().isBefore(LocalDate.now())) {
-            throw new ValidationException("Date must not be in the past");
-        }
-
-        if (request.getDate().isEqual(LocalDate.now()) && request.getStartTime().isBefore(LocalTime.now())) {
-            throw new ValidationException("Start time cannot be in the past");
-        }
-
-        if (request.getStartTime().isAfter(request.getEndTime())) {
-            throw new ValidationException("Start time must be before end time");
         }
 
         if (request.getUserContext().hasRole("ROLE_RECEPTIONIST") && request.getPatientId() == null) {
