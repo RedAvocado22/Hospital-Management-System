@@ -25,5 +25,5 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID>,
     @EntityGraph(attributePaths = {"doctor", "schedule", "patient", "patient.account"})
     Optional<Appointment> findByIdWithDetails(@Param("id") UUID id);
 
-    Integer countAppointmentByDoctorSchedule_Id(UUID doctorScheduleId);
+    Integer countAppointmentBySchedule_Id(UUID doctorScheduleId);
 }
