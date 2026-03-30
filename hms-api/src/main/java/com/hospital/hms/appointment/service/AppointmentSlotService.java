@@ -55,7 +55,7 @@ public class AppointmentSlotService {
     public boolean bookSlot(UUID doctorScheduleId, String key, Integer maxPatients) {
         Integer count = 0;
         if (template.opsForValue().get(key) == null) {
-            count = appointmentRepository.countAppointmentByDoctorSchedule_Id(doctorScheduleId);
+            count = appointmentRepository.countAppointmentBySchedule_Id(doctorScheduleId);
             log.debug("Redis key {} not found — seeding from DB, count: {}", key, count);
         }
 
