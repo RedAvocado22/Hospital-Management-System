@@ -40,30 +40,30 @@ public class UpdateMedicalRecordService extends BaseService<UpdateMedicalRecordR
         log.info("Updating medical record id: {} by doctor: {}",
                 request.getId(), request.getUserContext().getUserId());
 
-        MedicalRecord response = medicalRecordRepository.findById(request.getId()).orElseThrow(
+        MedicalRecord mr = medicalRecordRepository.findById(request.getId()).orElseThrow(
                 () -> new NotFoundException("Medical record not found")
         );
 
-        if (!response.getDoctor().getId().equals(request.getUserContext().getUserId())) {
+        if (!mr.getDoctor().getId().equals(request.getUserContext().getUserId())) {
             log.warn("Access denied: doctor {} attempted to update record {}",
                     request.getUserContext().getUserId(), request.getId());
             throw new AccessDeniedException("You do not have permission to access this resource");
         }
 
         if (request.getAdvice() != null && !request.getAdvice().isBlank()) {
-            response.setDoctorAdvice(request.getAdvice());
+            mr.setDoctorAdvice(request.getAdvice());
         }
 
         if (request.getDescription() != null && !request.getDescription().isBlank()) {
-            response.setDescription(request.getDescription());
+            mr.setDescription(request.getDescription());
         }
 
-        MedicalRecord saved = medicalRecordRepository.save(response);
+        MedicalRecord saved = medicalRecordRepository.save(mr);
 
         log.info("Medical record {} updated successfully", saved.getId());
 
         EmployeeSummary employeeInfo = employeeQueryService.getInfoByAccountId(saved.getDoctor().getId());
-        PatientSummary patientSummary = patientQueryService.getById(response.getPatient().getId());
+        PatientSummary patientSummary = PatientSummary.from(mr.getPatient());
 
         return MedicalRecordDetailResponse.from(saved, employeeInfo, patientSummary);
     }
