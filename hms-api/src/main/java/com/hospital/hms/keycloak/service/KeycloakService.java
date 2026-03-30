@@ -1,7 +1,6 @@
 package com.hospital.hms.keycloak.service;
 
-import com.hospital.hms.auth.repository.AccountRepository;
-import com.hospital.hms.auth.response.AuthResponse;
+import com.hospital.hms.auth.dto.AuthTokenInfo;
 import com.hospital.hms.exception.IdentityProviderException;
 import com.hospital.hms.keycloak.request.KeyCloakRequest;
 import jakarta.ws.rs.core.Response;
@@ -33,7 +32,6 @@ public class KeycloakService {
 
     private final WebClient webClient = WebClient.builder().build();
     private final Keycloak keycloak;
-    private final AccountRepository accountRepository;
 
     @Value("${app.keycloak.server-url}")
     private String serverUrl;
@@ -50,7 +48,7 @@ public class KeycloakService {
     /**
      * Authenticates a user with Keycloak and returns access/refresh tokens.
      */
-    public AuthResponse authenticate(String username, String password) {
+    public AuthTokenInfo authenticate(String username, String password) {
         String tokenUrl = serverUrl + "/realms/" + realm + "/protocol/openid-connect/token";
 
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
@@ -73,12 +71,12 @@ public class KeycloakService {
                     .block();
 
             if (response != null) {
-                return AuthResponse.builder()
-                        .accessToken((String) response.get("access_token"))
-                        .refreshToken((String) response.get("refresh_token"))
-                        .expiresIn(((Number) response.get("expires_in")).longValue())
-                        .refreshExpiresIn(((Number) response.get("refresh_expires_in")).longValue())
-                        .build();
+                return new AuthTokenInfo(
+                        (String) response.get("access_token"),
+                        (String) response.get("refresh_token"),
+                        ((Number) response.get("expires_in")).longValue(),
+                        ((Number) response.get("refresh_expires_in")).longValue()
+                );
             }
         } catch (WebClientResponseException e) {
             log.error("Keycloak authentication failed: {}", e.getResponseBodyAsString());
