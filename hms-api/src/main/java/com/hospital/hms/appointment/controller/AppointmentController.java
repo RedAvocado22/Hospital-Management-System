@@ -51,8 +51,7 @@ public class AppointmentController {
     public ResponseEntity<ApiResponse<AppointmentResponse>> bookAppointment(
             @Valid @RequestBody BookAppointmentRequest request
     ) {
-        log.info("Booking appointment — doctorId: {}, date: {}",
-                request.getDoctorId(), request.getDate());
+        log.info("Booking appointment — doctor schedule with id: {}", request.getScheduleId());
 
         AppointmentResponse data = bookAppointmentService.execute(request);
 
