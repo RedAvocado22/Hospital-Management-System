@@ -1,13 +1,15 @@
 package com.hospital.hms.medical.service;
 
 import com.hospital.hms.base.service.BaseService;
-import com.hospital.hms.employee.response.EmployeeResponse;
+import com.hospital.hms.employee.dto.EmployeeSummary;
 import com.hospital.hms.employee.service.EmployeeQueryService;
 import com.hospital.hms.exception.NotFoundException;
 import com.hospital.hms.medical.entity.MedicalRecord;
 import com.hospital.hms.medical.repository.MedicalRecordRepository;
 import com.hospital.hms.medical.request.MedicalRecordIdRequest;
 import com.hospital.hms.medical.response.MedicalRecordDetailResponse;
+import com.hospital.hms.patient.dto.PatientSummary;
+import com.hospital.hms.patient.service.PatientQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
@@ -21,6 +23,7 @@ public class GetMedicalRecordDetailService extends BaseService<MedicalRecordIdRe
 
     private final MedicalRecordRepository medicalRecordRepository;
     private final EmployeeQueryService employeeQueryService;
+    private final PatientQueryService patientQueryService;
 
     @Override
     @Transactional(readOnly = true)
@@ -50,8 +53,9 @@ public class GetMedicalRecordDetailService extends BaseService<MedicalRecordIdRe
             throw new AccessDeniedException("You are not allowed to view this medical record");
         }
 
-        EmployeeResponse employeeResponse = employeeQueryService.getByAccountId(md.getDoctor().getId());
+        EmployeeSummary employeeInfo = employeeQueryService.getInfoByAccountId(md.getDoctor().getId());
+        PatientSummary patientSummary = patientQueryService.getById(md.getPatient().getId());
 
-        return MedicalRecordDetailResponse.from(md, employeeResponse);
+        return MedicalRecordDetailResponse.from(md, employeeInfo, patientSummary);
     }
 }
