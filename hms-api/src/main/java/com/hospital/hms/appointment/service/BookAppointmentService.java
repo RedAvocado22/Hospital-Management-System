@@ -92,7 +92,7 @@ public class BookAppointmentService extends BaseService<BookAppointmentRequest, 
         if (request.getUserContext().hasRole("ROLE_RECEPTIONIST") && request.getPatientId() == null) {
             throw new ValidationException("Patient ID must be specified for this book appointment");
         } else if (request.getUserContext().hasRole("ROLE_PATIENT")) {
-            request.setPatientId(patientQueryService.getPatientIdByAccountId(request.getUserContext().getUserId()));
+            request.setPatientId(patientQueryService.getPatientIdByAccountId(request.getUserContext().getUserId()).id());
         }
     }
 }

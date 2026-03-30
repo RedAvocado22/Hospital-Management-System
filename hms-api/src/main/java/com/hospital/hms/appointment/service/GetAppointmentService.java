@@ -40,7 +40,7 @@ public class GetAppointmentService extends BaseService<SearchAppointmentRequest,
         }
 
         if (request.getUserContext().hasRole("ROLE_PATIENT")) {
-            patientId = patientQueryService.getPatientIdByAccountId(request.getUserContext().getUserId());
+            patientId = patientQueryService.getPatientIdByAccountId(request.getUserContext().getUserId()).id();
         }
 
         Pageable pageable = request.toPageable();
