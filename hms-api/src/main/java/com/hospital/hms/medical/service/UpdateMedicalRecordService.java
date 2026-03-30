@@ -1,13 +1,15 @@
 package com.hospital.hms.medical.service;
 
 import com.hospital.hms.base.service.BaseService;
-import com.hospital.hms.employee.response.EmployeeResponse;
+import com.hospital.hms.employee.dto.EmployeeSummary;
 import com.hospital.hms.employee.service.EmployeeQueryService;
 import com.hospital.hms.exception.NotFoundException;
 import com.hospital.hms.medical.entity.MedicalRecord;
 import com.hospital.hms.medical.repository.MedicalRecordRepository;
 import com.hospital.hms.medical.request.UpdateMedicalRecordRequest;
 import com.hospital.hms.medical.response.MedicalRecordDetailResponse;
+import com.hospital.hms.patient.dto.PatientSummary;
+import com.hospital.hms.patient.service.PatientQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
@@ -21,6 +23,7 @@ public class UpdateMedicalRecordService extends BaseService<UpdateMedicalRecordR
 
     private final MedicalRecordRepository medicalRecordRepository;
     private final EmployeeQueryService employeeQueryService;
+    private final PatientQueryService patientQueryService;
 
     @Override
     @Transactional
@@ -37,30 +40,31 @@ public class UpdateMedicalRecordService extends BaseService<UpdateMedicalRecordR
         log.info("Updating medical record id: {} by doctor: {}",
                 request.getId(), request.getUserContext().getUserId());
 
-        MedicalRecord response = medicalRecordRepository.findById(request.getId()).orElseThrow(
+        MedicalRecord mr = medicalRecordRepository.findById(request.getId()).orElseThrow(
                 () -> new NotFoundException("Medical record not found")
         );
 
-        if (!response.getDoctor().getId().equals(request.getUserContext().getUserId())) {
+        if (!mr.getDoctor().getId().equals(request.getUserContext().getUserId())) {
             log.warn("Access denied: doctor {} attempted to update record {}",
                     request.getUserContext().getUserId(), request.getId());
             throw new AccessDeniedException("You do not have permission to access this resource");
         }
 
         if (request.getAdvice() != null && !request.getAdvice().isBlank()) {
-            response.setDoctorAdvice(request.getAdvice());
+            mr.setDoctorAdvice(request.getAdvice());
         }
 
         if (request.getDescription() != null && !request.getDescription().isBlank()) {
-            response.setDescription(request.getDescription());
+            mr.setDescription(request.getDescription());
         }
 
-        MedicalRecord saved = medicalRecordRepository.save(response);
+        MedicalRecord saved = medicalRecordRepository.save(mr);
 
         log.info("Medical record {} updated successfully", saved.getId());
 
-        EmployeeResponse er = employeeQueryService.getByAccountId(saved.getDoctor().getId());
+        EmployeeSummary employeeInfo = employeeQueryService.getInfoByAccountId(saved.getDoctor().getId());
+        PatientSummary patientSummary = PatientSummary.from(mr.getPatient());
 
-        return MedicalRecordDetailResponse.from(saved, er);
+        return MedicalRecordDetailResponse.from(saved, employeeInfo, patientSummary);
     }
 }

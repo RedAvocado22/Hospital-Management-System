@@ -1,5 +1,6 @@
 package com.hospital.hms.auth.service;
 
+import com.hospital.hms.auth.dto.AuthTokenInfo;
 import com.hospital.hms.auth.entity.Account;
 import com.hospital.hms.auth.repository.AccountRepository;
 import com.hospital.hms.auth.request.SignInRequest;
@@ -30,6 +31,14 @@ public class SignInService {
             throw new BusinessException("The account is de-activated. Please contact administrator.");
         }
 
-        return keycloakService.authenticate(request.getUsername(), request.getPassword());
+        AuthTokenInfo tokenInfo = keycloakService.authenticate(request.getUsername(), request.getPassword());
+
+        return AuthResponse.builder()
+                .accessToken(tokenInfo.accessToken())
+                .refreshToken(tokenInfo.refreshToken())
+                .expiresIn(tokenInfo.expiresIn())
+                .refreshExpiresIn(tokenInfo.refreshExpiresIn())
+                .build();
     }
 }
+

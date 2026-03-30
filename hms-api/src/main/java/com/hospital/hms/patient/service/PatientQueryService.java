@@ -1,6 +1,7 @@
 package com.hospital.hms.patient.service;
 
 import com.hospital.hms.exception.NotFoundException;
+import com.hospital.hms.patient.dto.PatientSummary;
 import com.hospital.hms.patient.entity.PatientInfo;
 import com.hospital.hms.patient.repository.PatientInfoRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,10 +24,18 @@ public class PatientQueryService {
         return patientInfoRepository.getReferenceById(id);
     }
 
-    public UUID getPatientIdByAccountId(UUID id) {
+    public PatientSummary getPatientIdByAccountId(UUID id) {
         PatientInfo pi = patientInfoRepository.findByAccount_Id(id).orElseThrow(
                 () -> new NotFoundException("Patient with id " + id + " not found")
         );
-        return pi.getId();
+        return PatientSummary.from(pi);
+    }
+
+    @Transactional(readOnly = true)
+    public PatientSummary getById(UUID id) {
+        PatientInfo pi = patientInfoRepository.findWithAccountById(id).orElseThrow(
+                () -> new NotFoundException("Patient with id " + id + " not found")
+        );
+        return PatientSummary.from(pi);
     }
 }
