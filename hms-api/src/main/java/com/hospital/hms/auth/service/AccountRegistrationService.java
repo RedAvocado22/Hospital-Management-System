@@ -1,5 +1,6 @@
 package com.hospital.hms.auth.service;
 
+import com.hospital.hms.auth.dto.AccountInfo;
 import com.hospital.hms.auth.entity.Account;
 import com.hospital.hms.auth.entity.Role;
 import com.hospital.hms.auth.repository.AccountRepository;
@@ -23,7 +24,7 @@ import java.util.UUID;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class AccountRegistrationService extends BaseService<AccountRegistrationRequest, Account> {
+public class AccountRegistrationService extends BaseService<AccountRegistrationRequest, AccountInfo> {
 
     private final AccountRepository accountRepository;
     private final KeycloakService keycloakService;
@@ -31,12 +32,12 @@ public class AccountRegistrationService extends BaseService<AccountRegistrationR
 
     @Override
     @Transactional
-    public Account execute(AccountRegistrationRequest request) {
+    public AccountInfo execute(AccountRegistrationRequest request) {
         return super.execute(request);
     }
 
     @Override
-    protected Account doProcess(AccountRegistrationRequest request) {
+    protected AccountInfo doProcess(AccountRegistrationRequest request) {
         log.debug("User saved to local database: {}", request.getUsername());
 
         Role role = roleRepository.findByNameIgnoreCase(request.getRole())
@@ -79,7 +80,7 @@ public class AccountRegistrationService extends BaseService<AccountRegistrationR
             throw new BusinessException("Account registration failed — database error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        return account;
+        return AccountInfo.from(account);
     }
 
     @Override

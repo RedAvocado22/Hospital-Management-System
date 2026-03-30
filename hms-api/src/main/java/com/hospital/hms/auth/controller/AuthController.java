@@ -1,7 +1,7 @@
 package com.hospital.hms.auth.controller;
 
 import com.hospital.hms.auth.request.SignInRequest;
-import com.hospital.hms.auth.response.AccountResponse;
+import com.hospital.hms.auth.dto.AccountInfo;
 import com.hospital.hms.auth.response.AuthResponse;
 import com.hospital.hms.auth.service.SignInService;
 import com.hospital.hms.base.api.ApiResponse;
@@ -63,10 +63,10 @@ public class AuthController {
                     description = "Keycloak unavailable — registration rolled back"
             )
     })
-    public ResponseEntity<ApiResponse<AccountResponse>> signUp(@Valid @RequestBody CreatePatientRequest request) {
+    public ResponseEntity<ApiResponse<AccountInfo>> signUp(@Valid @RequestBody CreatePatientRequest request) {
         log.info("Received sign up request: {}", request.toLogString());
 
-        AccountResponse data = createPatientService.execute(request);
+        AccountInfo data = createPatientService.execute(request);
 
         log.info("Successfully processed sign up request for: {}", request.getUsername());
         return ResponseEntity.status(HttpStatus.CREATED).body(
