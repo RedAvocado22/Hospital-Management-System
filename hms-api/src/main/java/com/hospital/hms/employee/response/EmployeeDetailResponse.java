@@ -62,8 +62,8 @@ public record EmployeeDetailResponse(
         @Schema(description = "Last modification timestamp")
         LocalDateTime updatedAt
 ) {
-    public static EmployeeResponse from(EmployeeInfo employee) {
-        return new EmployeeResponse(
+    public static EmployeeDetailResponse from(EmployeeInfo employee) {
+        return new EmployeeDetailResponse(
                 employee.getId(),
                 employee.getAccount().getUsername(),
                 employee.getAccount().getEmail(),
