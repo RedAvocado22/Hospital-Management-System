@@ -38,14 +38,16 @@ Infrastructure boundaries are strict: all Keycloak calls go through `KeycloakSer
 
 ## Running Locally
 
-```bash
-# 1. Start infrastructure (MySQL, Redis, Keycloak)
-cd hms-api
-docker-compose up -d
+### Prerequisites
 
-# 2. Start the API
-./mvnw spring-boot:run
-```
+- Java 17+
+- Docker Desktop (must be running)
+
+### Start
+
+Just run the Spring Boot app from IntelliJ (or `./mvnw spring-boot:run` inside `hms-api/`).
+
+Spring Boot automatically starts all Docker containers (MySQL, Redis, Keycloak), waits for them to be healthy, then boots the API. No manual `docker compose` step needed.
 
 | Service    | URL                                       |
 |------------|-------------------------------------------|
@@ -53,6 +55,35 @@ docker-compose up -d
 | Swagger UI | http://localhost:8080/api/swagger-ui.html |
 | Keycloak   | http://localhost:9090                     |
 | Frontend   | http://localhost:5173                     |
+
+### Default Credentials
+
+**Keycloak Admin:** `admin / admin` at `http://localhost:9090`
+
+**Seed users** (all passwords: `123456`):
+
+| Username | Role |
+|---|---|
+| `admin.seed` | ADMIN |
+| `dr.nguyen` | DOCTOR |
+| `dr.tran` | DOCTOR |
+| `receptionist.le` | RECEPTIONIST |
+| `pharmacist.pham` | PHARMACIST |
+| `cashier.hoang` | CASHIER |
+| `patient.bui` | PATIENT |
+| `patient.vo` | PATIENT |
+| `patient.dang` | PATIENT |
+
+### Full Reset (broken DB, Keycloak out of sync, Flyway checksum errors)
+
+```bash
+cd hms-api
+docker compose down -v
+```
+
+Then run the project again — schema, seed data, and Keycloak realm all rebuild from scratch automatically.
+
+> **Warning:** `-v` deletes all volumes including the database. Only use this for a clean slate.
 
 ---
 
