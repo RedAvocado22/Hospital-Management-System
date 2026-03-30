@@ -201,4 +201,37 @@ public class KeycloakService {
             );
         }
     }
+
+    public void updateUserInfo(String accountId, String email, String firstName, String lastName) {
+        try {
+            UserRepresentation user = keycloak.realm(realm).users().get(accountId).toRepresentation();
+            user.setEmail(email);
+            user.setFirstName(firstName);
+            user.setLastName(lastName);
+            keycloak.realm(realm).users().get(accountId).update(user);
+            log.info("Successfully updated user info in Keycloak for user ID: {}", accountId);
+        } catch (Exception e) {
+            log.error("Failed to update user info in Keycloak for user ID: {}", accountId, e);
+            throw new IdentityProviderException(
+                    "Failed to update user info in Keycloak", HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
+
+    public void updatePassword(String accountId, String newPassword) {
+        try {
+            CredentialRepresentation credential = new CredentialRepresentation();
+            credential.setType(CredentialRepresentation.PASSWORD);
+            credential.setValue(newPassword);
+            credential.setTemporary(false);
+
+            keycloak.realm(realm).users().get(accountId).resetPassword(credential);
+            log.info("Successfully updated password for user ID: {}", accountId);
+        } catch (Exception e) {
+            log.error("Failed to update password in Keycloak for user ID: {}", accountId, e);
+            throw new IdentityProviderException(
+                    "Failed to change password", HttpStatus.INTERNAL_SERVER_ERROR
+            );
+        }
+    }
 }
