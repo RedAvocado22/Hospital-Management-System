@@ -8,6 +8,7 @@ import java.util.UUID;
 
 public record PatientSummary(
         UUID id,
+        UUID accountId,
         String fullName,
         Gender gender,
         LocalDate dob,
@@ -20,6 +21,7 @@ public record PatientSummary(
     public static PatientSummary from(PatientInfo patientInfo) {
         return new PatientSummary(
                 patientInfo.getId(),
+                patientInfo.getAccount().getId(),
                 patientInfo.getAccount().getFullName(),
                 patientInfo.getAccount().getGender(),
                 patientInfo.getAccount().getDob(),

@@ -43,15 +43,15 @@ public class MedicalRecordController {
     private final UpdateMedicalRecordService updateMedicalRecordService;
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'DOCTOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'DOCTOR', 'PATIENT')")
     @Operation(
             summary = "Search medical records",
             description = """
                     Returns a paginated list of medical records with optional filters.
-
+                    
                     **ABAC rule:** Doctors receive only records they created (doctorId is extracted from the JWT automatically). \
                     Admins and Receptionists see all records.
-
+                    
                     **Filters:** keyword (full-text on patient name/phone), doctorName (LIKE), date range (from/to).
                     """
     )
@@ -80,13 +80,13 @@ public class MedicalRecordController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'DOCTOR')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'RECEPTIONIST', 'DOCTOR', 'PATIENT')")
     @Operation(
             summary = "Get medical record detail",
             description = """
                     Returns full detail of a single medical record including patient info, doctor summary, \
                     description, and advice.
-
+                    
                     **ABAC rule:** Doctors can only retrieve records they created. \
                     Admins and Receptionists can retrieve any record. \
                     A Doctor requesting another doctor's record will receive 403.
@@ -130,12 +130,12 @@ public class MedicalRecordController {
             description = """
                     Creates a new medical record for a patient after examination. \
                     Only accessible by Doctors.
-
+                    
                     **Side effects (all in one transaction):**
                     - Saves the MedicalRecord
                     - Auto-creates an empty ServiceInvoice linked to this record
                     - Auto-creates an empty MedicineInvoice linked to this record
-
+                    
                     If any of the above fail, the entire transaction rolls back — no partial data is saved.
                     """
     )
@@ -182,10 +182,10 @@ public class MedicalRecordController {
             description = """
                     Updates the description and/or advice on an existing medical record. \
                     Only accessible by Doctors.
-
+                    
                     **ABAC rule:** A Doctor can only update records they created. \
                     Attempting to update another doctor's record returns 403.
-
+                    
                     Both fields are optional — only non-null values are applied.
                     """
     )
