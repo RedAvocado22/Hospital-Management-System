@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @SuperBuilder
@@ -36,14 +38,14 @@ public class SearchEmployeeRequest extends PaginatedRequest {
     @Schema(description = "Filter by email address", example = "nguyen@hospital.com")
     private String email;
 
+    @Schema(description = "Filter by role", example = "Doctor")
+    private String roleName;
+
     @Schema(description = "Filter by hire date range")
-    private DateRange hireDate;
+    private LocalDate hireDateFrom;
 
-    @Schema(description = "Filter by creation date range")
-    private DateRange createdAtRange;
-
-    @Schema(description = "Filter by last update date range")
-    private DateRange updatedAtRange;
+    @Schema(description = "Filter by hire date range")
+    private LocalDate hireDateTo;
 
     @Schema(description = "Filter by department name", example = "Cardiology")
     private String department;
