@@ -15,3 +15,9 @@ export const getMedicalRecordById = (id: string) =>
 
 export const updateMedicalRecord = (id: string, data: { description: string; advice: string }) =>
   api.put<ApiResponse<MedicalRecordDetail>>(`/medical-records/${id}`, data);
+
+export const createMedicalRecord = (data: {
+  patientId: string;
+  description: string;
+  advice?: string;
+}) => api.post<ApiResponse<MedicalRecordDetail>>('/medical-records', data);

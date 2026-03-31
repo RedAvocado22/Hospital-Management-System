@@ -58,20 +58,19 @@ export interface Employee {
     id: string;
     name: string;
   };
-  role: {
-    id: string;
-    name: string;
-  };
+  role: string;
 }
 
 export interface Department {
   id: string;
   name: string;
   isActive: boolean;
+  createdAt?: string;
 }
 
 export interface MedicalRecord {
   id: string;
+  doctorId: string;
   patientName: string;
   doctorName: string;
   description: string;
@@ -128,4 +127,52 @@ export interface CreateEmployeeRequest {
   hireDate: string;
   department: string;
   role: string;
+}
+
+export interface Appointment {
+  id: string;
+  doctorId: string;
+  doctorName: string | null;
+  patientId: string;
+  patientName: string | null;
+  date: string;
+  startTime: string;
+  endTime: string;
+  status: 'PENDING' | 'CONFIRMED' | 'COMPLETED' | 'CANCELLED';
+}
+
+export interface Patient {
+  id: string;
+  email: string;
+  fullName: string;
+  phone: string;
+  active: boolean;
+}
+
+export interface PatientDetail {
+  id: string;
+  username: string;
+  email: string;
+  fullName: string;
+  dob: string;
+  gender: 'MALE' | 'FEMALE';
+  address: string;
+  phone: string;
+  active: boolean;
+  bloodType: string | null;
+  allergies: string | null;
+}
+
+export interface UpdateEmployeeRequest {
+  email?: string;
+  firstName?: string;
+  lastName?: string;
+  dob?: string;
+  gender?: string;
+  address?: string;
+  phone?: string;
+  password?: string;
+  department?: string;
+  role?: string;
+  hireDate?: string;
 }

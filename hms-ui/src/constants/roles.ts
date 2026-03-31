@@ -8,9 +8,9 @@ export const ROLES = {
 } as const;
 
 export const ROLE_NAMES = {
-  ADMIN: 'ADMIN',
-  DOCTOR: 'DOCTOR',
-  RECEPTIONIST: 'RECEPTIONIST',
-  PHARMACIST: 'PHARMACIST',
-  CASHIER: 'CASHIER',
+  ADMIN: 'admin',
+  DOCTOR: 'doctor',
+  RECEPTIONIST: 'receptionist',
+  PHARMACIST: 'pharmacist',
+  CASHIER: 'cashier',
 } as const;
