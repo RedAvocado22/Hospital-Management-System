@@ -13,6 +13,7 @@ const { RangePicker } = DatePicker;
 export default function MedicalRecordsPage() {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
   const [keyword, setKeyword] = useState('');
   const [doctorName, setDoctorName] = useState('');
   const [dateRange, setDateRange] = useState<[string, string] | null>(null);
@@ -20,11 +21,11 @@ export default function MedicalRecordsPage() {
   const [doctorInput, setDoctorInput] = useState('');
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: ['medical-records', page, keyword, doctorName, dateRange],
+    queryKey: ['medical-records', page, pageSize, keyword, doctorName, dateRange],
     queryFn: () =>
       getMedicalRecords({
         page: page - 1,
-        size: 10,
+        size: pageSize,
         keyword: keyword || undefined,
         doctorName: doctorName || undefined,
         from: dateRange?.[0] || undefined,
@@ -150,9 +151,11 @@ export default function MedicalRecordsPage() {
           loading={isLoading}
           pagination={{
             current: page,
-            pageSize: 10,
+            pageSize,
             total: data?.data?.totalElements ?? 0,
-            onChange: (p) => setPage(p),
+            onChange: (p, ps) => { setPage(p); setPageSize(ps); },
+            showSizeChanger: true,
+            pageSizeOptions: ['5', '10', '20', '50'],
             showTotal: (total) => `${total} records`,
           }}
         />

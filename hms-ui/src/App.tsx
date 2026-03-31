@@ -9,13 +9,21 @@ import PrivateRoute from "./components/PrivateRoute";
 import AdminLayout from "./pages/admin/AdminLayout";
 import EmployeeListPage from "./pages/admin/EmployeeListPage";
 import CreateEmployeePage from "./pages/admin/CreateEmployeePage";
+import DepartmentListPage from "./pages/admin/DepartmentListPage";
 
 import DoctorLayout from "./pages/doctor/DoctorLayout";
+import CreateMedicalRecordPage from "./pages/doctor/CreateMedicalRecordPage";
+
 import ReceptionistLayout from "./pages/receptionist/ReceptionistLayout";
 import PatientLayout from "./pages/patient/PatientLayout";
 import PatientDashboard from "./pages/patient/PatientDashboard";
+import PatientListPage from "./pages/patient/PatientListPage";
+import PatientDetailPage from "./pages/patient/PatientDetailPage";
+
 import MedicalRecordsPage from "./pages/shared/MedicalRecordsPage";
 import MedicalRecordDetailPage from "./pages/shared/MedicalRecordDetailPage";
+import AppointmentListPage from "./pages/shared/AppointmentListPage";
+
 import PharmacistLayout from "./pages/pharmacist/PharmacistLayout";
 import MedicineListPage from "./pages/pharmacist/MedicineListPage";
 
@@ -78,26 +86,15 @@ export default function App() {
                                 </PrivateRoute>
                             }
                         >
-                            <Route
-                                index
-                                element={<Navigate to="employees" replace />}
-                            />
-                            <Route
-                                path="employees"
-                                element={<EmployeeListPage />}
-                            />
-                            <Route
-                                path="employees/create"
-                                element={<CreateEmployeePage />}
-                            />
-                            <Route
-                                path="medical-records"
-                                element={<MedicalRecordsPage />}
-                            />
-                            <Route
-                                path="medical-records/:id"
-                                element={<MedicalRecordDetailPage />}
-                            />
+                            <Route index element={<Navigate to="employees" replace />} />
+                            <Route path="employees" element={<EmployeeListPage />} />
+                            <Route path="employees/create" element={<CreateEmployeePage />} />
+                            <Route path="medical-records" element={<MedicalRecordsPage />} />
+                            <Route path="medical-records/:id" element={<MedicalRecordDetailPage />} />
+                            <Route path="appointments" element={<AppointmentListPage />} />
+                            <Route path="patients" element={<PatientListPage />} />
+                            <Route path="patients/:id" element={<PatientDetailPage />} />
+                            <Route path="departments" element={<DepartmentListPage />} />
                         </Route>
 
                         {/* Doctor */}
@@ -109,47 +106,28 @@ export default function App() {
                                 </PrivateRoute>
                             }
                         >
-                            <Route
-                                index
-                                element={
-                                    <Navigate to="medical-records" replace />
-                                }
-                            />
-                            <Route
-                                path="medical-records"
-                                element={<MedicalRecordsPage />}
-                            />
-                            <Route
-                                path="medical-records/:id"
-                                element={<MedicalRecordDetailPage />}
-                            />
+                            <Route index element={<Navigate to="medical-records" replace />} />
+                            <Route path="medical-records" element={<MedicalRecordsPage />} />
+                            <Route path="medical-records/create" element={<CreateMedicalRecordPage />} />
+                            <Route path="medical-records/:id" element={<MedicalRecordDetailPage />} />
+                            <Route path="appointments" element={<AppointmentListPage />} />
                         </Route>
 
                         {/* Receptionist */}
                         <Route
                             path="/receptionist"
                             element={
-                                <PrivateRoute
-                                    allowedRoles={["ROLE_RECEPTIONIST"]}
-                                >
+                                <PrivateRoute allowedRoles={["ROLE_RECEPTIONIST"]}>
                                     <ReceptionistLayout />
                                 </PrivateRoute>
                             }
                         >
-                            <Route
-                                index
-                                element={
-                                    <Navigate to="medical-records" replace />
-                                }
-                            />
-                            <Route
-                                path="medical-records"
-                                element={<MedicalRecordsPage />}
-                            />
-                            <Route
-                                path="medical-records/:id"
-                                element={<MedicalRecordDetailPage />}
-                            />
+                            <Route index element={<Navigate to="medical-records" replace />} />
+                            <Route path="medical-records" element={<MedicalRecordsPage />} />
+                            <Route path="medical-records/:id" element={<MedicalRecordDetailPage />} />
+                            <Route path="appointments" element={<AppointmentListPage />} />
+                            <Route path="patients" element={<PatientListPage />} />
+                            <Route path="patients/:id" element={<PatientDetailPage />} />
                         </Route>
 
                         {/* Pharmacist */}
@@ -161,14 +139,8 @@ export default function App() {
                                 </PrivateRoute>
                             }
                         >
-                            <Route
-                                index
-                                element={<Navigate to="medicines" replace />}
-                            />
-                            <Route
-                                path="medicines"
-                                element={<MedicineListPage />}
-                            />
+                            <Route index element={<Navigate to="medicines" replace />} />
+                            <Route path="medicines" element={<MedicineListPage />} />
                         </Route>
 
                         {/* Patient */}
@@ -180,35 +152,25 @@ export default function App() {
                                 </PrivateRoute>
                             }
                         >
-                            <Route
-                                index
-                                element={<Navigate to="dashboard" replace />}
-                            />
-                            <Route
-                                path="dashboard"
-                                element={<PatientDashboard />}
-                            />
+                            <Route index element={<Navigate to="dashboard" replace />} />
+                            <Route path="dashboard" element={<PatientDashboard />} />
+                            <Route path="appointments" element={<AppointmentListPage />} />
+                            <Route path="medical-records" element={<MedicalRecordsPage />} />
+                            <Route path="medical-records/:id" element={<MedicalRecordDetailPage />} />
+                            <Route path="patients/:id" element={<PatientDetailPage />} />
                         </Route>
 
                         {/* Fallback */}
-                        <Route
-                            path="/"
-                            element={<Navigate to="/login" replace />}
-                        />
+                        <Route path="/" element={<Navigate to="/login" replace />} />
                         <Route
                             path="/unauthorized"
                             element={
-                                <div
-                                    style={{ padding: 40, textAlign: "center" }}
-                                >
+                                <div style={{ padding: 40, textAlign: "center" }}>
                                     403 — Access Denied
                                 </div>
                             }
                         />
-                        <Route
-                            path="*"
-                            element={<Navigate to="/login" replace />}
-                        />
+                        <Route path="*" element={<Navigate to="/login" replace />} />
                     </Routes>
                 </BrowserRouter>
             </ConfigProvider>
