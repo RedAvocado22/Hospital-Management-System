@@ -1,4 +1,4 @@
-import { Card, Row, Col, Typography, Avatar, Descriptions, Tag } from 'antd';
+import { Card, Row, Col, Typography, Avatar, Descriptions, Tag, Spin } from 'antd';
 import {
   UserOutlined,
   CalendarOutlined,
@@ -6,16 +6,50 @@ import {
   BellOutlined,
 } from '@ant-design/icons';
 import { useAuthStore } from '../../store/authStore';
+import { useQuery } from '@tanstack/react-query';
+import { getAppointments } from '../../api/appointments';
+import { getMedicalRecords } from '../../api/medicalRecords';
 
 const { Title, Text } = Typography;
 
 export default function PatientDashboard() {
   const { user } = useAuthStore();
 
+  const { data: appointmentsData, isLoading: appointmentsLoading } = useQuery({
+    queryKey: ['appointments-pending-count'],
+    queryFn: () => getAppointments({ page: 0, size: 1, status: 'PENDING' }).then((r) => r.data),
+  });
+
+  const { data: recordsData, isLoading: recordsLoading } = useQuery({
+    queryKey: ['medical-records-count'],
+    queryFn: () => getMedicalRecords({ page: 0, size: 1 }).then((r) => r.data),
+  });
+
+  const pendingAppointments = appointmentsData?.data?.totalElements ?? 0;
+  const totalRecords = recordsData?.data?.totalElements ?? 0;
+
   const stats = [
-    { title: 'Upcoming Appointments', value: 0, icon: <CalendarOutlined />, color: '#0D9488' },
-    { title: 'Medical Records', value: 0, icon: <FileTextOutlined />, color: '#16A34A' },
-    { title: 'Notifications', value: 0, icon: <BellOutlined />, color: '#F59E0B' },
+    {
+      title: 'Upcoming Appointments',
+      value: pendingAppointments,
+      loading: appointmentsLoading,
+      icon: <CalendarOutlined />,
+      color: '#0D9488',
+    },
+    {
+      title: 'Medical Records',
+      value: totalRecords,
+      loading: recordsLoading,
+      icon: <FileTextOutlined />,
+      color: '#16A34A',
+    },
+    {
+      title: 'Notifications',
+      value: 0,
+      loading: false,
+      icon: <BellOutlined />,
+      color: '#F59E0B',
+    },
   ];
 
   return (
@@ -55,7 +89,11 @@ export default function PatientDashboard() {
                   {stat.icon}
                 </div>
                 <div>
-                  <Title level={3} style={{ margin: 0 }}>{stat.value}</Title>
+                  {stat.loading ? (
+                    <Spin size="small" />
+                  ) : (
+                    <Title level={3} style={{ margin: 0 }}>{stat.value}</Title>
+                  )}
                   <Text type="secondary" style={{ fontSize: 13 }}>{stat.title}</Text>
                 </div>
               </div>

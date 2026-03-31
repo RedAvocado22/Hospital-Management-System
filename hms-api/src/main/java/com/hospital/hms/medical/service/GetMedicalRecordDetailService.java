@@ -9,7 +9,6 @@ import com.hospital.hms.medical.repository.MedicalRecordRepository;
 import com.hospital.hms.medical.request.MedicalRecordIdRequest;
 import com.hospital.hms.medical.response.MedicalRecordDetailResponse;
 import com.hospital.hms.patient.dto.PatientSummary;
-import com.hospital.hms.patient.service.PatientQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
@@ -23,7 +22,6 @@ public class GetMedicalRecordDetailService extends BaseService<MedicalRecordIdRe
 
     private final MedicalRecordRepository medicalRecordRepository;
     private final EmployeeQueryService employeeQueryService;
-    private final PatientQueryService patientQueryService;
 
     @Override
     @Transactional(readOnly = true)
@@ -43,6 +41,12 @@ public class GetMedicalRecordDetailService extends BaseService<MedicalRecordIdRe
         MedicalRecord mr = medicalRecordRepository.findById(request.getId()).orElseThrow(
                 () -> new NotFoundException("Medical record with id: " + request.getId() + " not found")
         );
+
+        if (request.getUserContext().hasRole("ROLE_PATIENT") &&
+                !request.getUserContext().getUserId().equals(mr.getPatient().getAccount().getId())
+        ) {
+            throw new AccessDeniedException("You do not have permission to access this resource");
+        }
 
         if (
                 request.getUserContext().hasRole("DOCTOR")

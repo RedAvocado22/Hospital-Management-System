@@ -85,29 +85,19 @@ public class EmployeeSpecification {
                 ));
             }
 
-            if (request.getHireDate() != null) {
+            if (request.getHireDateFrom() != null && request.getHireDateTo() != null) {
                 predicates.add(criteriaBuilder.between(
                         root.get("hireDate"),
-                        request.getHireDate().from().atStartOfDay(),
-                        request.getHireDate().to().atTime(23, 59, 59))
+                        request.getHireDateFrom().atStartOfDay(),
+                        request.getHireDateTo().atTime(23, 59, 59))
                 );
             }
 
-            if (request.getCreatedAtRange() != null) {
-                predicates.add(criteriaBuilder.between(
-                        root.get("createdAt"),
-                        request.getCreatedAtRange().from().atStartOfDay(),
-                        request.getCreatedAtRange().to().atTime(23, 59, 59))
-                );
+            if (request.getRoleName() != null && !request.getRoleName().isBlank()) {
+                Join<Object, Object> roleJoin = accountJoin.join("role");
+                predicates.add(criteriaBuilder.equal(roleJoin.get("name"), request.getRoleName()));
             }
 
-            if (request.getUpdatedAtRange() != null) {
-                predicates.add(criteriaBuilder.between(
-                        root.get("updatedAt"),
-                        request.getUpdatedAtRange().from(),
-                        request.getUpdatedAtRange().to())
-                );
-            }
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
     }

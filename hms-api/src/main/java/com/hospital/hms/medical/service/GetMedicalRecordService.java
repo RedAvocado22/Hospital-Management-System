@@ -32,6 +32,7 @@ public class GetMedicalRecordService extends BaseService<SearchMedicalRecordRequ
         Pageable pageable = request.toPageable();
 
         UUID doctorId = request.getUserContext() != null && request.getUserContext().hasRole("ROLE_DOCTOR") ? request.getUserContext().getUserId() : null;
+        UUID patientId = request.getUserContext() != null && request.getUserContext().hasRole("ROLE_PATIENT") ? request.getUserContext().getUserId() : null;
 
         log.debug("Searching medical records — keyword: {}, doctorName: {}, doctorFilter: {}",
                 request.getKeyword(), request.getDoctorName(), doctorId);
@@ -41,7 +42,8 @@ public class GetMedicalRecordService extends BaseService<SearchMedicalRecordRequ
                 request.getDoctorName(),
                 request.getFrom() != null ? request.getFrom().atStartOfDay() : null,
                 request.getTo() != null ? request.getTo().plusDays(1).atStartOfDay() : null,
-                doctorId,
+                doctorId != null ? doctorId.toString() : null,
+                patientId != null ? patientId.toString() : null,
                 pageable
         );
 
