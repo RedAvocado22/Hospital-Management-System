@@ -1,7 +1,9 @@
 package com.hospital.hms.auth.controller;
 
+import com.hospital.hms.auth.request.LogoutRequest;
 import com.hospital.hms.auth.request.SignInRequest;
 import com.hospital.hms.auth.response.AuthResponse;
+import com.hospital.hms.auth.service.LogoutService;
 import com.hospital.hms.auth.service.SignInService;
 import com.hospital.hms.base.api.ApiResponse;
 import com.hospital.hms.patient.request.CreatePatientRequest;
@@ -17,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +34,7 @@ public class AuthController {
 
     private final CreatePatientService createPatientService;
     private final SignInService signInService;
+    private final LogoutService logoutService;
 
     @PostMapping("/signup")
     @Operation(
@@ -110,6 +114,16 @@ public class AuthController {
         log.info("Successfully processed sign in request for: {}", request.getUsername());
         return ResponseEntity.status(HttpStatus.OK).body(
                 ApiResponse.success(response, "Login successful", HttpStatus.OK.value())
+        );
+    }
+
+    @PostMapping("/logout")
+    @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR', 'RECEPTIONIST', 'PHARMACIST', 'CASHIER', 'PATIENT')")
+    public ResponseEntity<ApiResponse<Void>> logout() {
+        LogoutRequest request = new LogoutRequest();
+        logoutService.execute(request);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.success(null, "Logout successful", HttpStatus.OK.value())
         );
     }
 }
