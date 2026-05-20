@@ -72,7 +72,7 @@ app:
     server-url: ${KEYCLOAK_SERVER_URL:http://localhost:9090}
     realm: ${KEYCLOAK_REALM:hms}
     client-id: ${KEYCLOAK_CLIENT_ID:hms-api}
-    client-secret: ${KC_CLIENT_SECRET:}
+    client-secret: ${KC_CLIENT_SECRET}
     admin:
       username: ${KEYCLOAK_ADMIN:admin}
       password: ${KEYCLOAK_ADMIN_PASSWORD:admin}
