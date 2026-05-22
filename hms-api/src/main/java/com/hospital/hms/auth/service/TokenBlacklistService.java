@@ -17,6 +17,6 @@ public class TokenBlacklistService {
     }
 
     public boolean isBlacklisted(String jti) {
-        return Boolean.TRUE.equals(template.opsForSet().getOperations().hasKey(jti));
+        return Boolean.TRUE.equals(template.hasKey(jti));
     }
 }

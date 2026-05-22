@@ -118,7 +118,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    @PreAuthorize("hasAnyRole('ADMIN', 'DOCTOR', 'RECEPTIONIST', 'PHARMACIST', 'CASHIER', 'PATIENT')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<Void>> logout() {
         LogoutRequest request = new LogoutRequest();
         logoutService.execute(request);
