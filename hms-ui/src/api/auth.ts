@@ -15,3 +15,6 @@ export const signUp = (data: {
     address: string;
     phone: string;
 }) => api.post<ApiResponse<unknown>>("/auth/signup", data);
+
+export const logout = () =>
+    api.post<ApiResponse<void>>("/auth/logout");

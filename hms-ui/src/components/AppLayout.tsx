@@ -8,6 +8,7 @@ import {
 } from "@ant-design/icons";
 import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
+import { logout as logoutApi } from "../api/auth";
 
 const { Sider, Header, Content } = Layout;
 const { Text } = Typography;
@@ -34,8 +35,10 @@ export default function AppLayout({ navItems, role }: Props) {
         "";
 
     const handleLogout = () => {
-        logout();
-        navigate("/login");
+        logoutApi().finally(() => {
+            logout();
+            navigate("/login");
+        });
     };
 
     const userMenuItems = [
