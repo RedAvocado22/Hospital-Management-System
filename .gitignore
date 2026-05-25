@@ -40,3 +40,6 @@ docs/*
 CLAUDE.md
 GEMINI.md
 .claude/*
+
+# --- Linux ---
+hms-api/compose.override.yaml
