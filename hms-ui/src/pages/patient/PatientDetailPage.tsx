@@ -13,12 +13,12 @@ import {
     Space,
     Spin,
 } from "antd";
-import { ArrowLeftOutlined, EditOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, EditOutlined, MedicineBoxOutlined } from "@ant-design/icons";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import dayjs from "dayjs";
-import { getPatientById, updatePatient } from "../../api/patients";
+import { getPatientById, updatePatient, updatePatientMedical } from "../../api/patients";
 import { useAuthStore } from "../../store/authStore";
 
 const { Title } = Typography;
@@ -29,9 +29,12 @@ export default function PatientDetailPage() {
     const queryClient = useQueryClient();
     const { user } = useAuthStore();
     const isPatient = user?.roles?.includes("ROLE_PATIENT") ?? false;
+    const isDoctor = user?.roles?.includes("ROLE_DOCTOR") ?? false;
 
     const [editOpen, setEditOpen] = useState(false);
+    const [medicalOpen, setMedicalOpen] = useState(false);
     const [form] = Form.useForm();
+    const [medicalForm] = Form.useForm();
 
     const { data, isLoading } = useQuery({
         queryKey: ["patient", id],
@@ -45,8 +48,7 @@ export default function PatientDetailPage() {
         mutationFn: (values: Record<string, unknown>) => {
             const payload: Record<string, string> = {};
             if (values.email) payload.email = values.email as string;
-            if (values.firstName)
-                payload.firstName = values.firstName as string;
+            if (values.firstName) payload.firstName = values.firstName as string;
             if (values.lastName) payload.lastName = values.lastName as string;
             if (values.dob)
                 payload.dob = dayjs(values.dob as string).format("YYYY-MM-DD");
@@ -64,6 +66,17 @@ export default function PatientDetailPage() {
         onError: () => message.error("Failed to update profile"),
     });
 
+    const updateMedicalMutation = useMutation({
+        mutationFn: (values: { bloodType?: string; allergies?: string }) =>
+            updatePatientMedical(id!, values),
+        onSuccess: () => {
+            message.success("Medical profile updated");
+            setMedicalOpen(false);
+            queryClient.invalidateQueries({ queryKey: ["patient", id] });
+        },
+        onError: () => message.error("Failed to update medical profile"),
+    });
+
     const openEdit = () => {
         if (!patient) return;
         form.setFieldsValue({
@@ -78,6 +91,15 @@ export default function PatientDetailPage() {
         setEditOpen(true);
     };
 
+    const openMedical = () => {
+        if (!patient) return;
+        medicalForm.setFieldsValue({
+            bloodType: patient.bloodType ?? undefined,
+            allergies: patient.allergies ?? undefined,
+        });
+        setMedicalOpen(true);
+    };
+
     if (isLoading)
         return (
             <Spin size="large" style={{ display: "block", marginTop: 80 }} />
@@ -87,22 +109,24 @@ export default function PatientDetailPage() {
     return (
         <div>
             <Space style={{ marginBottom: 24 }}>
-                <Button
-                    icon={<ArrowLeftOutlined />}
-                    onClick={() => navigate(-1)}
-                >
+                <Button icon={<ArrowLeftOutlined />} onClick={() => navigate(-1)}>
                     Back
                 </Button>
                 <Title level={3} style={{ margin: 0 }}>
                     Patient Detail
                 </Title>
                 {isPatient && (
-                    <Button
-                        type="primary"
-                        icon={<EditOutlined />}
-                        onClick={openEdit}
-                    >
+                    <Button type="primary" icon={<EditOutlined />} onClick={openEdit}>
                         Edit Profile
+                    </Button>
+                )}
+                {isDoctor && (
+                    <Button
+                        icon={<MedicineBoxOutlined />}
+                        onClick={openMedical}
+                        style={{ borderColor: "#0D9488", color: "#0D9488" }}
+                    >
+                        Update Medical Info
                     </Button>
                 )}
             </Space>
@@ -125,9 +149,7 @@ export default function PatientDetailPage() {
                         {patient.phone ?? "—"}
                     </Descriptions.Item>
                     <Descriptions.Item label="Date of Birth">
-                        {patient.dob
-                            ? dayjs(patient.dob).format("DD/MM/YYYY")
-                            : "—"}
+                        {patient.dob ? dayjs(patient.dob).format("DD/MM/YYYY") : "—"}
                     </Descriptions.Item>
                     <Descriptions.Item label="Gender">
                         {patient.gender ?? "—"}
@@ -154,6 +176,7 @@ export default function PatientDetailPage() {
                 </Descriptions>
             </Card>
 
+            {/* Patient: edit own profile */}
             <Modal
                 title="Edit Profile"
                 open={editOpen}
@@ -173,21 +196,14 @@ export default function PatientDetailPage() {
                     <Form.Item name="lastName" label="Last Name">
                         <Input />
                     </Form.Item>
-                    <Form.Item
-                        name="email"
-                        label="Email"
-                        rules={[{ type: "email" }]}
-                    >
+                    <Form.Item name="email" label="Email" rules={[{ type: "email" }]}>
                         <Input />
                     </Form.Item>
                     <Form.Item name="phone" label="Phone">
                         <Input />
                     </Form.Item>
                     <Form.Item name="dob" label="Date of Birth">
-                        <DatePicker
-                            style={{ width: "100%" }}
-                            format="DD/MM/YYYY"
-                        />
+                        <DatePicker style={{ width: "100%" }} format="DD/MM/YYYY" />
                     </Form.Item>
                     <Form.Item name="gender" label="Gender">
                         <Select allowClear>
@@ -203,6 +219,39 @@ export default function PatientDetailPage() {
                         label="New Password (leave blank to keep current)"
                     >
                         <Input.Password />
+                    </Form.Item>
+                </Form>
+            </Modal>
+
+            {/* Doctor: update blood type + allergies */}
+            <Modal
+                title="Update Medical Info"
+                open={medicalOpen}
+                onCancel={() => setMedicalOpen(false)}
+                onOk={() => medicalForm.submit()}
+                confirmLoading={updateMedicalMutation.isPending}
+            >
+                <Form
+                    form={medicalForm}
+                    layout="vertical"
+                    onFinish={(vals) => updateMedicalMutation.mutate(vals)}
+                >
+                    <Form.Item name="bloodType" label="Blood Type">
+                        <Select allowClear placeholder="Select blood type">
+                            {["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"].map(
+                                (bt) => (
+                                    <Select.Option key={bt} value={bt}>
+                                        {bt}
+                                    </Select.Option>
+                                ),
+                            )}
+                        </Select>
+                    </Form.Item>
+                    <Form.Item name="allergies" label="Allergies">
+                        <Input.TextArea
+                            rows={3}
+                            placeholder="e.g. Penicillin, Aspirin"
+                        />
                     </Form.Item>
                 </Form>
             </Modal>

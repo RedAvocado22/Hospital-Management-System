@@ -11,6 +11,12 @@ export const getAppointments = (params: {
         params,
     });
 
+export const bookAppointment = (data: {
+    scheduleId: string;
+    reason: string;
+    patientId?: string;
+}) => api.post<ApiResponse<Appointment>>("/appointments", data);
+
 export const cancelAppointment = (id: string) =>
     api.patch<ApiResponse<unknown>>(`/appointments/${id}/cancel`);
 

@@ -9,14 +9,18 @@ import {
     message,
     Typography,
     DatePicker,
+    Modal,
+    Form,
+    Input,
 } from "antd";
-import { CalendarOutlined } from "@ant-design/icons";
+import { CalendarOutlined, PlusOutlined } from "@ant-design/icons";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import {
     getAppointments,
+    bookAppointment,
     cancelAppointment,
     confirmAppointment,
 } from "../../api/appointments";
@@ -40,6 +44,8 @@ export default function AppointmentListPage() {
     const [pageSize, setPageSize] = useState(10);
     const [statusFilter, setStatusFilter] = useState<string | undefined>();
     const [dateFilter, setDateFilter] = useState<string | undefined>();
+    const [bookOpen, setBookOpen] = useState(false);
+    const [bookForm] = Form.useForm();
 
     const isAdmin = user?.roles?.includes("ROLE_ADMIN") ?? false;
     const isDoctor = user?.roles?.includes("ROLE_DOCTOR") ?? false;
@@ -74,6 +80,34 @@ export default function AppointmentListPage() {
         },
         onError: () => message.error("Failed to confirm appointment"),
     });
+
+    const bookMutation = useMutation({
+        mutationFn: bookAppointment,
+        onSuccess: () => {
+            message.success("Appointment booked");
+            setBookOpen(false);
+            bookForm.resetFields();
+            queryClient.invalidateQueries({ queryKey: ["appointments"] });
+        },
+        onError: (err: unknown) => {
+            const msg =
+                (err as { response?: { data?: { message?: string } } })
+                    ?.response?.data?.message ?? "Failed to book appointment";
+            message.error(msg);
+        },
+    });
+
+    const handleBook = (values: {
+        scheduleId: string;
+        reason: string;
+        patientId?: string;
+    }) => {
+        bookMutation.mutate({
+            scheduleId: values.scheduleId,
+            reason: values.reason,
+            patientId: isReceptionist ? values.patientId : undefined,
+        });
+    };
 
     const formatTime = (t: string) => t?.substring(0, 5) ?? "";
 
@@ -167,10 +201,29 @@ export default function AppointmentListPage() {
 
     return (
         <div>
-            <Title level={3} style={{ marginBottom: 24 }}>
-                <CalendarOutlined style={{ marginRight: 8 }} />
-                Appointments
-            </Title>
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    marginBottom: 24,
+                }}
+            >
+                <Title level={3} style={{ margin: 0 }}>
+                    <CalendarOutlined style={{ marginRight: 8 }} />
+                    Appointments
+                </Title>
+                {(isPatient || isReceptionist) && (
+                    <Button
+                        type="primary"
+                        icon={<PlusOutlined />}
+                        onClick={() => setBookOpen(true)}
+                    >
+                        Book Appointment
+                    </Button>
+                )}
+            </div>
+
             <Card style={{ borderRadius: 8 }}>
                 <Space style={{ marginBottom: 16 }} wrap>
                     <Select
@@ -231,6 +284,64 @@ export default function AppointmentListPage() {
                     }}
                 />
             </Card>
+
+            <Modal
+                title="Book Appointment"
+                open={bookOpen}
+                onCancel={() => {
+                    setBookOpen(false);
+                    bookForm.resetFields();
+                }}
+                onOk={() => bookForm.submit()}
+                confirmLoading={bookMutation.isPending}
+            >
+                <Form
+                    form={bookForm}
+                    layout="vertical"
+                    onFinish={handleBook}
+                >
+                    <Form.Item
+                        name="scheduleId"
+                        label="Schedule ID"
+                        rules={[
+                            {
+                                required: true,
+                                message: "Schedule ID is required",
+                            },
+                        ]}
+                        extra="Enter the doctor schedule UUID"
+                    >
+                        <Input placeholder="e.g. d0000001-0000-0000-0000-000000000001" />
+                    </Form.Item>
+                    {isReceptionist && (
+                        <Form.Item
+                            name="patientId"
+                            label="Patient ID"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "Patient ID is required",
+                                },
+                            ]}
+                            extra="Enter the patient UUID"
+                        >
+                            <Input placeholder="Patient UUID" />
+                        </Form.Item>
+                    )}
+                    <Form.Item
+                        name="reason"
+                        label="Reason"
+                        rules={[
+                            { required: true, message: "Reason is required" },
+                        ]}
+                    >
+                        <Input.TextArea
+                            rows={3}
+                            placeholder="Reason for appointment"
+                        />
+                    </Form.Item>
+                </Form>
+            </Modal>
         </div>
     );
 }
