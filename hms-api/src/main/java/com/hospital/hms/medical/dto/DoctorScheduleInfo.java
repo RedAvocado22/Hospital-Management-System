@@ -20,8 +20,8 @@ public record DoctorScheduleInfo(
                 schedule.getId(),
                 schedule.getDoctor().getId(),
                 schedule.getDate(),
-                schedule.getStartTime(),
-                schedule.getEndTime(),
+                schedule.getType().getStart(),
+                schedule.getType().getEnd(),
                 schedule.getMaxPatients(),
                 schedule.getIsAvailable()
         );
