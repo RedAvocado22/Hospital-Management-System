@@ -26,8 +26,8 @@ public record AppointmentResponse(
                 appointment.getPatient().getId(),
                 null,
                 appointment.getDate(),
-                appointment.getSchedule().getStartTime(),
-                appointment.getSchedule().getEndTime(),
+                appointment.getSchedule().getType().getStart(),
+                appointment.getSchedule().getType().getEnd(),
                 appointment.getStatus()
         );
     }
@@ -40,8 +40,8 @@ public record AppointmentResponse(
                 appointment.getPatient().getId(),
                 appointment.getPatient().getAccount().getFullName(),
                 appointment.getDate(),
-                appointment.getSchedule().getStartTime(),
-                appointment.getSchedule().getEndTime(),
+                appointment.getSchedule().getType().getStart(),
+                appointment.getSchedule().getType().getEnd(),
                 appointment.getStatus()
         );
     }

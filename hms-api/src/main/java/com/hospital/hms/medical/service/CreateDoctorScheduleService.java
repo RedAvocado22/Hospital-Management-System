@@ -48,8 +48,8 @@ public class CreateDoctorScheduleService extends BaseService<CreateDoctorSchedul
         if (!accountQueryService.hasRole(request.getDoctorId(), "DOCTOR")) {
             throw new BusinessException("Account is not a doctor");
         }
-        
-        if (doctorScheduleRepository.existsByDoctor_IdAndDateAndShiftType(request.getDoctorId(), request.getDate(), request.getType())) {
+
+        if (doctorScheduleRepository.existsByDoctor_IdAndDateAndType(request.getDoctorId(), request.getDate(), request.getType())) {
             throw new BusinessException("Doctor already has this schedule");
         }
     }
