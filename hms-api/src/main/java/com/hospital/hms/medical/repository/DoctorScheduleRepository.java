@@ -22,6 +22,6 @@ DoctorScheduleRepository extends JpaRepository<DoctorSchedule, UUID> {
     @EntityGraph(attributePaths = {"doctor"})
     Optional<DoctorSchedule> findDetailsById(UUID id);
 
-    boolean existsByDoctor_IdAndDateAndShiftType(UUID doctorId, LocalDate date, ShiftType type);
+    boolean existsByDoctor_IdAndDateAndType(UUID doctorId, LocalDate date, ShiftType type);
 
 }
