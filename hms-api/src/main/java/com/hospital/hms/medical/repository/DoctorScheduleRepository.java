@@ -23,4 +23,5 @@ DoctorScheduleRepository extends JpaRepository<DoctorSchedule, UUID> {
     Optional<DoctorSchedule> findDetailsById(UUID id);
 
     boolean existsByDoctor_IdAndDateAndShiftType(UUID doctorId, LocalDate date, ShiftType type);
+
 }
