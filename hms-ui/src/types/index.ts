@@ -42,6 +42,7 @@ export interface PaginatedResponse<T> {
 
 export interface Employee {
     id: string;
+    accountId: string;
     code: string;
     hireDate: string;
     username: string;
