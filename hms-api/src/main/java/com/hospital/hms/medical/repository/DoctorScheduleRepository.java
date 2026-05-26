@@ -21,7 +21,7 @@ DoctorScheduleRepository extends JpaRepository<DoctorSchedule, UUID> {
 
     List<DoctorSchedule> findByDoctor_Id(UUID doctorId);
 
-    @Query("SELECT ds FROM DoctorSchedule ds WHERE ds.doctor.role.name = 'DOCTOR' AND ds.doctor.id = :doctorId AND ds.date = :date ")
+    @Query("SELECT ds FROM DoctorSchedule ds WHERE ds.doctor.role.name = 'doctor' AND ds.doctor.id = :doctorId AND ds.date = :date ")
     Page<DoctorSchedule> findByDoctorAndDateWithRoleCheck(
             @Param("doctorId") UUID doctorId,
             @Param("date") LocalDate date,
