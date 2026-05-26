@@ -28,6 +28,11 @@ public class SearchDoctorScheduleService extends BaseService<SearchDoctorSchedul
 
     @Override
     @Transactional(readOnly = true)
+    public PaginatedResponse<DoctorScheduleDetailResponse> execute(SearchDoctorScheduleRequest request) {
+        return super.execute(request);
+    }
+
+    @Override
     protected PaginatedResponse<DoctorScheduleDetailResponse> doProcess(SearchDoctorScheduleRequest request) {
         log.debug("Search doctor schedule request received");
 
@@ -37,7 +42,7 @@ public class SearchDoctorScheduleService extends BaseService<SearchDoctorSchedul
         if (request.getDoctorId() == null) {
             doctorSchedulePage = doctorScheduleRepository.findByDate(date, pageable);
         } else {
-            if (!accountQueryService.hasRole(request.getDoctorId(), "doctor")) {
+            if (!accountQueryService.hasRole(request.getDoctorId(), "DOCTOR")) {
                 throw new NotFoundException("Doctor does not exist in the system");
             }
             doctorSchedulePage = doctorScheduleRepository.findByDoctorAndDateWithRoleCheck(request.getDoctorId(), date, pageable);
