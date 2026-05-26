@@ -17,7 +17,5 @@ public class SearchDoctorScheduleRequest extends PaginatedRequest {
 
     private UUID doctorId;
 
-    private String roleName;
-
     private LocalDate date;
 }

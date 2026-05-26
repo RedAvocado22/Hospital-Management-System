@@ -11,7 +11,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,9 +28,6 @@ DoctorScheduleRepository extends JpaRepository<DoctorSchedule, UUID> {
             Pageable pageable
     );
 
-    boolean existsByDoctor_IdAndDoctor_Role_Name(UUID doctorId, String roleName);
-
-    Optional<DoctorSchedule> findByDoctor_IdAndDateAndStartTimeAndEndTime(UUID doctorId, LocalDate date, LocalTime startTime, LocalTime endTime);
 
     Page<DoctorSchedule> findByDate(LocalDate date, Pageable pageable);
 
