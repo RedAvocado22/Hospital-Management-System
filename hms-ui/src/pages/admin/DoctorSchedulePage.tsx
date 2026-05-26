@@ -64,6 +64,7 @@ export default function DoctorSchedulePage() {
     const queryClient = useQueryClient();
     const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs());
     const [createOpen, setCreateOpen] = useState(false);
+    const [selectedShift, setSelectedShift] = useState<string | undefined>();
     const [form] = Form.useForm();
 
     const dateStr = selectedDate.format("YYYY-MM-DD");
@@ -133,6 +134,7 @@ export default function DoctorSchedulePage() {
 
     const openCreate = () => {
         form.resetFields();
+        setSelectedShift(undefined);
         setCreateOpen(true);
     };
 
@@ -372,7 +374,7 @@ export default function DoctorSchedulePage() {
                                     .includes(input.toLowerCase())
                             }
                             options={doctors.map((d) => ({
-                                value: d.id,
+                                value: d.accountId,
                                 label: d.fullName,
                             }))}
                         />
@@ -390,18 +392,16 @@ export default function DoctorSchedulePage() {
                                     (typeof SHIFT_CONFIG)[keyof typeof SHIFT_CONFIG],
                                 ][]
                             ).map(([key, cfg]) => (
-                                <Form.Item
+                                <ShiftCard
                                     key={key}
-                                    name="type"
-                                    noStyle
-                                >
-                                    <ShiftCard
-                                        shiftKey={key}
-                                        config={cfg}
-                                        selected={form.getFieldValue("type") === key}
-                                        onSelect={(k) => form.setFieldValue("type", k)}
-                                    />
-                                </Form.Item>
+                                    shiftKey={key}
+                                    config={cfg}
+                                    selected={selectedShift === key}
+                                    onSelect={(k) => {
+                                        setSelectedShift(k);
+                                        form.setFieldValue("type", k);
+                                    }}
+                                />
                             ))}
                         </div>
                     </Form.Item>

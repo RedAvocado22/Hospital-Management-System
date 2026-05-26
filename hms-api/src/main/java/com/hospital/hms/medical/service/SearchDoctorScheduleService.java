@@ -42,7 +42,7 @@ public class SearchDoctorScheduleService extends BaseService<SearchDoctorSchedul
         if (request.getDoctorId() == null) {
             doctorSchedulePage = doctorScheduleRepository.findByDate(date, pageable);
         } else {
-            if (!accountQueryService.hasRole(request.getDoctorId(), "DOCTOR")) {
+            if (!accountQueryService.hasRole(request.getDoctorId(), "doctor")) {
                 throw new NotFoundException("Doctor does not exist in the system");
             }
             doctorSchedulePage = doctorScheduleRepository.findByDoctorAndDateWithRoleCheck(request.getDoctorId(), date, pageable);

@@ -45,7 +45,7 @@ public class CreateDoctorScheduleService extends BaseService<CreateDoctorSchedul
     protected void validate(CreateDoctorScheduleRequest request) {
         super.validate(request);
 
-        if (!accountQueryService.hasRole(request.getDoctorId(), "DOCTOR")) {
+        if (!accountQueryService.hasRole(request.getDoctorId(), "doctor")) {
             throw new BusinessException("Account is not a doctor");
         }
 
