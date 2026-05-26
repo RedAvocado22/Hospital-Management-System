@@ -7,6 +7,6 @@ CREATE TABLE queue
     date       date         NOT NULL,
     position   INT          NOT NULL,
     status     VARCHAR(255) NOT NULL,
-    CONSTRAINT pk_queue PRIMARY KEY (id)
+    CONSTRAINT pk_queue PRIMARY KEY (id),
+    CONSTRAINT fk_queue_patient FOREIGN KEY (patient_id) REFERENCES patient_info(id)
 );
-

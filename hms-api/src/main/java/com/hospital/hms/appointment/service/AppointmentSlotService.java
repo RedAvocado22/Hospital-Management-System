@@ -25,7 +25,7 @@ public class AppointmentSlotService {
                 redis.call('DECR', KEYS[1])
                 return 0
             end
-            
+
             return 1
             """;
     private static final RedisScript<Long> BOOK_SLOT_REDIS_SCRIPT = RedisScript.of(BOOK_SLOT_SCRIPT, Long.class);

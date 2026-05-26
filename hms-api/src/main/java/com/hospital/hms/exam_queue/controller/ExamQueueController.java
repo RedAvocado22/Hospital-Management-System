@@ -25,16 +25,15 @@ import java.util.UUID;
 
 @Slf4j
 @RestController
-@RequestMapping("/v1/exam-queue")
+@RequestMapping("/exam-queue")
 @RequiredArgsConstructor
-@PreAuthorize("hasAnyRole('RECEPTIONIST', 'ADMIN')")
 public class ExamQueueController {
     private final GetTodayQueueService getTodayQueueService;
     private final AddToQueueService addToQueueService;
     private final UpdateQueueService updateQueueService;
     private final DeleteQueueService deleteQueueService;
 
-
+    @PreAuthorize("hasAnyRole('RECEPTIONIST', 'ADMIN')")
     @GetMapping()
     public ResponseEntity<ApiResponse<PaginatedResponse<QueueInfoResponse>>> getTodayQueue(@ModelAttribute GetExamQueueRequest request, HttpServletRequest httpRequest) {
         long startTime = System.currentTimeMillis();
@@ -72,7 +71,7 @@ public class ExamQueueController {
         long startTime = System.currentTimeMillis();
         String traceId = java.util.UUID.randomUUID().toString();
 
-        log.info("[TraceID: {}] Adding new patient to queue with id: {}", traceId, request.getPatientId());
+        log.info("[TraceID: {}] Adding new patient to queue with id: {}", traceId, request.getPatient().getId());
 
         QueueInfoResponse response = addToQueueService.execute(request);
 
@@ -101,8 +100,9 @@ public class ExamQueueController {
                 .body(apiResponse);
     }
 
+    @PreAuthorize("hasAnyRole('RECEPTIONIST', 'ADMIN')")
     @PatchMapping("/{id}")
-    public ResponseEntity<ApiResponse<QueueInfoResponse>> updateMedicine(@Valid @PathVariable UUID id, @RequestBody UpdateQueueRequest request, HttpServletRequest httpRequest) {
+    public ResponseEntity<ApiResponse<QueueInfoResponse>> updateQueue(@Valid @PathVariable UUID id, @RequestBody UpdateQueueRequest request, HttpServletRequest httpRequest) {
         long startTime = System.currentTimeMillis();
         String traceId = java.util.UUID.randomUUID().toString();
         log.info("[TraceID: {}] Updating queue status with id: {}", traceId, request.getId());
@@ -135,6 +135,7 @@ public class ExamQueueController {
                 .body(apiResponse);
     }
 
+    @PreAuthorize("hasAnyRole('RECEPTIONIST', 'ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deleteQueue(@PathVariable UUID id, HttpServletRequest httpRequest) {
         long startTime = System.currentTimeMillis();

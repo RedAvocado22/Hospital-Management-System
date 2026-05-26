@@ -1,6 +1,7 @@
 package com.hospital.hms.exam_queue.entity;
 
 import com.hospital.hms.base.BaseEntity;
+import com.hospital.hms.patient.entity.PatientInfo;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +10,6 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 @Entity
 @Table(name = "queue")
@@ -20,8 +20,9 @@ import java.util.UUID;
 @SuperBuilder
 public class QueueInfo extends BaseEntity {
 
-    @Column(name = "patient_id", nullable = false)
-    private UUID patientId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "patient_id", nullable = false)
+    private PatientInfo patient;
 
     @Column(name = "date", nullable = false)
     private LocalDate date;

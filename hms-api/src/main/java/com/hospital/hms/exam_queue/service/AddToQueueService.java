@@ -7,11 +7,11 @@ import com.hospital.hms.exam_queue.mapper.QueueInfoMapper;
 import com.hospital.hms.exam_queue.repository.QueueRepository;
 import com.hospital.hms.exam_queue.request.AddToQueueRequest;
 import com.hospital.hms.exam_queue.response.QueueInfoResponse;
-import com.hospital.hms.exception.BusinessException;
 import com.hospital.hms.patient.service.PatientQueryService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
@@ -25,27 +25,24 @@ public class AddToQueueService extends BaseService<AddToQueueRequest, QueueInfoR
     private final QueueInfoMapper queueInfoMapper;
 
     @Override
+    @Transactional
     protected QueueInfoResponse doProcess(AddToQueueRequest request) {
-//        if (request.getUserContext() == null) {
-//            throw new AccessDeniedException("You do not have permission to access this resource");
-//        }
-        patientQueryService.getReferenceById(request.getPatientId());
+        patientQueryService.getReferenceById(request.getPatient().getId());
         log.info("Creating Exam queue  — patientId: {}",
-                request.getPatientId());
-        if (queueRepository.existsByDateAndPatientId(LocalDate.now(), request.getPatientId())) {
-            throw new BusinessException("Patient is already in today's queue");
-        }
-        Integer position = queueRepository.countByDate(LocalDate.now()) + 1;
+                request.getPatient().getId());
+        LocalDate currentDate = LocalDate.now();
+        Integer count = queueRepository.countByDateWithLock(currentDate);
+        Integer position = count + 1;
         QueueInfo queueInfo = QueueInfo.builder()
-                .patientId(request.getPatientId())
-                .date(LocalDate.now())
+                .patient(request.getPatient())
+                .date(currentDate)
                 .position(position)
                 .status(QueueStatus.WAITING)
                 .build();
 
         QueueInfo saved = queueRepository.save(queueInfo);
 
-        log.info("Medical record created, id: {}", saved.getId());
+        log.info("New queue created, id: {}", saved.getId());
 
         return queueInfoMapper.toResponse(saved);
     }
