@@ -13,6 +13,7 @@ import DepartmentListPage from "./pages/admin/DepartmentListPage";
 
 import DoctorLayout from "./pages/doctor/DoctorLayout";
 import CreateMedicalRecordPage from "./pages/doctor/CreateMedicalRecordPage";
+import DoctorSchedulePage from "./pages/admin/DoctorSchedulePage";
 
 import ReceptionistLayout from "./pages/receptionist/ReceptionistLayout";
 import PatientLayout from "./pages/patient/PatientLayout";
@@ -122,6 +123,10 @@ export default function App() {
                                 path="departments"
                                 element={<DepartmentListPage />}
                             />
+                            <Route
+                                path="schedules"
+                                element={<DoctorSchedulePage />}
+                            />
                         </Route>
 
                         {/* Doctor */}
@@ -154,6 +159,14 @@ export default function App() {
                             <Route
                                 path="appointments"
                                 element={<AppointmentListPage />}
+                            />
+                            <Route
+                                path="patients"
+                                element={<PatientListPage />}
+                            />
+                            <Route
+                                path="patients/:id"
+                                element={<PatientDetailPage />}
                             />
                         </Route>
 
