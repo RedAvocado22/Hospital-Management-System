@@ -4,6 +4,7 @@ import {
     CalendarOutlined,
     UserOutlined,
     BankOutlined,
+    ScheduleOutlined,
 } from "@ant-design/icons";
 import AppLayout from "../../components/AppLayout";
 
@@ -15,16 +16,22 @@ const navItems = [
         path: "/admin/employees",
     },
     {
-        key: "medical-records",
-        icon: <FileTextOutlined />,
-        label: "Medical Records",
-        path: "/admin/medical-records",
+        key: "schedules",
+        icon: <ScheduleOutlined />,
+        label: "Doctor Schedules",
+        path: "/admin/schedules",
     },
     {
         key: "appointments",
         icon: <CalendarOutlined />,
         label: "Appointments",
         path: "/admin/appointments",
+    },
+    {
+        key: "medical-records",
+        icon: <FileTextOutlined />,
+        label: "Medical Records",
+        path: "/admin/medical-records",
     },
     {
         key: "patients",

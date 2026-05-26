@@ -1,4 +1,4 @@
-import { FileTextOutlined, CalendarOutlined } from "@ant-design/icons";
+import { FileTextOutlined, CalendarOutlined, UserOutlined } from "@ant-design/icons";
 import AppLayout from "../../components/AppLayout";
 
 const navItems = [
@@ -13,6 +13,12 @@ const navItems = [
         icon: <CalendarOutlined />,
         label: "Appointments",
         path: "/doctor/appointments",
+    },
+    {
+        key: "patients",
+        icon: <UserOutlined />,
+        label: "Patients",
+        path: "/doctor/patients",
     },
 ];
 

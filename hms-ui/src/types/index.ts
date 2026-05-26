@@ -163,6 +163,16 @@ export interface PatientDetail {
     allergies: string | null;
 }
 
+export interface DoctorSchedule {
+    id: string;
+    doctorName: string;
+    doctorId: string;
+    date: string;
+    type: "MORNING" | "AFTERNOON" | "EVENING";
+    maxPatients: number;
+    isAvailable: boolean;
+}
+
 export interface UpdateEmployeeRequest {
     email?: string;
     firstName?: string;

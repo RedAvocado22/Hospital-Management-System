@@ -12,8 +12,10 @@ import {
     Modal,
     Form,
     Input,
+    Spin,
+    Empty,
 } from "antd";
-import { CalendarOutlined, PlusOutlined } from "@ant-design/icons";
+import { CalendarOutlined, PlusOutlined, UserOutlined } from "@ant-design/icons";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -24,8 +26,15 @@ import {
     cancelAppointment,
     confirmAppointment,
 } from "../../api/appointments";
+import { getDoctorSchedules } from "../../api/doctorSchedules";
 import { useAuthStore } from "../../store/authStore";
-import type { Appointment } from "../../types";
+import type { Appointment, DoctorSchedule } from "../../types";
+
+const SHIFT_CONFIG = {
+    MORNING: { label: "Morning", time: "07:00 – 12:00", color: "#1890FF", bg: "#E6F4FF", borderColor: "#91CAFF" },
+    AFTERNOON: { label: "Afternoon", time: "13:00 – 18:00", color: "#FA8C16", bg: "#FFF7E6", borderColor: "#FFD591" },
+    EVENING: { label: "Evening", time: "19:00 – 22:00", color: "#722ED1", bg: "#F9F0FF", borderColor: "#D3ADF7" },
+} as const;
 
 const { Title } = Typography;
 
@@ -46,6 +55,8 @@ export default function AppointmentListPage() {
     const [dateFilter, setDateFilter] = useState<string | undefined>();
     const [bookOpen, setBookOpen] = useState(false);
     const [bookForm] = Form.useForm();
+    const [bookDate, setBookDate] = useState<string | undefined>();
+    const [selectedScheduleId, setSelectedScheduleId] = useState<string | undefined>();
 
     const isAdmin = user?.roles?.includes("ROLE_ADMIN") ?? false;
     const isDoctor = user?.roles?.includes("ROLE_DOCTOR") ?? false;
@@ -81,12 +92,24 @@ export default function AppointmentListPage() {
         onError: () => message.error("Failed to confirm appointment"),
     });
 
+    const { data: schedulesData, isLoading: schedulesLoading } = useQuery({
+        queryKey: ["book-schedules", bookDate],
+        queryFn: () =>
+            getDoctorSchedules({ date: bookDate, size: 50 }).then((r) => r.data),
+        enabled: !!bookDate && bookOpen,
+    });
+    const availableSchedules = (schedulesData?.data?.content ?? []).filter(
+        (s: DoctorSchedule) => s.isAvailable,
+    );
+
     const bookMutation = useMutation({
         mutationFn: bookAppointment,
         onSuccess: () => {
             message.success("Appointment booked");
             setBookOpen(false);
             bookForm.resetFields();
+            setBookDate(undefined);
+            setSelectedScheduleId(undefined);
             queryClient.invalidateQueries({ queryKey: ["appointments"] });
         },
         onError: (err: unknown) => {
@@ -97,16 +120,23 @@ export default function AppointmentListPage() {
         },
     });
 
-    const handleBook = (values: {
-        scheduleId: string;
-        reason: string;
-        patientId?: string;
-    }) => {
+    const handleBook = (values: { reason: string; patientId?: string }) => {
+        if (!selectedScheduleId) {
+            message.warning("Please select a schedule");
+            return;
+        }
         bookMutation.mutate({
-            scheduleId: values.scheduleId,
+            scheduleId: selectedScheduleId,
             reason: values.reason,
             patientId: isReceptionist ? values.patientId : undefined,
         });
+    };
+
+    const handleBookModalClose = () => {
+        setBookOpen(false);
+        bookForm.resetFields();
+        setBookDate(undefined);
+        setSelectedScheduleId(undefined);
     };
 
     const formatTime = (t: string) => t?.substring(0, 5) ?? "";
@@ -181,6 +211,17 @@ export default function AppointmentListPage() {
                                 </Button>
                             </Popconfirm>
                         )}
+                    {isDoctor && (
+                        <Button
+                            size="small"
+                            icon={<UserOutlined />}
+                            onClick={() =>
+                                navigate(`/doctor/patients/${record.patientId}`)
+                            }
+                        >
+                            Patient
+                        </Button>
+                    )}
                     {isDoctor && record.status === "CONFIRMED" && (
                         <Button
                             size="small"
@@ -288,57 +329,111 @@ export default function AppointmentListPage() {
             <Modal
                 title="Book Appointment"
                 open={bookOpen}
-                onCancel={() => {
-                    setBookOpen(false);
-                    bookForm.resetFields();
-                }}
+                onCancel={handleBookModalClose}
                 onOk={() => bookForm.submit()}
                 confirmLoading={bookMutation.isPending}
+                width={560}
+                okText="Book"
+                okButtonProps={{ disabled: !selectedScheduleId }}
             >
                 <Form
                     form={bookForm}
                     layout="vertical"
                     onFinish={handleBook}
+                    style={{ marginTop: 8 }}
                 >
-                    <Form.Item
-                        name="scheduleId"
-                        label="Schedule ID"
-                        rules={[
-                            {
-                                required: true,
-                                message: "Schedule ID is required",
-                            },
-                        ]}
-                        extra="Enter the doctor schedule UUID"
-                    >
-                        <Input placeholder="e.g. d0000001-0000-0000-0000-000000000001" />
-                    </Form.Item>
                     {isReceptionist && (
                         <Form.Item
                             name="patientId"
                             label="Patient ID"
-                            rules={[
-                                {
-                                    required: true,
-                                    message: "Patient ID is required",
-                                },
-                            ]}
-                            extra="Enter the patient UUID"
+                            rules={[{ required: true, message: "Patient ID is required" }]}
                         >
                             <Input placeholder="Patient UUID" />
                         </Form.Item>
                     )}
+
+                    <Form.Item label="Appointment Date">
+                        <DatePicker
+                            style={{ width: "100%" }}
+                            format="DD/MM/YYYY"
+                            disabledDate={(d) => d.isBefore(dayjs(), "day")}
+                            onChange={(_, dateStr) => {
+                                const val = Array.isArray(dateStr) ? dateStr[0] : dateStr;
+                                setBookDate(
+                                    val
+                                        ? dayjs(val, "DD/MM/YYYY").format("YYYY-MM-DD")
+                                        : undefined,
+                                );
+                                setSelectedScheduleId(undefined);
+                            }}
+                        />
+                    </Form.Item>
+
+                    {bookDate && (
+                        <Form.Item label="Available Schedules">
+                            {schedulesLoading ? (
+                                <div style={{ textAlign: "center", padding: 16 }}>
+                                    <Spin size="small" />
+                                </div>
+                            ) : availableSchedules.length === 0 ? (
+                                <Empty
+                                    description="No available schedules on this date"
+                                    image={Empty.PRESENTED_IMAGE_SIMPLE}
+                                />
+                            ) : (
+                                <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+                                    {availableSchedules.map((s: DoctorSchedule) => {
+                                        const shift = SHIFT_CONFIG[s.type];
+                                        const isSelected = selectedScheduleId === s.id;
+                                        return (
+                                            <div
+                                                key={s.id}
+                                                onClick={() => setSelectedScheduleId(s.id)}
+                                                style={{
+                                                    flex: "1 1 calc(50% - 5px)",
+                                                    minWidth: 200,
+                                                    padding: "12px 14px",
+                                                    borderRadius: 8,
+                                                    border: `2px solid ${isSelected ? shift.color : "#e5e9ef"}`,
+                                                    background: isSelected ? shift.bg : "#fff",
+                                                    cursor: "pointer",
+                                                    transition: "all 0.2s",
+                                                    boxShadow: isSelected
+                                                        ? `0 0 0 2px ${shift.color}22`
+                                                        : "none",
+                                                }}
+                                            >
+                                                <div style={{ marginBottom: 4 }}>
+                                                    <Tag
+                                                        color={shift.color}
+                                                        style={{ fontWeight: 600, fontSize: 12 }}
+                                                    >
+                                                        {shift.label}
+                                                    </Tag>
+                                                    <span style={{ fontSize: 12, color: "#8c8c8c" }}>
+                                                        {shift.time}
+                                                    </span>
+                                                </div>
+                                                <div style={{ fontWeight: 500, fontSize: 13 }}>
+                                                    {s.doctorName}
+                                                </div>
+                                                <div style={{ fontSize: 12, color: "#8c8c8c", marginTop: 2 }}>
+                                                    {s.maxPatients} max patients
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </Form.Item>
+                    )}
+
                     <Form.Item
                         name="reason"
                         label="Reason"
-                        rules={[
-                            { required: true, message: "Reason is required" },
-                        ]}
+                        rules={[{ required: true, message: "Reason is required" }]}
                     >
-                        <Input.TextArea
-                            rows={3}
-                            placeholder="Reason for appointment"
-                        />
+                        <Input.TextArea rows={3} placeholder="Reason for appointment" />
                     </Form.Item>
                 </Form>
             </Modal>
