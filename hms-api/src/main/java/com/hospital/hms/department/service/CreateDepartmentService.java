@@ -20,6 +20,11 @@ public class CreateDepartmentService extends BaseService<CreateDepartmentRequest
 
     @Override
     @Transactional
+    public DepartmentResponse execute(CreateDepartmentRequest request) {
+        return super.execute(request);
+    }
+
+    @Override
     protected DepartmentResponse doProcess(CreateDepartmentRequest request) {
         log.info("Starting department creation: {}", request.getName());
         Department department = Department.builder()
