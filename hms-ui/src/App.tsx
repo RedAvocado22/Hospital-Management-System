@@ -9,13 +9,21 @@ import PrivateRoute from "./components/PrivateRoute";
 import AdminLayout from "./pages/admin/AdminLayout";
 import EmployeeListPage from "./pages/admin/EmployeeListPage";
 import CreateEmployeePage from "./pages/admin/CreateEmployeePage";
+import DepartmentListPage from "./pages/admin/DepartmentListPage";
 
 import DoctorLayout from "./pages/doctor/DoctorLayout";
+import CreateMedicalRecordPage from "./pages/doctor/CreateMedicalRecordPage";
+
 import ReceptionistLayout from "./pages/receptionist/ReceptionistLayout";
 import PatientLayout from "./pages/patient/PatientLayout";
 import PatientDashboard from "./pages/patient/PatientDashboard";
+import PatientListPage from "./pages/patient/PatientListPage";
+import PatientDetailPage from "./pages/patient/PatientDetailPage";
+
 import MedicalRecordsPage from "./pages/shared/MedicalRecordsPage";
 import MedicalRecordDetailPage from "./pages/shared/MedicalRecordDetailPage";
+import AppointmentListPage from "./pages/shared/AppointmentListPage";
+
 import PharmacistLayout from "./pages/pharmacist/PharmacistLayout";
 import MedicineListPage from "./pages/pharmacist/MedicineListPage";
 
@@ -98,6 +106,22 @@ export default function App() {
                                 path="medical-records/:id"
                                 element={<MedicalRecordDetailPage />}
                             />
+                            <Route
+                                path="appointments"
+                                element={<AppointmentListPage />}
+                            />
+                            <Route
+                                path="patients"
+                                element={<PatientListPage />}
+                            />
+                            <Route
+                                path="patients/:id"
+                                element={<PatientDetailPage />}
+                            />
+                            <Route
+                                path="departments"
+                                element={<DepartmentListPage />}
+                            />
                         </Route>
 
                         {/* Doctor */}
@@ -120,8 +144,16 @@ export default function App() {
                                 element={<MedicalRecordsPage />}
                             />
                             <Route
+                                path="medical-records/create"
+                                element={<CreateMedicalRecordPage />}
+                            />
+                            <Route
                                 path="medical-records/:id"
                                 element={<MedicalRecordDetailPage />}
+                            />
+                            <Route
+                                path="appointments"
+                                element={<AppointmentListPage />}
                             />
                         </Route>
 
@@ -150,13 +182,27 @@ export default function App() {
                                 path="medical-records/:id"
                                 element={<MedicalRecordDetailPage />}
                             />
+                            <Route
+                                path="appointments"
+                                element={<AppointmentListPage />}
+                            />
+                            <Route
+                                path="patients"
+                                element={<PatientListPage />}
+                            />
+                            <Route
+                                path="patients/:id"
+                                element={<PatientDetailPage />}
+                            />
                         </Route>
 
                         {/* Pharmacist */}
                         <Route
                             path="/pharmacist"
                             element={
-                                <PrivateRoute allowedRoles={["ROLE_PHARMACIST"]}>
+                                <PrivateRoute
+                                    allowedRoles={["ROLE_PHARMACIST"]}
+                                >
                                     <PharmacistLayout />
                                 </PrivateRoute>
                             }
@@ -187,6 +233,22 @@ export default function App() {
                             <Route
                                 path="dashboard"
                                 element={<PatientDashboard />}
+                            />
+                            <Route
+                                path="appointments"
+                                element={<AppointmentListPage />}
+                            />
+                            <Route
+                                path="medical-records"
+                                element={<MedicalRecordsPage />}
+                            />
+                            <Route
+                                path="medical-records/:id"
+                                element={<MedicalRecordDetailPage />}
+                            />
+                            <Route
+                                path="patients/:id"
+                                element={<PatientDetailPage />}
                             />
                         </Route>
 

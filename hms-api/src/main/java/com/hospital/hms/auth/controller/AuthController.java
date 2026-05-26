@@ -1,11 +1,13 @@
 package com.hospital.hms.auth.controller;
 
+import com.hospital.hms.auth.request.LogoutRequest;
 import com.hospital.hms.auth.request.SignInRequest;
-import com.hospital.hms.auth.response.AccountResponse;
 import com.hospital.hms.auth.response.AuthResponse;
+import com.hospital.hms.auth.service.LogoutService;
 import com.hospital.hms.auth.service.SignInService;
 import com.hospital.hms.base.api.ApiResponse;
 import com.hospital.hms.patient.request.CreatePatientRequest;
+import com.hospital.hms.patient.response.PatientResponse;
 import com.hospital.hms.patient.service.CreatePatientService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -17,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,6 +34,7 @@ public class AuthController {
 
     private final CreatePatientService createPatientService;
     private final SignInService signInService;
+    private final LogoutService logoutService;
 
     @PostMapping("/signup")
     @Operation(
@@ -38,12 +42,12 @@ public class AuthController {
             description = """
                     Registers a new patient account. This is the only public registration endpoint — \
                     employees are created by an Admin via POST /employees.
-
+                    
                     **What happens internally:**
                     1. Validates username and email uniqueness
                     2. Saves Account + PatientInfo to MySQL
                     3. Provisions the user in Keycloak and assigns the PATIENT role
-
+                    
                     If Keycloak provisioning fails, the MySQL record is rolled back (two-phase compensation). \
                     The caller always gets a consistent result.
                     """
@@ -63,10 +67,10 @@ public class AuthController {
                     description = "Keycloak unavailable — registration rolled back"
             )
     })
-    public ResponseEntity<ApiResponse<AccountResponse>> signUp(@Valid @RequestBody CreatePatientRequest request) {
+    public ResponseEntity<ApiResponse<PatientResponse>> signUp(@Valid @RequestBody CreatePatientRequest request) {
         log.info("Received sign up request: {}", request.toLogString());
 
-        AccountResponse data = createPatientService.execute(request);
+        PatientResponse data = createPatientService.execute(request);
 
         log.info("Successfully processed sign up request for: {}", request.getUsername());
         return ResponseEntity.status(HttpStatus.CREATED).body(
@@ -79,10 +83,10 @@ public class AuthController {
             summary = "Sign in",
             description = """
                     Authenticates a user against Keycloak and returns a JWT access token and refresh token.
-
+                    
                     **Token usage:** Include the access token in the Authorization header as `Bearer <token>` \
                     for all protected endpoints.
-
+                    
                     **Token lifetime:** Access token expires per Keycloak realm config (default 5 minutes). \
                     Use the refresh token to obtain a new access token without re-login.
                     """
@@ -110,6 +114,16 @@ public class AuthController {
         log.info("Successfully processed sign in request for: {}", request.getUsername());
         return ResponseEntity.status(HttpStatus.OK).body(
                 ApiResponse.success(response, "Login successful", HttpStatus.OK.value())
+        );
+    }
+
+    @PostMapping("/logout")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<Void>> logout() {
+        LogoutRequest request = new LogoutRequest();
+        logoutService.execute(request);
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.success(null, "Logout successful", HttpStatus.OK.value())
         );
     }
 }

@@ -1,8 +1,10 @@
 package com.hospital.hms.medical.repository;
 
+import com.hospital.hms.common.enums.ShiftType;
 import com.hospital.hms.medical.entity.DoctorSchedule;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -32,4 +34,9 @@ DoctorScheduleRepository extends JpaRepository<DoctorSchedule, UUID> {
     Optional<DoctorSchedule> findByDoctor_IdAndDateAndStartTimeAndEndTime(UUID doctorId, LocalDate date, LocalTime startTime, LocalTime endTime);
 
     Page<DoctorSchedule> findByDate(LocalDate date, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"doctor"})
+    Optional<DoctorSchedule> findDetailsById(UUID id);
+
+    boolean existsByDoctor_IdAndDateAndType(UUID doctorId, LocalDate date, ShiftType type);
 }
