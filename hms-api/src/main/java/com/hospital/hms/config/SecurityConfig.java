@@ -1,5 +1,8 @@
 package com.hospital.hms.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hospital.hms.auth.service.TokenBlacklistService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -7,10 +10,11 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -28,7 +32,12 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+    private final JwtDecoder jwtDecoder;
+    private final TokenBlacklistService tokenBlacklistService;
+    private final ObjectMapper objectMapper;
 
     /**
      * Public endpoints that do NOT require authentication.
@@ -42,8 +51,9 @@ public class SecurityConfig {
             // Actuator health check
             "/actuator/health",
             "/actuator/info",
-            //Testing
-            "/**"
+            // Auth
+            "/auth/signup",
+            "/auth/signin"
     };
 
     @Bean
@@ -53,7 +63,6 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
 
                 // Disable CSRF (stateless API with JWT — not vulnerable to CSRF)
-                .csrf(AbstractHttpConfigurer::disable)
                 .csrf(CsrfConfigurer::disable)
 
                 // Stateless session — no HttpSession, every request must have a JWT
@@ -68,6 +77,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // Everything else requires authentication
                         .anyRequest().authenticated()
+                )
+
+                .addFilterBefore(
+                        new JwtBlacklistFilter(jwtDecoder, tokenBlacklistService, objectMapper),
+                        BearerTokenAuthenticationFilter.class
                 )
 
                 // Validate JWTs from Keycloak

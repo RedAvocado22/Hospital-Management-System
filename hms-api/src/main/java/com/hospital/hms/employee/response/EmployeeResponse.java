@@ -1,15 +1,14 @@
 package com.hospital.hms.employee.response;
 
+import com.hospital.hms.auth.dto.AccountInfo;
 import com.hospital.hms.common.enums.Gender;
-import com.hospital.hms.department.response.DepartmentResponse;
+import com.hospital.hms.department.dto.DepartmentInfo;
 import com.hospital.hms.employee.entity.EmployeeInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Schema(description = "Employee details including account and department information")
 public record EmployeeResponse(
         @Schema(description = "Unique identifier", example = "550e8400-e29b-41d4-a716-446655440000")
         UUID id,
@@ -19,12 +18,6 @@ public record EmployeeResponse(
 
         @Schema(description = "Email address", example = "nguyen@hospital.com")
         String email,
-
-        @Schema(description = "First name", example = "Minh")
-        String firstName,
-
-        @Schema(description = "Last name", example = "Nguyen")
-        String lastName,
 
         @Schema(description = "Full display name", example = "Minh Nguyen")
         String fullName,
@@ -48,39 +41,29 @@ public record EmployeeResponse(
         String role,
 
         @Schema(description = "Assigned department")
-        DepartmentResponse department,
+        DepartmentInfo department,
 
         @Schema(description = "Employment start date", example = "2026-01-15")
         LocalDate hireDate,
 
         @Schema(description = "Unique employee code", example = "EMP-001")
-        String code,
-
-        @Schema(description = "Record creation timestamp")
-        LocalDateTime createdAt,
-
-        @Schema(description = "Last modification timestamp")
-        LocalDateTime updatedAt
+        String code
 ) {
-    public static EmployeeResponse from(EmployeeInfo employee) {
+    public static EmployeeResponse from(EmployeeInfo employee, AccountInfo account, DepartmentInfo department) {
         return new EmployeeResponse(
                 employee.getId(),
-                employee.getAccount().getUsername(),
-                employee.getAccount().getEmail(),
-                employee.getAccount().getFirstName(),
-                employee.getAccount().getLastName(),
-                employee.getAccount().getFullName(),
-                employee.getAccount().getDob(),
-                employee.getAccount().getGender(),
-                employee.getAccount().getAddress(),
-                employee.getAccount().getPhone(),
-                employee.getAccount().getIsActive(),
-                employee.getAccount().getRole().getName(),
-                DepartmentResponse.from(employee.getDepartment()),
+                account.username(),
+                account.email(),
+                account.fullName(),
+                account.dob(),
+                account.gender(),
+                account.address(),
+                account.phone(),
+                account.active(),
+                account.role(),
+                department,
                 employee.getHireDate(),
-                employee.getCode(),
-                employee.getCreatedAt(),
-                employee.getUpdatedAt()
+                employee.getCode()
         );
     }
 }
