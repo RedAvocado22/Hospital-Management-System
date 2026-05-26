@@ -51,7 +51,7 @@ public class CancelAppointmentService extends BaseService<AppointmentIdRequest, 
             throw new BusinessException("Appointment only cancel when pending or confirmed");
         }
 
-        String key = "slots:" + appointment.getDoctor().getId() + ":" + appointment.getDate() + ":" + appointment.getSchedule().getStartTime() + "-" + appointment.getSchedule().getEndTime();
+        String key = "slots:" + appointment.getDoctor().getId() + ":" + appointment.getDate() + ":" + appointment.getSchedule().getType().getStart() + "-" + appointment.getSchedule().getType().getEnd();
         boolean slotReleased = appointmentSlotService.cancelSlot(key);
         if (!slotReleased) {
             log.warn("Redis slot key not found or already at 0 — key: {}. Proceeding with DB cancel.", key);
