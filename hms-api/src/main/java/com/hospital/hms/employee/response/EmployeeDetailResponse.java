@@ -14,6 +14,9 @@ public record EmployeeDetailResponse(
         @Schema(description = "Unique identifier", example = "550e8400-e29b-41d4-a716-446655440000")
         UUID id,
 
+        @Schema(description = "Unique identifier", example = "550e8400-e29b-41d4-a716-446655440000")
+        UUID accountId,
+
         @Schema(description = "Login username", example = "dr.nguyen")
         String username,
 
@@ -65,6 +68,7 @@ public record EmployeeDetailResponse(
     public static EmployeeDetailResponse from(EmployeeInfo employee) {
         return new EmployeeDetailResponse(
                 employee.getId(),
+                employee.getAccount().getId(),
                 employee.getAccount().getUsername(),
                 employee.getAccount().getEmail(),
                 employee.getAccount().getFirstName(),
