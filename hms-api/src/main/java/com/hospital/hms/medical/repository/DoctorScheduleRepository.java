@@ -1,5 +1,6 @@
 package com.hospital.hms.medical.repository;
 
+import com.hospital.hms.common.enums.ShiftType;
 import com.hospital.hms.medical.entity.DoctorSchedule;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,4 +21,6 @@ DoctorScheduleRepository extends JpaRepository<DoctorSchedule, UUID> {
 
     @EntityGraph(attributePaths = {"doctor"})
     Optional<DoctorSchedule> findDetailsById(UUID id);
+
+    boolean existsByDoctor_IdAndDateAndShiftType(UUID doctorId, LocalDate date, ShiftType type);
 }
