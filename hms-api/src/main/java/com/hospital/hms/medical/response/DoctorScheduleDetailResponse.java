@@ -1,9 +1,9 @@
 package com.hospital.hms.medical.response;
 
+import com.hospital.hms.common.enums.ShiftType;
 import com.hospital.hms.medical.entity.DoctorSchedule;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.UUID;
 
 public record DoctorScheduleDetailResponse(
@@ -11,8 +11,7 @@ public record DoctorScheduleDetailResponse(
         String doctorName,
         UUID doctorId,
         LocalDate date,
-        LocalTime startTime,
-        LocalTime endTime,
+        ShiftType type,
         Integer maxPatients,
         Boolean isAvailable
 ) {
@@ -22,8 +21,7 @@ public record DoctorScheduleDetailResponse(
                 schedule.getDoctor().getFullName(),
                 schedule.getDoctor().getId(),
                 schedule.getDate(),
-                schedule.getStartTime(),
-                schedule.getEndTime(),
+                schedule.getType(),
                 schedule.getMaxPatients(),
                 schedule.getIsAvailable()
         );

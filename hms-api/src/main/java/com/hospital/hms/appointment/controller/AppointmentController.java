@@ -10,6 +10,12 @@ import com.hospital.hms.appointment.service.ConfirmAppointmentService;
 import com.hospital.hms.appointment.service.GetAppointmentService;
 import com.hospital.hms.base.api.ApiResponse;
 import com.hospital.hms.base.response.PaginatedResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,12 +30,32 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/appointments")
 @RequiredArgsConstructor
+@Tag(name = "Appointments", description = "Appointment booking, cancellation, and confirmation")
+@SecurityRequirement(name = "bearerAuth")
 public class AppointmentController {
     private final BookAppointmentService bookAppointmentService;
     private final CancelAppointmentService cancelAppointmentService;
     private final ConfirmAppointmentService confirmAppointmentService;
     private final GetAppointmentService getAppointmentService;
 
+    @Operation(
+            summary = "List appointments",
+            description = """
+                    Returns a paginated list of appointments with optional filters.
+
+                    **ABAC rule:** DOCTOR sees only their own appointments. PATIENT sees only their own. \
+                    ADMIN and RECEPTIONIST see all.
+
+                    **Filters:** status, doctorName, patientName, date range.
+                    """
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = "Appointments retrieved successfully",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            )
+    })
     @GetMapping
     @PreAuthorize("hasAnyRole('PATIENT', 'DOCTOR', 'RECEPTIONIST', 'ADMIN')")
     public ResponseEntity<ApiResponse<PaginatedResponse<AppointmentResponse>>> getAllAppointments(
@@ -46,6 +72,24 @@ public class AppointmentController {
         );
     }
 
+    @Operation(
+            summary = "Book an appointment",
+            description = """
+                    Books a slot on a doctor's schedule. Uses Redis atomic increment to prevent overbooking.
+
+                    **ABAC rule:** PATIENT books for themselves (patientId resolved from JWT). \
+                    RECEPTIONIST must provide patientId explicitly.
+                    """
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "201",
+                    description = "Appointment booked successfully",
+                    content = @Content(schema = @Schema(implementation = ApiResponse.class))
+            ),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Schedule full or invalid input"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Schedule not found")
+    })
     @PostMapping
     @PreAuthorize("hasAnyRole('PATIENT', 'RECEPTIONIST')")
     public ResponseEntity<ApiResponse<AppointmentResponse>> bookAppointment(
@@ -61,6 +105,20 @@ public class AppointmentController {
         );
     }
 
+    @Operation(
+            summary = "Cancel an appointment",
+            description = """
+                    Cancels a PENDING or CONFIRMED appointment and decrements the Redis slot count.
+
+                    **ABAC rule:** PATIENT can only cancel their own appointments.
+                    """
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Appointment cancelled successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Appointment already cancelled or completed"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Patient trying to cancel another patient's appointment"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Appointment not found")
+    })
     @PatchMapping("/{id}/cancel")
     @PreAuthorize("hasAnyRole('PATIENT', 'RECEPTIONIST', 'ADMIN')")
     public ResponseEntity<ApiResponse<AppointmentResponse>> cancelAppointment(
@@ -77,6 +135,20 @@ public class AppointmentController {
         );
     }
 
+    @Operation(
+            summary = "Confirm an appointment",
+            description = """
+                    Confirms a PENDING appointment. Cannot confirm past appointments.
+
+                    **ABAC rule:** DOCTOR can only confirm appointments assigned to them.
+                    """
+    )
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Appointment confirmed successfully"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Appointment not in PENDING status or date is in the past"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "403", description = "Doctor trying to confirm another doctor's appointment"),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Appointment not found")
+    })
     @PatchMapping("/{id}/confirm")
     @PreAuthorize("hasAnyRole('DOCTOR', 'RECEPTIONIST', 'ADMIN')")
     public ResponseEntity<ApiResponse<AppointmentResponse>> confirmAppointment(
