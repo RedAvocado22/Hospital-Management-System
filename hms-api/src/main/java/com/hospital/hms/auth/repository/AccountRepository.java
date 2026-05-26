@@ -1,6 +1,7 @@
 package com.hospital.hms.auth.repository;
 
 import com.hospital.hms.auth.entity.Account;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -15,4 +16,7 @@ public interface AccountRepository extends JpaRepository<Account, UUID> {
     boolean existsByUsername(String username);
 
     boolean existsByEmail(String email);
+
+    @EntityGraph(attributePaths = "role")
+    Optional<Account> findWithRoleById(UUID id);
 }
