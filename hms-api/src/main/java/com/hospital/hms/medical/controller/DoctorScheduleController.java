@@ -28,7 +28,7 @@ import java.util.UUID;
 
 @Slf4j
 @RestController
-@RequestMapping("/v1/doctor-schedules")
+@RequestMapping("/doctor-schedules")
 @RequiredArgsConstructor
 @Tag(name = "Doctor Schedules", description = "Manage doctor shift schedules")
 @SecurityRequirement(name = "bearerAuth")
@@ -76,7 +76,7 @@ public class DoctorScheduleController {
             description = """
                     Creates a shift schedule for a doctor. Shifts are fixed: MORNING (07:00–12:00), \
                     AFTERNOON (13:00–18:00), EVENING (19:00–22:00).
-
+                    
                     Validates that the account has DOCTOR role and no overlapping shift exists for the same doctor and date.
                     """
     )

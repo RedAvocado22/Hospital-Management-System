@@ -1,5 +1,6 @@
 package com.hospital.hms.medical.service;
 
+import com.hospital.hms.auth.service.AccountQueryService;
 import com.hospital.hms.base.response.PaginatedResponse;
 import com.hospital.hms.base.service.BaseService;
 import com.hospital.hms.exception.NotFoundException;
@@ -23,6 +24,7 @@ import java.time.LocalDate;
 public class SearchDoctorScheduleService extends BaseService<SearchDoctorScheduleRequest, PaginatedResponse<DoctorScheduleDetailResponse>> {
     private final DoctorScheduleRepository doctorScheduleRepository;
     private final DoctorScheduleMapper doctorScheduleMapper;
+    private final AccountQueryService accountQueryService;
 
     @Override
     @Transactional(readOnly = true)
@@ -35,7 +37,7 @@ public class SearchDoctorScheduleService extends BaseService<SearchDoctorSchedul
         if (request.getDoctorId() == null) {
             doctorSchedulePage = doctorScheduleRepository.findByDate(date, pageable);
         } else {
-            if (!doctorScheduleRepository.existsByDoctor_IdAndDoctor_Role_Name(request.getDoctorId(), "doctor")) {
+            if (!accountQueryService.hasRole(request.getDoctorId(), "doctor")) {
                 throw new NotFoundException("Doctor does not exist in the system");
             }
             doctorSchedulePage = doctorScheduleRepository.findByDoctorAndDateWithRoleCheck(request.getDoctorId(), date, pageable);
