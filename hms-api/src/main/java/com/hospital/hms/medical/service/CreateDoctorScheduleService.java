@@ -11,6 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 @Service
 @RequiredArgsConstructor
 public class CreateDoctorScheduleService extends BaseService<CreateDoctorScheduleRequest, DoctorScheduleDetailResponse> {
@@ -51,6 +54,14 @@ public class CreateDoctorScheduleService extends BaseService<CreateDoctorSchedul
 
         if (doctorScheduleRepository.existsByDoctor_IdAndDateAndType(request.getDoctorId(), request.getDate(), request.getType())) {
             throw new BusinessException("Doctor already has this schedule");
+        }
+
+        if (request.getDate().isBefore(LocalDate.now())) {
+            throw new BusinessException("Date is in the past");
+        }
+
+        if (request.getDate().isEqual(LocalDate.now()) && request.getType().getStart().isBefore(LocalTime.now().plusHours(8))) {
+            throw new BusinessException("Shift must start at least 8 hours from now");
         }
     }
 }
