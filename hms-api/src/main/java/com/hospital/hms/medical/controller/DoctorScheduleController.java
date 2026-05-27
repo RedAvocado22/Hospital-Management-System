@@ -39,7 +39,7 @@ public class DoctorScheduleController {
     private final DeactivateDoctorScheduleService deactivateDoctorScheduleService;
 
     @GetMapping()
-    @PreAuthorize("hasAnyRole('RECEPTIONIST', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('RECEPTIONIST', 'ADMIN', 'PATIENT', 'DOCTOR')")
     public ResponseEntity<ApiResponse<PaginatedResponse<DoctorScheduleDetailResponse>>> getDoctorSchedule(
             @ModelAttribute SearchDoctorScheduleRequest request, HttpServletRequest httpRequest) {
         long startTime = System.currentTimeMillis();
