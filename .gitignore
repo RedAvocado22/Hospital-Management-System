@@ -43,3 +43,4 @@ GEMINI.md
 
 # --- Linux ---
 hms-api/compose.override.yaml
+/hms-ui/.claude
