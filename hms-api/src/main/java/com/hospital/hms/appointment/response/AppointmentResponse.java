@@ -2,9 +2,9 @@ package com.hospital.hms.appointment.response;
 
 import com.hospital.hms.appointment.entity.Appointment;
 import com.hospital.hms.common.enums.AppointmentStatus;
+import com.hospital.hms.common.enums.ShiftType;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.UUID;
 
 public record AppointmentResponse(
@@ -14,8 +14,7 @@ public record AppointmentResponse(
         UUID patientId,
         String patientName,
         LocalDate date,
-        LocalTime startTime,
-        LocalTime endTime,
+        ShiftType shift,
         AppointmentStatus status
 ) {
     public static AppointmentResponse from(Appointment appointment) {
@@ -26,8 +25,7 @@ public record AppointmentResponse(
                 appointment.getPatient().getId(),
                 null,
                 appointment.getDate(),
-                appointment.getSchedule().getType().getStart(),
-                appointment.getSchedule().getType().getEnd(),
+                appointment.getSchedule().getType(),
                 appointment.getStatus()
         );
     }
@@ -40,8 +38,7 @@ public record AppointmentResponse(
                 appointment.getPatient().getId(),
                 appointment.getPatient().getAccount().getFullName(),
                 appointment.getDate(),
-                appointment.getSchedule().getType().getStart(),
-                appointment.getSchedule().getType().getEnd(),
+                appointment.getSchedule().getType(),
                 appointment.getStatus()
         );
     }

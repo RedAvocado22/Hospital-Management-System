@@ -51,15 +51,11 @@ public class BookAppointmentService extends BaseService<BookAppointmentRequest, 
             throw new ValidationException("Date must not be in the past");
         }
 
-        if (schedule.date().isEqual(LocalDate.now()) && schedule.startTime().isBefore(LocalTime.now())) {
-            throw new ValidationException("Start time cannot be in the past");
+        if (schedule.date().isEqual(LocalDate.now()) && schedule.type().getStart().isBefore(LocalTime.now())) {
+            throw new ValidationException("Shift has already started");
         }
 
-        if (schedule.startTime().isAfter(schedule.endTime())) {
-            throw new ValidationException("Start time must be before end time");
-        }
-
-        String key = "slots:" + schedule.doctorId() + ":" + schedule.date() + ":" + schedule.startTime() + "-" + schedule.endTime();
+        String key = "slots:" + schedule.doctorId() + ":" + schedule.date() + ":" + schedule.type().name();
 
         if (appointmentSlotService.bookSlot(schedule.id(), key, schedule.maxPatients())) {
             Appointment appointment = Appointment.builder()
